@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BiClinic } from "react-icons/bi";
+// import { BiClinic } from "react-icons/bi";
 
 
 import {
@@ -19,9 +19,6 @@ import {
   FaEdit,FaFileInvoice,FaResearchgate,FaTemperatureHigh,
 } from "react-icons/fa";
 import { FaBarsProgress, FaNotesMedical,  FaRegFaceSurprise } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
-
-
 import { GoChevronDown } from "react-icons/go";
 import { IoPeople } from "react-icons/io5";
 import { LuDot } from "react-icons/lu";
@@ -29,14 +26,10 @@ import { MdOutlineDocumentScanner, MdOutlineMessage, MdOutlineSettings } from "r
 import { PiCallBellBold } from "react-icons/pi";
 import { SiArkecosystem, SiFiles, SiDatabricks } from "react-icons/si";
 
-export default function Sidebar({ userRole, setActiveComponent, setUserRole }) {
+export default function Sidebar({ userRole, setActiveComponent }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [SidebarOpen,setSidebarOpen]=useState(false);
-  const navigate = useNavigate();
 
-   const handleNavigation = (component) => {
-    navigate(`/${userRole}/${component}`);
-  };
 
 
   const toggleDropdown = (dropdown) => {
@@ -59,23 +52,16 @@ export default function Sidebar({ userRole, setActiveComponent, setUserRole }) {
     <div className={`fixed inset-y-0 left-0 transform ${SidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 w-64 bg-white bg-opacity-90 overflow-y-auto transition duration-200 ease-in-out z-10 md:relative`}>
       <div className="p-6">
         <h2 className="text-3xl font-bold text-purple-600">Dashboard</h2>
-        {/* <button
-          onClick={() => setUserRole(userRole === "therapist" ? "admin" : "therapist")}
-          className="mt-4 px-4 py-2 bg-gradient-to-r from-purple-400 to-pink-500 text-white rounded-full shadow-lg hover:shadow-xl transition duration-200"
-        >
-          Switch to {userRole === "therapist" ? "Admin" : "Therapist"}
-        </button> */}
+      
       </div>
       <nav className="mt-8">
-        <a onClick={() => setActiveComponent('home')} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
-          <FaHome className="mr-3" /> Home
-        </a>
+     
         {userRole === "therapist" ? (
           <>
-            {/* <a
-              onClick={() => setActiveComponent("videoCall")}
-              className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200"
-            > */}
+           <a onClick={() => setActiveComponent('home')} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
+            <FaHome className="mr-3" /> Home
+          </a>
+         
             <a onClick={() => setActiveComponent("appointments")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
               <FaCalendarAlt className="mr-3" /> View Appointments
             </a>
@@ -88,10 +74,7 @@ export default function Sidebar({ userRole, setActiveComponent, setUserRole }) {
             >
               <FaList className="mr-3" /> Patients List
             </a>
-            {/* <a
-              onClick={() => setActiveComponent('Messages')}
-              className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
-            > */}
+          
             <a onClick={() => setActiveComponent('Messages')} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <MdOutlineMessage className="mr-3" /> Patients Messages
             </a>
@@ -239,8 +222,10 @@ export default function Sidebar({ userRole, setActiveComponent, setUserRole }) {
           </>
         ) : (
           <>
-
-            <a onClick={() => setActiveComponent('therapists')} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+             <a onClick={() => setActiveComponent('home')} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
+          <FaHome className="mr-3" /> Home
+        </a>
+            <a onClick={() => setActiveComponent('therapiest')} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <FaUserMd className="mr-3" /> View Therapists
             </a>
        

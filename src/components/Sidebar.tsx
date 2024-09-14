@@ -236,11 +236,11 @@ export default function Sidebar({ userRole, setActiveComponent }) {
               </a>
               {openDropdown === "userManagement" && (
                 <div className="ml-6">
-                  <a onClick={() => setActiveComponent("users")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <a onClick={() => setActiveComponent("Admin Users")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1" /> User details</p>
                   </a>
                  
-                  <a onClick={() => setActiveComponent("engagement")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <a onClick={() => setActiveComponent("UserEngagement")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1 text-sm" /> User Engagement</p>
                   </a>
                 </div>
@@ -252,13 +252,13 @@ export default function Sidebar({ userRole, setActiveComponent }) {
               </a>
               {openDropdown === "patientManagement" && (
                 <div className="ml-6">
-                  <a onClick={() => setActiveComponent("Patient list")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <a onClick={() => setActiveComponent("AdminPatientList")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1" /> Patient List</p>
                   </a>
-                  <a onClick={() => setActiveComponent("appointment")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <a onClick={() => setActiveComponent("Patient_Appointment")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1 text-sm" /> Appointments</p>
                   </a>
-                  <a onClick={() => setActiveComponent("Messages")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <a onClick={() => setActiveComponent("Patient_Messages")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1 text-sm" /> Patient Message</p>
                   </a>
                 </div>
@@ -270,7 +270,7 @@ export default function Sidebar({ userRole, setActiveComponent }) {
               </a>
               {openDropdown === "systemManagement" && (
                 <div className="ml-6">
-                 <a onClick={() => setActiveComponent("roles")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                 <a onClick={() => setActiveComponent("Roles and Permissions")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1 text-sm" /> Role and Permissions</p>
                   </a>
                  
@@ -284,10 +284,10 @@ export default function Sidebar({ userRole, setActiveComponent }) {
             
            
          
-            <a onClick={() => setActiveComponent("communication")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+            <a onClick={() => setActiveComponent("Community Management")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <PiCallBellBold className="mr-3 text-xl" /> Community Management
             </a>
-            <a onClick={() => setActiveComponent("electronic health records")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+            <a onClick={() => setActiveComponent("Electronic Records")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <SiFiles className="mr-3" /> Electronic Health Records
               </a>
             <div className="relative">
@@ -296,22 +296,22 @@ export default function Sidebar({ userRole, setActiveComponent }) {
               </a>
               {openDropdown === "dataManagement" && (
                 <div className="ml-6">
-                  <a onClick={() => setActiveComponent("reports")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <a onClick={() => setActiveComponent("Data Reports")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1" /> Data Reports</p>
                   </a>
-                  <a onClick={() => setActiveComponent("data security")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <a onClick={() => setActiveComponent("Data Security")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1 text-sm" /> Data Security</p>
                   </a>
-                  <a onClick={() => setActiveComponent("data backup")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <a onClick={() => setActiveComponent("Data backup")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                     <p className="flex"><LuDot className="m-1 text-sm" /> Backup and Recovery</p>
                   </a>
                 </div>
               )}
             </div>
-            <a onClick={() => setActiveComponent("financial")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+            <a onClick={() => setActiveComponent("Financial Management")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <FaMoneyBillWave className="mr-3 text-2xl" /> Financial and Billing Management
             </a>
-            <a onClick={() => setActiveComponent("legal and compliance")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+            <a onClick={() => setActiveComponent("Legal and Complaints")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <p className="flex"><MdOutlineDocumentScanner className="m-1 text-xl" /> Legal and Compliance</p>
             </a>
             <a onClick={() => setActiveComponent("settings")} className="flex items-center text-2xl px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">

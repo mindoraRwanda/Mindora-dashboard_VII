@@ -7,7 +7,7 @@ import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { useTranslation } from 'react-i18next';
 
-export default function TopBar({ userRole, items = [], onSearch }) {
+export default function TopBar({ userRole, items = [], }) {
   const { t, i18n } = useTranslation(); 
   const [filteredItems, setFilteredItems] = useState(items);
   const [calendarModal, setCalendarModal] = useState(false);
@@ -34,7 +34,7 @@ export default function TopBar({ userRole, items = [], onSearch }) {
   // Example user object for demonstration purposes
   const user = {
     name: "John Doe",
-    profilePhoto: "/images/profile.jpeg" // Make sure this path is correct
+    profilePhoto: "/public/Images/PEREZIDA.jpeg" // Make sure this path is correct
   };
  
   const handleLanguageChange = (e) => {

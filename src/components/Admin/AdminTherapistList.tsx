@@ -12,7 +12,10 @@ import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import VideoCall from "../VideoCall";
 
+
+
 export default function AdminTherapistList() {
+
 
   // those are initial data
   const initaltherapists = [

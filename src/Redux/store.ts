@@ -1,9 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slice/authSlice';
+import TherapyReducer from './slice/ThearpySlice';
+
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    Therapy: TherapyReducer,
   },
 });
 

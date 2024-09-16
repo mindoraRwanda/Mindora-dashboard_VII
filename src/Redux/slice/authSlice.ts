@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 interface AuthState {
-  user: any;
+  user;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
@@ -19,7 +19,7 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axios.post('https://mindora-backend-beta-version.onrender.com/api/auth/login', credentials);
       return response.data;
-    } catch (err: any) {
+    } catch (err) {
       return rejectWithValue(err.response.data);
     }
   }

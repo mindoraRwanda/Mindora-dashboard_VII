@@ -15,7 +15,7 @@ export default function TopBar({ userRole, items = [], }) {
 
   useEffect(() => {
     setFilteredItems(items);
-  }, [items]);
+  }, []);
 
   const navigate = useNavigate();
   
@@ -34,7 +34,7 @@ export default function TopBar({ userRole, items = [], }) {
   // Example user object for demonstration purposes
   const user = {
     name: "John Doe",
-    profilePhoto: "/public/Images/PEREZIDA.jpeg" // Make sure this path is correct
+    profilePhoto: "/Images/PEREZIDA.jpeg" // Make sure this path is correct
   };
  
   const handleLanguageChange = (e) => {

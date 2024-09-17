@@ -2,7 +2,7 @@ import { FiSearch } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { message, Modal } from "antd";
 import Create_Therapy from "./Create_Therapy";
 import jsPDF from "jspdf";
@@ -11,43 +11,44 @@ import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import VideoCall from "../VideoCall";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTherapists } from "../../Redux/slice/ThearpySlice";
 
 
 
 export default function AdminTherapistList() {
 
+const dispatch=useDispatch();
+const therapists = useSelector((state) => state?.therapy?.therapists || []);
 
-  // those are initial data
-  const initaltherapists = [
-    {
-      id: 1,
-      name: "Dr. Alice Johnson",
-      specialty: "Cognitive Behavioral Therapy",
-      patients: 25,
-    },
-    { id: 2, name: "Dr. Bob Smith", specialty: "Family Therapy", patients: 30 },
-    {
-      id: 3,
-      name: "Dr. Carol Williams",
-      specialty: "Child Psychology",
-      patients: 20,
-    },
-    { id: 4, name: "Placide", specialty: "Boy", patients: 20 },
-  ];
-
-  // those are the state that should be used to change data.
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredtherapists, setFilteredtherapists] =useState(initaltherapists);
+  const [filteredtherapists, setFilteredtherapists] =useState([]);
   const [isShowModal, setShowModal] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedTherapy, setSelectedTherapy] = useState(null);
-  const [Therapy, setTherapy] = useState(initaltherapists);
-
-  // this is about the pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
-    //The pagination Content
+  const handleList=async()=>{
+    console.log('start of functions');
+    try{
+     await dispatch(getAllTherapists())
+     console.log('Dispatch successful');
+    }
+    catch(err){
+     message.error("Failed to fetch therapists. Please try again later",err);
+    }
+   };
+   
+   useEffect(() => {
+    handleList();
+  }, [dispatch]);
+   
+  useEffect(() => {
+    setFilteredtherapists(therapists);
+    console.log("Therapists Data:", therapists);
+  }, [therapists]);
+  
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -55,21 +56,18 @@ export default function AdminTherapistList() {
       indexOfFirstItem,
       indexOfLastItem
     );
-
-  // That is used for adding new Therapy in the system
     const Add_Therapy = (newTherapy) => {
-      newTherapy.id = Therapy.length + 1;
-      setTherapy([...Therapy, newTherapy]);
-      setFilteredtherapists([...Therapy, newTherapy]);
+      newTherapy.id = therapists.length + 1;
+      setTherapy([...therapists, newTherapy]);
+      setFilteredtherapists([...therapists, newTherapy]);
       setShowModal(false);
       message.success("New Thearapist added Successfully");
     };
 
-// Function that will be used for search element
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
-    const filtered = Therapy.filter(
+    const filtered = therapists.filter(
       (therapist) =>
         therapist.name.toLowerCase().includes(query) ||
         therapist.specialty.toLowerCase().includes(query)
@@ -78,26 +76,24 @@ export default function AdminTherapistList() {
     setCurrentPage(1);
   };
 
-  // Function that should be used for Editing Therapiest
   const handleEdit = (therapist) => {
     setSelectedTherapy(therapist);
     setIsEditable(true);
     setShowModal(true);
   };
-  // This is about View Therapy data
+
   const handleView = (therapist) => {
     setSelectedTherapy(therapist);
     setIsEditable(false);
     setShowModal(true);
   };
 
-  // That is used for Deleting Data.
   const handleDelete = (therapyId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete Therapy?"
     );
     if (confirmed) {
-      const updateTherapy = Therapy.filter(
+      const updateTherapy = therapists.filter(
         (therapist) => therapist.id !== therapyId
       );
       setTherapy(updateTherapy);
@@ -106,21 +102,19 @@ export default function AdminTherapistList() {
     }
   };
 
-// that is used for Pop up modal.
 const showModal = () => {
   setSelectedTherapy(null);
   setIsEditable(true);
   setShowModal(true);
 };
 
-  // That is used for Canceling the Modal displayed
   const handleCancel = () => {
     setShowModal(false);
   };
 
-  // This function is used for updating thearapy's data.
+
   const handleUpdate = (updateTherapy) => {
-    const updateTherapies = Therapy.map((therapist) =>
+    const updateTherapies = therapists.map((therapist) =>
       therapist.id === updateTherapy.id ? updateTherapy : therapist
     );
 
@@ -130,14 +124,6 @@ const showModal = () => {
     message.success("updated Therapy Successfully");
   };
 
-
-// that will be used for blocking or unblocking the therapy
-  const handleBlock = () => {
-    message.info("You will block Therapist");
-  };
-
- 
-  // That is used for Downloading  file as Pdf
   const handleExportPDF = () => {
     const input = document.getElementById("therapist-table");
     html2canvas(input, { scale: 2 }).then((canvas) => {
@@ -149,7 +135,6 @@ const showModal = () => {
     });
   };
 
-  // That is Used for Download File as Word.
   const handleExportWord = () => {
     const doc = new Document({
       sections: [
@@ -183,7 +168,7 @@ const showModal = () => {
     });
   };
   
-  // That is used for Downloading Data as Excel
+
   const handleExportExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredtherapists);
     const workbook = XLSX.utils.book_new();
@@ -192,7 +177,7 @@ const showModal = () => {
   };
 
 
-// This function is Used for Copy data from the file
+
   const handleCopy = () => {
     const text = filteredtherapists
       .map(
@@ -279,14 +264,23 @@ const showModal = () => {
               Name
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Specialty
+              Date of Birth
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Patients
+              Address
             </th>
 
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Status
+              Phone Number
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Diploma
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Licence
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Gender
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Actions
@@ -298,20 +292,40 @@ const showModal = () => {
             <tr key={therapist.id}>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 font-medium text-gray-900">
-                  {therapist.name}
+                {therapist.name}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {therapist.specialty}
+                {therapist.dateOfBirth}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {therapist.patients}
+                {therapist.address}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                {therapist.phoneNumber}
+                </div>
+              </td> 
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                {therapist.diploma}
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                {therapist.licence}
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                {therapist.gender}
+                </div>
+              </td>
+              {/* <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900 ">
                   <button
                     className="border-2 border-gray-300 rounded-md p-2 px-6 font-semibold"
@@ -320,7 +334,7 @@ const showModal = () => {
                     Active
                   </button>
                 </div>
-              </td>
+              </td> */}
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="flex text-sm leading-5 text-gray-900">
                   <button

@@ -14,7 +14,7 @@ const initialState: AuthState = {
 };
 
 export const loginUser = createAsyncThunk(
-  'auth/loginUser',
+
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await axios.post('https://mindora-backend-beta-version.onrender.com/api/auth/login', credentials);

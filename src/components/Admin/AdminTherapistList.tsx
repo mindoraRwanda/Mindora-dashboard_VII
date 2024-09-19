@@ -42,12 +42,12 @@ const therapists = useSelector((state) => state?.therapy?.therapists || []);
    
    useEffect(() => {
     handleList();
-  }, [dispatch]);
+  }, []);
    
   useEffect(() => {
     setFilteredtherapists(therapists);
     console.log("Therapists Data:", therapists);
-  }, [therapists]);
+  }, []);
   
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const indexOfLastItem = currentPage * itemsPerPage;

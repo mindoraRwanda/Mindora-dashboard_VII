@@ -12,7 +12,7 @@ interface PersonalInformation {
   email?: string;
   lastName?: string;
   firstName?: string;
-}
+};
 
 interface User {
   id: string;
@@ -25,7 +25,7 @@ interface User {
   role: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 interface Therapist {
   id: string;
@@ -36,13 +36,13 @@ interface Therapist {
   createdAt: string;
   updatedAt: string;
   user: User;
-}
+};
 
 interface TherapyState {
   therapists: Therapist[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
-}
+};
 
 interface TherapyCredentials {
   name: string;
@@ -53,7 +53,7 @@ interface TherapyCredentials {
   diploma: string;
   licence: string;
   userId: string;
-}
+};
 
 const initialState: TherapyState = {
   therapists: [],
@@ -81,7 +81,7 @@ export const fetchTherapy = createAsyncThunk(
         }
       );
       return response.data;
-    } catch (err: any) {
+    } catch (err) {
       return rejectWithValue(err?.response?.data || "An Unexpected error occurred");
     }
   }
@@ -91,9 +91,9 @@ export const getAllTherapists = createAsyncThunk(
   "Therapist/getAllTherapists",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get<Therapist[]>('https://mindora-backend-beta-version.onrender.com/api/therapists');
+      const response = await axios.get<Therapist[]>('https://mindora-backend-beta-version.onrender.com/api/therapists',_);
       return response.data;
-    } catch (err: any) {
+    } catch (err) {
       return rejectWithValue(err.response?.data || "An Unexpected error occurred");
     }
   }

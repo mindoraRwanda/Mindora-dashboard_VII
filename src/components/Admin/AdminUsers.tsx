@@ -16,6 +16,7 @@ import { GetAllUsers, updateUser } from "../../Redux/slice/UserSlice";
 import { deleteUser } from "../../Redux/slice/UserSlice";
 import { useCallback } from "react";
 
+
 export default function AdminUserList() {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.users.users);
@@ -45,6 +46,7 @@ export default function AdminUserList() {
   const handleSearch = useCallback((event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
+    
     const filtered = users.filter(
       (user) =>
         user.firstName.toLowerCase().includes(query) ||
@@ -94,7 +96,10 @@ export default function AdminUserList() {
   };
 
   const handleView = (user) => {
-    setSelectedUser(user);
+    setSelectedUser({
+      ...user,
+    date:user.date|| ""
+    });
     setIsEditable(false);
     setIsModalVisible(true);
   };
@@ -131,6 +136,8 @@ export default function AdminUserList() {
   };
 
   const handleUpdate = async (user) => {
+    const confirmed=window.confirm("Are you sure you want to update User?");
+    if(confirmed){
     try {
       await dispatch(updateUser({
         id: user.id,
@@ -138,12 +145,16 @@ export default function AdminUserList() {
           firstName: user.firstName,
           email: user.email,
           password: user.password,
+          date: user.date,
         },
       }));
       message.success('User updated successfully');
+      dispatch(GetAllUsers()); // Refresh the user list
+      setIsModalVisible(false);
     } catch (error) {
       message.error("Error updating user: " + error.message);
     }
+  }
   };
   
 
@@ -367,7 +378,7 @@ export default function AdminUserList() {
               <br />
               <input
                 type="text"
-                className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                className="p-1 mt-2 rounded-md border-2 border-gray-300 w-full"
                 value={selectedUser.firstName}
                 onChange={(e) =>
                   setSelectedUser({ ...selectedUser, firstName: e.target.value })
@@ -380,7 +391,7 @@ export default function AdminUserList() {
 
               <input
                 type="email"
-                className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                className="p-1 mt-2 rounded-md border-2 border-gray-300 w-full"
                 value={selectedUser.email}
                 readOnly={!isEditable}
                 onChange={(e) =>
@@ -388,11 +399,24 @@ export default function AdminUserList() {
                 }
               />
             </p>
+            <p className="text-black m-3">
+              <span>Password:</span>
+              <br />
 
+              <input
+                type="password"
+                className="p-1 mt-2 rounded-md border-2 border-gray-300 w-full"
+                value={selectedUser.password}
+                readOnly={!isEditable}
+                onChange={(e) =>
+                  setSelectedUser({ ...selectedUser, password: e.target.value })
+                }
+              />
+            </p>
             {isEditable && (
               <button
                 onClick={() => handleUpdate(selectedUser)}
-                className="text-center border-2 p-2 ml-3 rounded-md bg-red-600 text-white font-semibold"
+                className="text-center border-2 py-2 rounded-md bg-red-600 text-white font-semibold w-full"
               >
                 Update
               </button>

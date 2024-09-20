@@ -2,7 +2,7 @@ import { FiSearch } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { message, Modal } from "antd";
 import Create_Therapy from "./Create_Therapy";
 import jsPDF from "jspdf";
@@ -10,9 +10,10 @@ import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
-import VideoCall from "../VideoCall";
+// import VideoCall from "../VideoCall";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTherapy, getAllTherapists } from "../../Redux/slice/ThearpySlice";
+import { deleteTherapy, getAllTherapists, updateTherapy } from "../../Redux/slice/ThearpySlice";
+
 
 
 
@@ -22,6 +23,7 @@ const dispatch=useDispatch();
 
 const  therapists= useSelector((state) => state.Therapy.therapists);
   const status = useSelector((state) => state.Therapy.status);
+  // const error = useSelector((state) => state.Therapy.error);
 
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,26 +53,25 @@ const  therapists= useSelector((state) => state.Therapy.therapists);
       indexOfFirstItem,
       indexOfLastItem
     );
+
+    
     const Add_Therapy = () => {
       setShowModal(false);
       message.success("New Therapist added successfully");
       dispatch(getAllTherapists()); // Fetch the updated list
     };
     
-
-  const handleSearch = (event) => {
-    const query = event.target.value.toLowerCase();
-    setSearchQuery(query);
-
-    const filtered = Therapy.filter(
-      (therapist) =>
-        therapist.personalInformation.name.toLowerCase().includes(query) ||
-        therapist.diploma.toLowerCase().includes(query) // Assuming you want to search by diploma
-    );
+    const handleSearch = useCallback((event) => {
+      const query = event.target.value.toLowerCase();
+      setSearchQuery(query);
     
-    setFilteredtherapists(filtered);
-    setCurrentPage(1);
-  };
+      const filtered = therapists.filter((therapist) =>
+        therapist.personalInformation.name.toLowerCase().includes(query) ||
+        therapist.personalInformation.phoneNumber.toLowerCase().includes(query)
+      );
+      setFilteredtherapists(filtered);
+      setCurrentPage(1);
+    }, [therapists]);
 
   const handleEdit = (therapist) => {
     setSelectedTherapy(therapist);
@@ -111,16 +112,34 @@ const showModal = () => {
   };
 
 
-  const handleUpdate = (updateTherapy) => {
-    const updateTherapies = therapists.map((therapist) =>
-      therapist.id === updateTherapy.id ? updateTherapy : therapist
-    );
-
-    setTherapy(updateTherapies);
-    setFilteredtherapists(updateTherapies);
-    setShowModal(false);
-    message.success("updated Therapy Successfully");
+  const handleUpdate = async(therapist) => {
+    const comfirm =window.confirm("Are you sure you want to update");
+    if(comfirm){
+      try{
+        await dispatch(updateTherapy({
+          id:therapist.id,
+          credentials:{
+            name: therapist.personalInformation.name,
+            gender: therapist.personalInformation.gender,
+            dateOfBirth: therapist.personalInformation.dateOfBirth,
+            address: therapist.personalInformation.address,
+            phoneNumber: therapist.personalInformation.phoneNumber,
+            diploma: therapist.diploma,
+            licence: therapist.licence,
+            userId: therapist.userId,
+          },
+        }));
+        message.success('Updated Successfully');
+        dispatch(getAllTherapists()); // Fetch the updated list
+        setShowModal(false);
+      }
+      catch(error){
+        message.error('failed to update Therapist'+error.message);
+      }
+    }
   };
+
+
 
   const handleExportPDF = () => {
     const input = document.getElementById("therapist-table");
@@ -381,69 +400,141 @@ const showModal = () => {
       <Modal footer={null} visible={isShowModal} onCancel={handleCancel}>
 
         {selectedTherapy ? (
-          <div>
+          <div className="mb-10">
             <h2 className="text-xl font-semibold mb-4">
               {isEditable ? " Edit Therapy " : " Therapy Details "}
             </h2>
+
+            <div className="grid grid-cols-2">
             <p className="text-black m-3">
               <span>Name:</span>
               <br />
               <input
                 type="text"
                 className="p-1 mt-2 border-2 rounded-md border-gray-300"
-                value={selectedTherapy.name}
+                value={selectedTherapy.personalInformation.name}
                 readOnly={!isEditable}
                 onChange={(e) =>
                   setSelectedTherapy({
-                    ...selectedTherapy,
-                    name: e.target.value,
+                    ...selectedTherapy,personalInformation:{
+                    ...selectedTherapy.personalInformation,
+                    name: e.target.value
+                  }
                   })
                 }
               />
             </p>
             <p className="text-black m-3">
-              <span>Speciality:</span>
+              <span>Address:</span>
+              <br />
+              <input
+                type="text"
+                className="p-1 mt-2 border-2 rounded-md border-gray-300"
+                value={selectedTherapy.personalInformation.address}
+                readOnly={!isEditable}
+                onChange={(e) =>
+                  setSelectedTherapy({
+                    ...selectedTherapy,personalInformation:{
+                      ...selectedTherapy.personalInformation,
+                    address: e.target.value
+                 } })
+                }
+              />
+            </p>
+            <p className="text-black m-3">
+              <span>Phone Number:</span>
               <br />
 
               <input
-                type="text"
+                type="number"
                 className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                value={selectedTherapy.specialty}
+                value={selectedTherapy.personalInformation.phoneNumber}
                 readOnly={!isEditable}
                 onChange={(e) =>
                   setSelectedTherapy({
-                    ...selectedTherapy,
-                    specialty: e.target.value,
+                    ...selectedTherapy,personalInformation:{
+                    ...selectedTherapy.personalInformation,
+                    phoneNumber: e.target.value
+                    }
                   })
                 }
               />
             </p>
 
             <p className="text-black m-3">
-              <span>Patients:</span> <br />
+              <span>Gender:</span> <br />
               <input
-                type="number"
+                type="text"
                 className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                value={selectedTherapy.patients}
+                value={selectedTherapy.personalInformation.gender}
+                readOnly={!isEditable}
+                onChange={(e) =>
+                  setSelectedTherapy({
+                    ...selectedTherapy,personalInformation:{
+                      ...selectedTherapy.personalInformation,
+                    gender: e.target.value
+                }})
+                }
+              />
+            </p>
+            <p className="text-black m-3">
+              <span>Diploma:</span> <br />
+              <input
+                type="text"
+                className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                value={selectedTherapy.diploma}
                 readOnly={!isEditable}
                 onChange={(e) =>
                   setSelectedTherapy({
                     ...selectedTherapy,
-                    patients: e.target.value,
+                    diploma: e.target.value
+                })
+                }
+              />
+            </p>
+            <p className="text-black m-3">
+              <span>Licence:</span> <br />
+              <input
+                type="text"
+                className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                value={selectedTherapy.licence}
+                readOnly={!isEditable}
+                onChange={(e) =>
+                  setSelectedTherapy({
+                    ...selectedTherapy,
+                    licence: e.target.value
+                })
+                }
+              />
+            </p>
+            <p className="text-black m-3">
+              <span>DateOfBirth:</span> <br />
+              <input
+                type="date"
+                className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                value={selectedTherapy.personalInformation.date}
+                readOnly={!isEditable}
+                onChange={(e) =>
+                  setSelectedTherapy({
+                    ...selectedTherapy,personalInformation:{
+                    ...selectedTherapy.personalInformation,
+                    date: e.target.value
+                    }
                   })
                 }
               />
             </p>
-
+            </div>
             {isEditable && (
               <button
                 onClick={() => handleUpdate(selectedTherapy)}
-                className="text-center border-2 p-2 ml-3 rounded-md bg-red-600 text-white font-semibold"
+                className=" w-full border-2 p-2 ml-3 rounded-md bg-red-600 text-white font-semibold"
               >
                 Update
               </button>
             )}
-             <VideoCall/>
+            
+             {/* <VideoCall/> */}
           </div>
         ) : (
           <Create_Therapy Add_Therapy={Add_Therapy} />

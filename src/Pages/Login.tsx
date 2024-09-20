@@ -18,7 +18,7 @@ const Login = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      navigate('/dashboard');
+      // navigate('/dashboard');
       try {
         const resultAction = await dispatch(loginUser({ email, password }));
         if (loginUser.fulfilled.match(resultAction)) {

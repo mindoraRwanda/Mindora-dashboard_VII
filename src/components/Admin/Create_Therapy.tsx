@@ -17,15 +17,16 @@ export default function CreateTherapy() {
   const [licence, setLicence] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { status } = useSelector((state: RootState) => state.Therapy);
+  const { status,error } = useSelector((state: RootState) => state.Therapy);
+  const userId = "1c8f15fc-4322-4647-b3ed-6b26df9826af";
 
   const handleSubmit = async () => {
-    const userId="f418cfe8-4112-4425-acc2-6536078a505d";
     if (!dateOfBirth) {
       message.error("Please select a valid date of birth");
       return;
     }
     try {
+  
       const resultAction = await dispatch(
         fetchTherapy({
           name,
@@ -41,8 +42,8 @@ export default function CreateTherapy() {
       if (fetchTherapy.fulfilled.match(resultAction)) {
         navigate("/dashboard");
         message.success('New Therapies created successfully');
-      } else {
-        message.error("Therapy creation failed");
+      } else{
+        message.error(`Therapy creation failed ${error}`);
       }
     } catch (error) {
       console.error("Failed to create therapy:", error);

@@ -12,67 +12,50 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { useDispatch, useSelector } from "react-redux";
-import { GetAllUsers } from "../../Redux/slice/UserSlice";
+import { GetAllUsers, updateUser } from "../../Redux/slice/UserSlice";
+import { deleteUser } from "../../Redux/slice/UserSlice";
+import { useCallback } from "react";
 
 export default function AdminUserList() {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.users.users);
   const status = useSelector((state) => state.users.status);
-  // const error = useSelector((state) => state.users.error);
 
-  // const initialsUser = [
-  //   { id: 1, name: "John Doe", gender: "male", email: "john@example.com", lastLogin: "2024-07-18" },
-  //   { id: 2, name: "Jane Smith", gender: "female", email: "jane@example.com", lastLogin: "2024-07-17" },
-  //   { id: 3, name: "Bob Johnson", gender: "male", email: "bob@example.com", lastLogin: "2024-07-16" },
-  // ];
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  // const [users, setUsers] = useState(initialsUser);
   const [isEditable, setIsEditable] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // const handleusers=async()=>
-  // {
-  //   console.log('Dispatch successful');
-  //   try{
-  //    await dispatch(GetAllUsers())
-  //    message.success('User featured successfully');
- 
-  //   }
-  //   catch(error)
-  //   {
-  //     message.error('Failed to featch all users');
-  //     console.error('Error fetching users', error);
-  //   }
-  // };
-
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(GetAllUsers());
     }
   }, [status, dispatch]);
-  
+
   useEffect(() => {
-    if (status === 'succeeded') {
+    if (status === "succeeded") {
       setFilteredUsers(users);
     }
   }, [users, status]);
 
-  const handleSearch = (event) => {
+  const handleSearch = useCallback((event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
     const filtered = users.filter(
       (user) =>
-        user.name.toLowerCase().includes(query) ||
+        user.firstName.toLowerCase().includes(query) ||
+        user.lastName.toLowerCase().includes(query)||
         user.email.toLowerCase().includes(query)
     );
     setFilteredUsers(filtered);
     setCurrentPage(1);
-  };
+  }, [users]);
+
+
   const paginate = (pageNumber) => {
     if (pageNumber < 1) return;
     if (pageNumber > Math.ceil(filteredUsers.length / itemsPerPage)) return;
@@ -82,7 +65,6 @@ export default function AdminUserList() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-
 
   const handleExportWord = () => {
     const doc = new Document({
@@ -133,25 +115,37 @@ export default function AdminUserList() {
     setIsModalVisible(true);
   };
 
-  const handleDelete = (userId) => {
+  const handleDelete = async(id:string) => {
     const confirmed = window.confirm("Are you sure you want to delete User?");
     if (confirmed) {
-      const updateUsers = users.filter((user) => user.id !== userId);
-      setUsers(updateUsers);
-      setFilteredUsers(updateUsers);
-      message.success("User Deleted Successfully");
+      console.log("User deleted");
+    try{
+      await dispatch(deleteUser(id));
+      message.success('User deleted successfully');
+      dispatch(GetAllUsers()); // Refresh the user list
+    }
+    catch(error){
+      message.error("Error deleting user"+error.message);
+    }
     }
   };
 
-  const handleUpdate = (updateUser) => {
-    const updateUsers = users.map((user) =>
-      user.id === updateUser.id ? updateUser : user
-    );
-    setUsers(updateUsers);
-    setFilteredUsers(updateUsers);
-    setIsModalVisible(false);
-    message.success("Updated user successfully");
+  const handleUpdate = async (user) => {
+    try {
+      await dispatch(updateUser({
+        id: user.id,
+        credentials: {
+          firstName: user.firstName,
+          email: user.email,
+          password: user.password,
+        },
+      }));
+      message.success('User updated successfully');
+    } catch (error) {
+      message.error("Error updating user: " + error.message);
+    }
   };
+  
 
   const handleBlock = () => {
     message.info("You will block User");
@@ -288,80 +282,79 @@ export default function AdminUserList() {
         </thead>
 
         <tbody>
-  {currentUsers.map((user) => (
-    <tr key={user.id}>
-      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-        <div className="text-sm leading-5 font-medium text-gray-900">
-          {user.firstName}
-        </div>
-      </td>
-      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-        <div className="text-sm leading-5 text-gray-900">
-          {user.lastName}
-        </div>
-      </td>
-      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-        <div className="text-sm leading-5 text-gray-900">
-          {user.email}
-        </div>
-      </td>
-      <td className="py-5 whitespace-no-wrap border-b border-gray-500">
-        <div className="text-sm leading-5 text-gray-900 ml-5">
-          <button
-            className="border-2 border-gray-300 p-2 px-6 rounded-md font-semibold"
-            onClick={handleBlock}
-          >
-            Active
-          </button>
-        </div>
-      </td>
-                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                  <div className="flex text-sm leading-5 text-gray-900">
-                    <button
-                      className="flex mr-2 bg-transparent rounded border-2 border-slate-300 font-semibold p-1 text-black"
-                      onClick={() => handleView(user)}
-                    >
-                      <BiShow size={25} />
-                    </button>
-                    <button
-                      className="flex mr-2 text-blue-700 border-2 border-slate-300 p-1 rounded font-semibold"
-                      onClick={() => handleEdit(user)}
-                    >
-                      <BiEditAlt size={25} />
-                    </button>
-                    <button
-                      className="flex mr-2 text-red-500 rounded p-1 border-2 border-slate-300 font-semibold"
-                      onClick={() => handleDelete(user.id)}
-                    >
-                      <MdDelete size={25} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            )
-          )}
+          {currentUsers.map((user) => (
+            <tr key={user.id}>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 font-medium text-gray-900">
+                  {user.firstName}
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                  {user.lastName}
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                  {user.email}
+                </div>
+              </td>
+              <td className="py-5 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900 ml-5">
+                  <button
+                    className="border-2 border-gray-300 p-2 px-6 rounded-md font-semibold"
+                    onClick={handleBlock}
+                  >
+                    Active
+                  </button>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="flex text-sm leading-5 text-gray-900">
+                  <button
+                    className="flex mr-2 bg-transparent rounded border-2 border-slate-300 font-semibold p-1 text-black"
+                    onClick={() => handleView(user)}
+                  >
+                    <BiShow size={25} />
+                  </button>
+                  <button
+                    className="flex mr-2 text-blue-700 border-2 border-slate-300 p-1 rounded font-semibold"
+                    onClick={() => handleEdit(user)}
+                  >
+                    <BiEditAlt size={25} />
+                  </button>
+                  <button
+                    className="flex mr-2 text-red-500 rounded p-1 border-2 border-slate-300 font-semibold"
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    <MdDelete size={25} />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">
-      {Array.from(
-        { length: Math.ceil(filteredUsers.length / itemsPerPage) },
-        (_, i) => i + 1
-      ).map((pageNumber) => (
-        <button
-          key={pageNumber}
-          onClick={() => paginate(pageNumber)}
-          className={`px-3 py-1 border ${
-            pageNumber === currentPage
-              ? "bg-purple-600 text-white"
-              : "bg-white text-purple-600"
-          } mx-1 rounded`}
-        >
-          {pageNumber}
-        </button>
-      ))}
-    </div>
+        {Array.from(
+          { length: Math.ceil(filteredUsers.length / itemsPerPage) },
+          (_, i) => i + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            onClick={() => paginate(pageNumber)}
+            className={`px-3 py-1 border ${
+              pageNumber === currentPage
+                ? "bg-purple-600 text-white"
+                : "bg-white text-purple-600"
+            } mx-1 rounded`}
+          >
+            {pageNumber}
+          </button>
+        ))}
+      </div>
 
       <Modal visible={isModalVisible} onCancel={handleCancel} footer={null}>
         {selectedUser ? (
@@ -375,10 +368,9 @@ export default function AdminUserList() {
               <input
                 type="text"
                 className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                value={selectedUser.name}
-                readOnly={!isEditable}
+                value={selectedUser.firstName}
                 onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, name: e.target.value })
+                  setSelectedUser({ ...selectedUser, firstName: e.target.value })
                 }
               />
             </p>
@@ -395,13 +387,6 @@ export default function AdminUserList() {
                   setSelectedUser({ ...selectedUser, email: e.target.value })
                 }
               />
-            </p>
-
-            <p className="text-black m-3 flex">
-              <span>Last Login:</span>
-              <p className="text-md font-semibold ml-2">
-                {selectedUser.lastLogin}
-              </p>
             </p>
 
             {isEditable && (

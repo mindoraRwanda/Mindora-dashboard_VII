@@ -61,6 +61,7 @@ const initialState: TherapyState = {
   error: null,
 };
 
+// This is for creating new therapist
 export const fetchTherapy = createAsyncThunk(
   "Therapy/fetchTherapy",
   async (credentials: TherapyCredentials, { rejectWithValue }) => {
@@ -87,17 +88,33 @@ export const fetchTherapy = createAsyncThunk(
   }
 );
 
+
+// This is for displaying all therapiest information
 export const getAllTherapists = createAsyncThunk(
   "Therapist/getAllTherapists",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get<Therapist[]>('https://mindora-backend-beta-version.onrender.com/api/therapists',_);
+      const response = await axios.get(`https://mindora-backend-beta-version.onrender.com/api/therapists`);
       return response.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || "An Unexpected error occurred");
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "An Unexpected error occurred");
     }
   }
 );
+// The following is for deleting Therapists
+
+export const deleteTherapy=createAsyncThunk('delete/Therapy',
+  async(id,{rejectWithValue})=>{
+    try{
+      const response=await axios.delete(`https://mindora-backend-beta-version.onrender.com/api/therapists/${id}`);
+      return response.data;
+    }
+    catch(error){
+      return rejectWithValue(error.response?.data ||"An Unexpected error occurred");
+    }
+  }
+);
+
 
 const TherapySlice = createSlice({
   name: 'Therapy',
@@ -116,6 +133,8 @@ const TherapySlice = createSlice({
         state.status = "failed";
         state.error = action.payload as string;
       })
+
+      // this is for Getting all Therapists
       .addCase(getAllTherapists.pending, (state) => {
         state.status = "loading";
       })
@@ -125,9 +144,26 @@ const TherapySlice = createSlice({
       })
       .addCase(getAllTherapists.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload as string;
-      });
-  },
+        state.error = action.payload;
+      })
+
+      // The following is for deleting Therapists
+
+      .addCase(deleteTherapy.pending,(state)=>{
+        state.status='loading'; 
+      })
+      .addCase(deleteTherapy.fulfilled,(state, action) => {
+        const index = state.therapists.findIndex(therapy => therapy.id === action.payload.id);
+        if (index > -1) {
+          state.therapists.splice(index, 1);
+        }
+      })
+      .addCase(deleteTherapy.rejected,(state,action)=>{
+        state.status="failed";
+        state.error=action.payload as string;  
+      })
+
+    },
 });
 
 export default TherapySlice.reducer;

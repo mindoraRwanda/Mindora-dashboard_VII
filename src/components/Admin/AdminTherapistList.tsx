@@ -12,14 +12,17 @@ import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import VideoCall from "../VideoCall";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllTherapists } from "../../Redux/slice/ThearpySlice";
+import { deleteTherapy, getAllTherapists } from "../../Redux/slice/ThearpySlice";
 
 
 
 export default function AdminTherapistList() {
 
 const dispatch=useDispatch();
-const therapists = useSelector((state) => state?.therapy?.therapists || []);
+
+const  therapists= useSelector((state) => state.Therapy.therapists);
+  const status = useSelector((state) => state.Therapy.status);
+
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredtherapists, setFilteredtherapists] =useState([]);
@@ -29,25 +32,17 @@ const therapists = useSelector((state) => state?.therapy?.therapists || []);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
-  const handleList=async()=>{
-    console.log('start of functions');
-    try{
-     await dispatch(getAllTherapists())
-     console.log('Dispatch successful');
-    }
-    catch(err){
-     message.error("Failed to fetch therapists. Please try again later",err);
-    }
-   };
-   
-   useEffect(() => {
-    handleList();
-  }, []);
-   
   useEffect(() => {
-    setFilteredtherapists(therapists);
-    console.log("Therapists Data:", therapists);
-  }, []);
+    if (status === "idle") {
+      dispatch(getAllTherapists());
+    }
+  }, [status, dispatch]);
+
+  useEffect(() => {
+    if (status === "succeeded") {
+      setFilteredtherapists(therapists);
+    }
+  }, [therapists, status]);
   
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -56,22 +51,23 @@ const therapists = useSelector((state) => state?.therapy?.therapists || []);
       indexOfFirstItem,
       indexOfLastItem
     );
-    const Add_Therapy = (newTherapy) => {
-      newTherapy.id = therapists.length + 1;
-      setTherapy([...therapists, newTherapy]);
-      setFilteredtherapists([...therapists, newTherapy]);
+    const Add_Therapy = () => {
       setShowModal(false);
-      message.success("New Thearapist added Successfully");
+      message.success("New Therapist added successfully");
+      dispatch(getAllTherapists()); // Fetch the updated list
     };
+    
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
-    const filtered = therapists.filter(
+
+    const filtered = Therapy.filter(
       (therapist) =>
-        therapist.name.toLowerCase().includes(query) ||
-        therapist.specialty.toLowerCase().includes(query)
+        therapist.personalInformation.name.toLowerCase().includes(query) ||
+        therapist.diploma.toLowerCase().includes(query) // Assuming you want to search by diploma
     );
+    
     setFilteredtherapists(filtered);
     setCurrentPage(1);
   };
@@ -88,18 +84,20 @@ const therapists = useSelector((state) => state?.therapy?.therapists || []);
     setShowModal(true);
   };
 
-  const handleDelete = (therapyId) => {
+  const handleDelete = async (therapyId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete Therapy?"
     );
     if (confirmed) {
-      const updateTherapy = therapists.filter(
-        (therapist) => therapist.id !== therapyId
-      );
-      setTherapy(updateTherapy);
-      setFilteredtherapists(updateTherapy);
-      message.success("Therapy Deleted SuccessFully");
-    }
+ try{
+  await dispatch(deleteTherapy(therapyId));
+  message.success('delete therapy sucessfully');
+  dispatch(getAllTherapists());
+ }
+catch(error){
+  message.error( `failed to delete therapy ${error}`);
+}
+}
   };
 
 const showModal = () => {
@@ -292,22 +290,22 @@ const showModal = () => {
             <tr key={therapist.id}>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 font-medium text-gray-900">
-                {therapist.name}
+                {therapist.personalInformation.name}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.dateOfBirth}
+                {therapist.personalInformation.dateOfBirth}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.address}
+                {therapist.personalInformation.address}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.phoneNumber}
+                {therapist.personalInformation.phoneNumber}
                 </div>
               </td> 
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
@@ -322,7 +320,7 @@ const showModal = () => {
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.gender}
+                {therapist.personalInformation.gender}
                 </div>
               </td>
               {/* <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">

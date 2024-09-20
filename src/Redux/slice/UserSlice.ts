@@ -38,13 +38,39 @@ export const NewUser = createAsyncThunk(
 
 export const GetAllUsers=createAsyncThunk('User/GetAllUsers', async(_,{rejectWithValue})=>{
         try{
-        const response= await axios.get('https://mindora-backend-beta-version.onrender.com/api/users',_);
+        const response= await axios.get(`https://mindora-backend-beta-version.onrender.com/api/users`,_);
         return response.data;
     }
     catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data||"Unexpected error");
     }
 }
+);
+
+export const deleteUser=createAsyncThunk('users/deleteUser',
+    async(id:string,{rejectWithValue})=>{
+        console.log("User deleted");
+        try{
+            const response=await axios.delete(`https://mindora-backend-beta-version.onrender.com/api/users/${id}`);
+            return response.data;
+        
+        }
+        catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const updateUser=createAsyncThunk('Users/updateUser',
+    async({id,credentials},{rejectWithValue})=>{
+        try{
+            const response = await axios.put(`https://mindora-backend-beta-version.onrender.com/api/users/${id}`, credentials);
+            return response.data;
+        }
+        catch(error){
+            return rejectWithValue(error.response.data);
+        }
+    }
 );
 
 const userSlice = createSlice({
@@ -64,6 +90,8 @@ const userSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.payload;
             })
+
+            // the following are for Getting all user in System
             .addCase(GetAllUsers.pending,(state)=>{
                 state.status='loading';
             })
@@ -72,6 +100,36 @@ const userSlice = createSlice({
                 state.users=action.payload;
             })
             .addCase(GetAllUsers.rejected,(state,action)=>{
+                state.status='failed';
+                state.error=action.payload;
+            })
+
+            // the following are for deleting User
+
+            .addCase(deleteUser.pending,(state)=>{
+                state.status='loading';
+            })
+            .addCase (deleteUser.fulfilled,(state,action)=>{
+                state.status='succeeded';
+                state.users=state.users.filter(user=>user.id!==action.payload);
+            })
+            .addCase(deleteUser.rejected,(state,action)=>{
+                state.status='failed';
+                state.error=action.payload;
+            })
+            // the following slice is about updataing users
+
+            .addCase(updateUser.pending,(state)=>{
+                state.status='loading';
+            })
+            .addCase(updateUser.fulfilled,(state,action)=>{
+                state.status='succeeded';
+                const index=state.users.findIndex(user=>user.id===action.payload.id);
+                if(index>-1){
+                    state.users[index]=action.payload;
+                }
+            })
+            .addCase(updateUser.rejected,(state,action)=>{
                 state.status='failed';
                 state.error=action.payload;
             })

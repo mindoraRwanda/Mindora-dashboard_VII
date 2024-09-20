@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { NewUser } from '../../Redux/slice/UserSlice';
+// import { GetAllUsers } from '../../Redux/slice/UserSlice';
 
 const { Text } = Typography;
 
@@ -35,6 +36,7 @@ export default function CreateUser() {
       if (NewUser.fulfilled.match(result)) {
         navigate('/dashboard'); // Use navigate here
         message.success("User created successfully");
+        // dispatch(GetAllUsers()); // Refresh the user list
       } else {
         message.error("Failed to create users");
       }

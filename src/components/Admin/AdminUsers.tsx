@@ -17,6 +17,7 @@ import { deleteUser } from "../../Redux/slice/UserSlice";
 import { useCallback } from "react";
 
 
+
 export default function AdminUserList() {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.users.users);
@@ -205,6 +206,10 @@ export default function AdminUserList() {
       message.success("Data copied to clipboard!");
     });
   };
+
+  const handleSuccess=()=>{
+    setIsModalVisible(false);
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-3">
@@ -424,7 +429,7 @@ export default function AdminUserList() {
             <VideoCall />
           </div>
         ) : (
-          <Create_User addUser={addUser} />
+          <Create_User onSuccess={handleSuccess} addUser={addUser} />
         )}
       </Modal>
     </div>

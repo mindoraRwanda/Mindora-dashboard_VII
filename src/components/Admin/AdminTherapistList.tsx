@@ -207,7 +207,9 @@ const showModal = () => {
     });
   };
 
-
+const handleClodeModal=()=>{
+  setShowModal(false);
+}
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
@@ -537,7 +539,7 @@ const showModal = () => {
              {/* <VideoCall/> */}
           </div>
         ) : (
-          <Create_Therapy Add_Therapy={Add_Therapy} />
+          <Create_Therapy onSuccess={handleClodeModal} Add_Therapy={Add_Therapy} />
         )}
        
       </Modal>

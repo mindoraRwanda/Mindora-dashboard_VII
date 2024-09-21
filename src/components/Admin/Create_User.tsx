@@ -1,14 +1,13 @@
 import { Typography, Form, Input, Button, Radio, message } from 'antd'; 
 import { useState } from 'react';
-
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { NewUser } from '../../Redux/slice/UserSlice';
-// import { GetAllUsers } from '../../Redux/slice/UserSlice';
+import { NewUser,GetAllUsers } from '../../Redux/slice/UserSlice';
+
 
 const { Text } = Typography;
 
-export default function CreateUser() {
+export default function CreateUser({onSuccess}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -36,7 +35,17 @@ export default function CreateUser() {
       if (NewUser.fulfilled.match(result)) {
         navigate('/dashboard'); // Use navigate here
         message.success("User created successfully");
-        // dispatch(GetAllUsers()); // Refresh the user list
+        dispatch(GetAllUsers()); 
+        if(onSuccess){
+          onSuccess();
+        }
+
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+        setPassword("");
+        setGender("");
+        
       } else {
         message.error("Failed to create users");
       }

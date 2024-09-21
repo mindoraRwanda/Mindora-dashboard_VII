@@ -2,12 +2,12 @@ import { useState } from "react";
 import {  Form, Input, Button, Radio, DatePicker} from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../Redux/store";
-import { fetchTherapy } from "../../Redux/slice/ThearpySlice";
+import { fetchTherapy, getAllTherapists } from "../../Redux/slice/ThearpySlice";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
 
-export default function CreateTherapy() {
+export default function CreateTherapy({onSuccess}) {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState(null);
@@ -15,10 +15,13 @@ export default function CreateTherapy() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [diploma, setDiploma] = useState("");
   const [licence, setLicence] = useState("");
+
+  const [form] = Form.useForm(); 
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { status,error } = useSelector((state: RootState) => state.Therapy);
-  const userId = "1c8f15fc-4322-4647-b3ed-6b26df9826af";
+  const userId = "4c54c0ba-bb7d-45ed-b00c-7ef4c786ed5f";
 
   const handleSubmit = async () => {
     if (!dateOfBirth) {
@@ -40,8 +43,25 @@ export default function CreateTherapy() {
         })
       );
       if (fetchTherapy.fulfilled.match(resultAction)) {
-        navigate("/dashboard");
+    
         message.success('New Therapies created successfully');
+         dispatch(getAllTherapists()); 
+       
+
+        setName("");
+        setGender("");
+        setDateOfBirth(null);
+        setAddress("");
+        setPhoneNumber("");
+        setDiploma("");
+        setLicence("");
+
+      form.resetFields();
+      
+      if(onSuccess){
+        onSuccess();
+      }
+      navigate("/dashboard");
       } else{
         message.error(`Therapy creation failed ${error}`);
       }
@@ -53,7 +73,7 @@ export default function CreateTherapy() {
 
   return (
     <div className="flex justify-center">
-      <Form className="bg-white rounded" onFinish={handleSubmit}>
+      <Form form={form} className="bg-white rounded" onFinish={handleSubmit}>
         <p className="text-black mb-8 text-center text-xl font-semibold">
           Create New Therapy
         </p>

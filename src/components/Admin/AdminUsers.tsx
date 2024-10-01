@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
@@ -30,6 +31,7 @@ export default function AdminUserList() {
   const [isEditable, setIsEditable] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [TherapyRole, setTherapyRole] = useState(false);
+  const [therapyUserId, setTherapyUserId] = useState(null);
   const [PatientRole, setPatientRole] = useState(false);
   const [newRole, setNewRole] = useState("");
 
@@ -53,6 +55,7 @@ export default function AdminUserList() {
     setNewRole(selectedRole);
     if (selectedRole === "therapy"|| selectedRole === "therapist") {
       setTherapyRole(true);
+      setTherapyUserId(user.id);
     }
     else if (selectedRole === "patient"){
       setPatientRole(true);
@@ -446,7 +449,7 @@ export default function AdminUserList() {
         ))}
       </div>
 
-      <Modal visible={isModalVisible} onCancel={handleCancel} footer={null}>
+      <Modal open={isModalVisible} onCancel={handleCancel} footer={null}>
         {selectedUser ? (
           <div>
             <h2 className="text-xl font-semibold mb-4">
@@ -497,15 +500,15 @@ export default function AdminUserList() {
         )}
         {/* the following are for therapist */}
       </Modal>
-      <Modal visible={TherapyRole} footer={null} onCancel={handleCancel}>
-        <CreateTherapy />
+      <Modal open={TherapyRole} footer={null} onCancel={handleCancel}>
+        <CreateTherapy userId={therapyUserId} onSuccess={handleSuccess}/>
       </Modal>
 
       {/* the following are for Patient */}
-
-      <Modal visible={PatientRole} footer={null} onCancel={handleCancel}>
-        <CreatePatient />
+      <Modal open={PatientRole} footer={null} onCancel={handleCancel}>
+        <CreatePatient/>
       </Modal>
+      
     </div>
   );
 }

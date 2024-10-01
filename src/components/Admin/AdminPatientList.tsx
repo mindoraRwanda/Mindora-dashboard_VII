@@ -299,7 +299,7 @@ export default function AdminPatientsList() {
           </button>
         ))}
       </div>
-<Modal visible={isModalVisible}  footer={null} onCancel={handleCancel}>
+<Modal open={isModalVisible}  footer={null} onCancel={handleCancel}>
     
 {selectedPatient ? (
           <div>

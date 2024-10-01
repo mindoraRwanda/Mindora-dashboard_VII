@@ -32,6 +32,7 @@ export default function AdminTherapistList() {
   const [ChangePassModal, SetChangePassModal] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedTherapy, setSelectedTherapy] = useState(null);
+  
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
@@ -413,7 +414,7 @@ export default function AdminTherapistList() {
           </button>
         ))}
       </div>
-      <Modal footer={null} visible={isShowModal} onCancel={handleCancel}>
+      <Modal footer={null} open={isShowModal} onCancel={handleCancel}>
         {selectedTherapy ? (
           <div className="mb-10">
             <h2 className="text-xl font-semibold mb-4">
@@ -572,7 +573,7 @@ export default function AdminTherapistList() {
           />
         )}
       </Modal>
-      <Modal visible={ChangePassModal} onCancel={CancelPassModal} footer={null} className="float-end mr-4">
+      <Modal open={ChangePassModal} onCancel={CancelPassModal} footer={null} className="float-end mr-4">
         <div className="grid grid-cols-1">
           <h3 className="font-bold text-xl py-3"> Enter New PassWord</h3>
           <p>Your New Password must be different to the current password.</p>

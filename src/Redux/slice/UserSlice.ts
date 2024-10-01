@@ -3,6 +3,7 @@ import axios from "axios";
 
 interface UserState {
     user: null | string;
+    selectedUser:null | object;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
 }
@@ -17,6 +18,7 @@ interface UserState {
 
 const initialState: UserState = {
     users: [],
+    selectedUser:null,
     status: 'idle',
     error: null,
 };
@@ -40,6 +42,23 @@ export const NewUser = createAsyncThunk(
         }
     }
 );
+
+// featch only single user by using ID.
+
+export const featchUserById=createAsyncThunk('user/featchUserById',
+    async(id:string,{rejectWithValue})=>{
+      
+        try{
+            const response= await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/users/${id}`);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response?.data||"Unexpected error");
+        }
+    }
+);
+
+
 
 export const GetAllUsers=createAsyncThunk('User/GetAllUsers', async(_,{rejectWithValue})=>{
         try{
@@ -104,6 +123,20 @@ const userSlice = createSlice({
                 state.users.push(action.payload);
             })
             .addCase(NewUser.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload;
+            })
+
+            // the following slice is about fetching single user by ID
+
+            .addCase(featchUserById.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(featchUserById.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.selectedUser = action.payload;
+            })
+            .addCase(featchUserById.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
             })

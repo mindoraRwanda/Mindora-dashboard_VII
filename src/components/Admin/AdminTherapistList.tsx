@@ -3,7 +3,7 @@ import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { useCallback, useEffect, useState } from "react";
-import { message, Modal } from "antd";
+import { message, Modal} from "antd";
 import Create_Therapy from "./Create_Therapy";
 import jsPDF from "jspdf";
 import { saveAs } from "file-saver";
@@ -12,23 +12,24 @@ import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 // import VideoCall from "../VideoCall";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTherapy, getAllTherapists, updateTherapy } from "../../Redux/slice/ThearpySlice";
-
-
+import {
+  deleteTherapy,
+  getAllTherapists,
+  updateTherapy,
+} from "../../Redux/slice/ThearpySlice";
 
 
 export default function AdminTherapistList() {
+  const dispatch = useDispatch();
 
-const dispatch=useDispatch();
-
-const  therapists= useSelector((state) => state.Therapy.therapists);
+  const therapists = useSelector((state) => state.Therapy.therapists);
   const status = useSelector((state) => state.Therapy.status);
   // const error = useSelector((state) => state.Therapy.error);
 
-
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredtherapists, setFilteredtherapists] =useState([]);
+  const [filteredtherapists, setFilteredtherapists] = useState([]);
   const [isShowModal, setShowModal] = useState(false);
+  const [ChangePassModal, SetChangePassModal] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedTherapy, setSelectedTherapy] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,33 +46,38 @@ const  therapists= useSelector((state) => state.Therapy.therapists);
       setFilteredtherapists(therapists);
     }
   }, [therapists, status]);
-  
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentTherapy = filteredtherapists.slice(
-      indexOfFirstItem,
-      indexOfLastItem
-    );
 
-    
-    const Add_Therapy = () => {
-      setShowModal(false);
-      message.success("New Therapist added successfully");
-      dispatch(getAllTherapists()); // Fetch the updated list
-    };
-    
-    const handleSearch = useCallback((event) => {
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentTherapy = filteredtherapists.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const Add_Therapy = () => {
+    setShowModal(false);
+    message.success("New Therapist added successfully");
+    dispatch(getAllTherapists()); // Fetch the updated list
+  };
+
+  const handleSearch = useCallback(
+    (event) => {
       const query = event.target.value.toLowerCase();
       setSearchQuery(query);
-    
-      const filtered = therapists.filter((therapist) =>
-        therapist.personalInformation.name.toLowerCase().includes(query) ||
-        therapist.personalInformation.phoneNumber.toLowerCase().includes(query)
+
+      const filtered = therapists.filter(
+        (therapist) =>
+          therapist.personalInformation.name.toLowerCase().includes(query) ||
+          therapist.personalInformation.phoneNumber
+            .toLowerCase()
+            .includes(query)
       );
       setFilteredtherapists(filtered);
       setCurrentPage(1);
-    }, [therapists]);
+    },
+    [therapists]
+  );
 
   const handleEdit = (therapist) => {
     setSelectedTherapy(therapist);
@@ -90,63 +96,71 @@ const  therapists= useSelector((state) => state.Therapy.therapists);
       "Are you sure you want to delete Therapy?"
     );
     if (confirmed) {
- try{
-  await dispatch(deleteTherapy(therapyId));
-  message.success('delete therapy sucessfully');
-  dispatch(getAllTherapists());
- }
-catch(error){
-  message.error( `failed to delete therapy ${error}`);
-}
-}
-  };
-
-const showModal = () => {
-  setSelectedTherapy(null);
-  setIsEditable(true);
-  setShowModal(true);
-};
-
-  const handleCancel = () => {
-    setShowModal(false);
-  };
-
-
-  const handleUpdate = async(therapist) => {
-    const comfirm =window.confirm("Are you sure you want to update");
-    if(comfirm){
-      try{
-        await dispatch(updateTherapy({
-          id:therapist.id,
-          credentials:{
-            name: therapist.personalInformation.name,
-            gender: therapist.personalInformation.gender,
-            dateOfBirth: therapist.personalInformation.dateOfBirth,
-            address: therapist.personalInformation.address,
-            phoneNumber: therapist.personalInformation.phoneNumber,
-            diploma: therapist.diploma,
-            licence: therapist.licence,
-            userId: therapist.userId,
-          },
-        }));
-        message.success('Updated Successfully');
-        dispatch(getAllTherapists()); // Fetch the updated list
-        setShowModal(false);
-      }
-      catch(error){
-        message.error('failed to update Therapist'+error.message);
+      try {
+        await dispatch(deleteTherapy(therapyId));
+        message.success("delete therapy sucessfully");
+        dispatch(getAllTherapists());
+      } catch (error) {
+        message.error(`failed to delete therapy ${error}`);
       }
     }
   };
 
+  const showModal = () => {
+    setSelectedTherapy(null);
+    setIsEditable(true);
+    setShowModal(true);
+  };
 
+  const ShowPassModal = () => {
+    SetChangePassModal(true);
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+    SetChangePassModal(false);
+  };
+
+  const handleUpdate = async (therapist) => {
+    const comfirm = window.confirm("Are you sure you want to update");
+    if (comfirm) {
+      try {
+        await dispatch(
+          updateTherapy({
+            id: therapist.id,
+            credentials: {
+              name: therapist.personalInformation.name,
+              gender: therapist.personalInformation.gender,
+              dateOfBirth: therapist.personalInformation.dateOfBirth,
+              address: therapist.personalInformation.address,
+              phoneNumber: therapist.personalInformation.phoneNumber,
+              diploma: therapist.diploma,
+              licence: therapist.licence,
+              userId: therapist.userId,
+            },
+          })
+        );
+        message.success("Updated Successfully");
+        dispatch(getAllTherapists()); // Fetch the updated list
+        setShowModal(false);
+      } catch (error) {
+        message.error("failed to update Therapist" + error.message);
+      }
+    }
+  };
 
   const handleExportPDF = () => {
     const input = document.getElementById("therapist-table");
     html2canvas(input, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF();
-      pdf.addImage( imgData, "PNG",10,10,canvas.width / 12,canvas.height / 12
+      pdf.addImage(
+        imgData,
+        "PNG",
+        10,
+        10,
+        canvas.width / 12,
+        canvas.height / 12
       );
       pdf.save("therapist_list.pdf");
     });
@@ -184,7 +198,6 @@ const showModal = () => {
       saveAs(blob, "therapist_list.docx");
     });
   };
-  
 
   const handleExportExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredtherapists);
@@ -192,8 +205,6 @@ const showModal = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Therapists");
     XLSX.writeFile(workbook, "therapist_list.xlsx");
   };
-
-
 
   const handleCopy = () => {
     const text = filteredtherapists
@@ -207,9 +218,13 @@ const showModal = () => {
     });
   };
 
-const handleClodeModal=()=>{
-  setShowModal(false);
-}
+  const handleClodeModal = () => {
+    setShowModal(false);
+  };
+
+  const CancelPassModal = () => {
+    SetChangePassModal(false);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
@@ -236,13 +251,12 @@ const handleClodeModal=()=>{
       </div>
       <div className="flex gap-4 mb-8">
         <div className="flex float-left border-2 border-slate-300 rounded-md mt-4">
-        <a
-  onClick={showModal}
-  className="text-white font-bold p-2 px-2 cursor-pointer bg-purple-600 rounded-md "
->
-  + Add New
-</a>
-
+          <a
+            onClick={showModal}
+            className="text-white font-bold p-2 px-2 cursor-pointer bg-purple-600 rounded-md "
+          >
+            + Add New
+          </a>
         </div>
         <div className="flex ml-auto gap-3 rounded-md mt-4 ">
           <button
@@ -311,37 +325,37 @@ const handleClodeModal=()=>{
             <tr key={therapist.id}>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 font-medium text-gray-900">
-                {therapist.personalInformation.name}
+                  {therapist.personalInformation.name}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.personalInformation.dateOfBirth}
+                  {therapist.personalInformation.dateOfBirth}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.personalInformation.address}
+                  {therapist.personalInformation.address}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.personalInformation.phoneNumber}
-                </div>
-              </td> 
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                {therapist.diploma}
+                  {therapist.personalInformation.phoneNumber}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.licence}
+                  {therapist.diploma}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                {therapist.personalInformation.gender}
+                  {therapist.licence}
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                  {therapist.personalInformation.gender}
                 </div>
               </td>
               {/* <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
@@ -400,7 +414,6 @@ const handleClodeModal=()=>{
         ))}
       </div>
       <Modal footer={null} visible={isShowModal} onCancel={handleCancel}>
-
         {selectedTherapy ? (
           <div className="mb-10">
             <h2 className="text-xl font-semibold mb-4">
@@ -408,140 +421,179 @@ const handleClodeModal=()=>{
             </h2>
 
             <div className="grid grid-cols-2">
-            <p className="text-black m-3">
-              <span>Name:</span>
-              <br />
-              <input
-                type="text"
-                className="p-1 mt-2 border-2 rounded-md border-gray-300"
-                value={selectedTherapy.personalInformation.name}
-                readOnly={!isEditable}
-                onChange={(e) =>
-                  setSelectedTherapy({
-                    ...selectedTherapy,personalInformation:{
-                    ...selectedTherapy.personalInformation,
-                    name: e.target.value
+              <p className="text-black m-3">
+                <span>Name:</span>
+                <br />
+                <input
+                  type="text"
+                  className="p-1 mt-2 border-2 rounded-md border-gray-300"
+                  value={selectedTherapy.personalInformation.name}
+                  readOnly={!isEditable}
+                  onChange={(e) =>
+                    setSelectedTherapy({
+                      ...selectedTherapy,
+                      personalInformation: {
+                        ...selectedTherapy.personalInformation,
+                        name: e.target.value,
+                      },
+                    })
                   }
-                  })
-                }
-              />
-            </p>
-            <p className="text-black m-3">
-              <span>Address:</span>
-              <br />
-              <input
-                type="text"
-                className="p-1 mt-2 border-2 rounded-md border-gray-300"
-                value={selectedTherapy.personalInformation.address}
-                readOnly={!isEditable}
-                onChange={(e) =>
-                  setSelectedTherapy({
-                    ...selectedTherapy,personalInformation:{
-                      ...selectedTherapy.personalInformation,
-                    address: e.target.value
-                 } })
-                }
-              />
-            </p>
-            <p className="text-black m-3">
-              <span>Phone Number:</span>
-              <br />
+                />
+              </p>
+              <p className="text-black m-3">
+                <span>Address:</span>
+                <br />
+                <input
+                  type="text"
+                  className="p-1 mt-2 border-2 rounded-md border-gray-300"
+                  value={selectedTherapy.personalInformation.address}
+                  readOnly={!isEditable}
+                  onChange={(e) =>
+                    setSelectedTherapy({
+                      ...selectedTherapy,
+                      personalInformation: {
+                        ...selectedTherapy.personalInformation,
+                        address: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </p>
+              <p className="text-black m-3">
+                <span>Phone Number:</span>
+                <br />
 
-              <input
-                type="number"
-                className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                value={selectedTherapy.personalInformation.phoneNumber}
-                readOnly={!isEditable}
-                onChange={(e) =>
-                  setSelectedTherapy({
-                    ...selectedTherapy,personalInformation:{
-                    ...selectedTherapy.personalInformation,
-                    phoneNumber: e.target.value
-                    }
-                  })
-                }
-              />
-            </p>
+                <input
+                  type="number"
+                  className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                  value={selectedTherapy.personalInformation.phoneNumber}
+                  readOnly={!isEditable}
+                  onChange={(e) =>
+                    setSelectedTherapy({
+                      ...selectedTherapy,
+                      personalInformation: {
+                        ...selectedTherapy.personalInformation,
+                        phoneNumber: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </p>
 
-            <p className="text-black m-3">
-              <span>Gender:</span> <br />
-              <input
-                type="text"
-                className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                value={selectedTherapy.personalInformation.gender}
-                readOnly={!isEditable}
-                onChange={(e) =>
-                  setSelectedTherapy({
-                    ...selectedTherapy,personalInformation:{
-                      ...selectedTherapy.personalInformation,
-                    gender: e.target.value
-                }})
-                }
-              />
-            </p>
-            <p className="text-black m-3">
-              <span>Diploma:</span> <br />
-              <input
-                type="text"
-                className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                value={selectedTherapy.diploma}
-                readOnly={!isEditable}
-                onChange={(e) =>
-                  setSelectedTherapy({
-                    ...selectedTherapy,
-                    diploma: e.target.value
-                })
-                }
-              />
-            </p>
-            <p className="text-black m-3">
-              <span>Licence:</span> <br />
-              <input
-                type="text"
-                className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                value={selectedTherapy.licence}
-                readOnly={!isEditable}
-                onChange={(e) =>
-                  setSelectedTherapy({
-                    ...selectedTherapy,
-                    licence: e.target.value
-                })
-                }
-              />
-            </p>
-            <p className="text-black m-3">
-              <span>DateOfBirth:</span> <br />
-              <input
-                type="date"
-                className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                value={selectedTherapy.personalInformation.date}
-                readOnly={!isEditable}
-                onChange={(e) =>
-                  setSelectedTherapy({
-                    ...selectedTherapy,personalInformation:{
-                    ...selectedTherapy.personalInformation,
-                    date: e.target.value
-                    }
-                  })
-                }
-              />
-            </p>
+              <p className="text-black m-3">
+                <span>Gender:</span> <br />
+                <input
+                  type="text"
+                  className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                  value={selectedTherapy.personalInformation.gender}
+                  readOnly={!isEditable}
+                  onChange={(e) =>
+                    setSelectedTherapy({
+                      ...selectedTherapy,
+                      personalInformation: {
+                        ...selectedTherapy.personalInformation,
+                        gender: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </p>
+              <p className="text-black m-3">
+                <span>Diploma:</span> <br />
+                <input
+                  type="text"
+                  className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                  value={selectedTherapy.diploma}
+                  readOnly={!isEditable}
+                  onChange={(e) =>
+                    setSelectedTherapy({
+                      ...selectedTherapy,
+                      diploma: e.target.value,
+                    })
+                  }
+                />
+              </p>
+              <p className="text-black m-3">
+                <span>Licence:</span> <br />
+                <input
+                  type="text"
+                  className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                  value={selectedTherapy.licence}
+                  readOnly={!isEditable}
+                  onChange={(e) =>
+                    setSelectedTherapy({
+                      ...selectedTherapy,
+                      licence: e.target.value,
+                    })
+                  }
+                />
+              </p>
+              <p className="text-black m-3">
+                <span>DateOfBirth:</span> <br />
+                <input
+                  type="date"
+                  className="p-1 mt-2 rounded-md border-2 border-gray-300"
+                  value={selectedTherapy.personalInformation.date}
+                  readOnly={!isEditable}
+                  onChange={(e) =>
+                    setSelectedTherapy({
+                      ...selectedTherapy,
+                      personalInformation: {
+                        ...selectedTherapy.personalInformation,
+                        date: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </p>
+
+              <button
+                onClick={ShowPassModal}
+                className="font-semibold text-start ml-3 text-md text-purple-700"
+              >
+              Click to Change Password ?{" "}
+              </button>
             </div>
             {isEditable && (
               <button
                 onClick={() => handleUpdate(selectedTherapy)}
-                className=" w-full border-2 p-2 ml-3 rounded-md bg-red-600 text-white font-semibold"
+                className=" w-full border-2 p-2 ml-3 mt-8 rounded-md bg-red-600 text-white font-semibold"
               >
                 Update
               </button>
             )}
-            
-             {/* <VideoCall/> */}
+
+            {/* <VideoCall/> */}
           </div>
         ) : (
-          <Create_Therapy onSuccess={handleClodeModal} Add_Therapy={Add_Therapy} />
+          <Create_Therapy
+            onSuccess={handleClodeModal}
+            Add_Therapy={Add_Therapy}
+          />
         )}
-       
+      </Modal>
+      <Modal visible={ChangePassModal} onCancel={CancelPassModal} footer={null} className="float-end mr-4">
+        <div className="grid grid-cols-1">
+          <h3 className="font-bold text-xl py-3"> Enter New PassWord</h3>
+          <p>Your New Password must be different to the current password.</p>
+          <input
+            type="password"
+            className="border-2 p-2 mt-6 rounded-md w-3/4"
+            placeholder="Enter New Password"
+          />{" "}
+          <br />
+          <input
+            type="password"
+            placeholder="Confirm password"
+            className="border-2 w-3/4 p-2  rounded-md"
+          />
+          <button
+            onClick={() => alert('password changed sucessfully')}
+            className="bg-purple-600 p-2 mt-3 w-3/4 rounded-md text-white"
+          >
+            Reset Password
+          </button>
+        </div>
       </Modal>
     </div>
   );

@@ -1,9 +1,10 @@
 import  { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import { RootState, AppDispatch } from '../Redux/store';
 import { loginUser } from '../Redux/slice/authSlice';
 import Mindora from '../assets/Logo/logo.png';
+// import ForgotPassword from './forgot-password';
 
 
 const Login = () => {
@@ -98,7 +99,8 @@ const Login = () => {
               {status === 'failed' && <p className="text-red-500">{error}</p>}
             </form>
             <div className="mt-6 text-center">
-              <a href="#" className="text-sm text-blue-500 hover:underline">Forgot password?</a>
+              <Link to='/forgot-password' className="text-sm text-blue-500 hover:underline">Forgot password?
+              </Link>
             </div>
             <div className="mt-8 border-t pt-6">
               <p className="text-sm text-gray-500 text-center">

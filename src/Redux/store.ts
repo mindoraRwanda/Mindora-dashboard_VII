@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slice/authSlice';
 import TherapyReducer from './slice/ThearpySlice';
 import UserReducer from './slice/UserSlice';
+import PatientReducer from './slice/PatientSlice';
 
 
 
@@ -10,6 +11,7 @@ const store = configureStore({
     auth: authReducer,
     Therapy: TherapyReducer,
     users: UserReducer,
+    patients: PatientReducer,
   },
 });
 

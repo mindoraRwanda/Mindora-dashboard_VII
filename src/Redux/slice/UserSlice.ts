@@ -7,13 +7,13 @@ interface UserState {
     error: string | null;
 }
 
-interface usersCredentials {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-};
+// interface usersCredentials {
+//     id: string;
+//     firstName: string;
+//     lastName: string;
+//     email: string;
+//     password: string;
+// };
 
 const initialState: UserState = {
     users: [],
@@ -23,15 +23,20 @@ const initialState: UserState = {
 
 export const NewUser = createAsyncThunk(
     'users/NewUser',
-    async (credentials: usersCredentials, { rejectWithValue }) => {
+    async (formData:FormData, { rejectWithValue }) => {
 
         try {
-            const response = await axios.post('https://mindora-backend-beta-version.onrender.com/api/auth/register', credentials);
+            const response = await axios.post('https://mindora-backend-beta-version.onrender.com/api/auth/register', formData,{
+
+                headers: {
+                    'Content-Type':'multipart/form-data'
+                },
+            });
             return response.data;
 
         }
         catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response ?.data || error.response);
         }
     }
 );
@@ -72,6 +77,18 @@ export const updateUser=createAsyncThunk('Users/updateUser',
         }
     }
 );
+
+export const changeRole=createAsyncThunk('User/changeRole',
+async ({id,credentials},{rejectWithValue})=>{
+    try{
+    const response= await axios.put(`https://mindora-backend-beta-version.onrender.com/admin/rbac/roles/${id}`,credentials);
+    return response.data;
+    }
+    catch(error){
+        return rejectWithValue(error.response.data);
+    }
+});
+
 
 const userSlice = createSlice({
     name: 'users',
@@ -133,6 +150,23 @@ const userSlice = createSlice({
                 state.status='failed';
                 state.error=action.payload;
             })
-    }
+
+            // change the Role of User
+            .addCase(changeRole.pending,(state)=>{
+                state.status='loading';
+            })
+            .addCase(changeRole.fulfilled,(state,action)=>{
+                state.status='succeeded';
+                const index=state.users.findIndex(user=>user.id===action.payload.id);
+                if(index>-1){
+                    state.users[index]=action.payload;
+                }
+            })
+            .addCase(changeRole.rejected,(state,action)=>{
+                state.status='failed';
+                state.error=action.payload;
+            })
+
+        }
 });
 export default userSlice.reducer;

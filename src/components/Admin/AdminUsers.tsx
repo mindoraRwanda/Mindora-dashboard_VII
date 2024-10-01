@@ -15,14 +15,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { GetAllUsers, updateUser } from "../../Redux/slice/UserSlice";
 import { deleteUser } from "../../Redux/slice/UserSlice";
 import { useCallback } from "react";
-
-
+import CreateTherapy from "./Create_Therapy";
+import CreatePatient from "./Create_Patient";
 
 export default function AdminUserList() {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.users.users);
   const status = useSelector((state) => state.users.status);
-
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -30,7 +29,12 @@ export default function AdminUserList() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditable, setIsEditable] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [TherapyRole, setTherapyRole] = useState(false);
+  const [PatientRole, setPatientRole] = useState(false);
+  const [newRole, setNewRole] = useState("");
+
   const itemsPerPage = 5;
+
 
   useEffect(() => {
     if (status === "idle") {
@@ -44,20 +48,37 @@ export default function AdminUserList() {
     }
   }, [users, status]);
 
-  const handleSearch = useCallback((event) => {
-    const query = event.target.value.toLowerCase();
-    setSearchQuery(query);
-    
-    const filtered = users.filter(
-      (user) =>
-        user.firstName.toLowerCase().includes(query) ||
-        user.lastName.toLowerCase().includes(query)||
-        user.email.toLowerCase().includes(query)
-    );
-    setFilteredUsers(filtered);
-    setCurrentPage(1);
-  }, [users]);
+  const handleTherapyRole = (e,user) => {
+    const selectedRole = e.target.value;
+    setNewRole(selectedRole);
+    if (selectedRole === "therapy"|| selectedRole === "therapist") {
+      setTherapyRole(true);
+    }
+    else if (selectedRole === "patient"){
+      setPatientRole(true);
+    }
+    dispatch(updateUser({ id: user.id, credentials: { role: selectedRole }}));
+  };
 
+  // this will handle the creation of Patient
+
+
+  const handleSearch = useCallback(
+    (event) => {
+      const query = event.target.value.toLowerCase();
+      setSearchQuery(query);
+
+      const filtered = users.filter(
+        (user) =>
+          user.firstName.toLowerCase().includes(query) ||
+          user.lastName.toLowerCase().includes(query) ||
+          user.email.toLowerCase().includes(query)
+      );
+      setFilteredUsers(filtered);
+      setCurrentPage(1);
+    },
+    [users]
+  );
 
   const paginate = (pageNumber) => {
     if (pageNumber < 1) return;
@@ -99,7 +120,7 @@ export default function AdminUserList() {
   const handleView = (user) => {
     setSelectedUser({
       ...user,
-    date:user.date|| ""
+      date: user.date || "",
     });
     setIsEditable(false);
     setIsModalVisible(true);
@@ -113,6 +134,8 @@ export default function AdminUserList() {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setPatientRole(false);
+    setTherapyRole(false);
   };
 
   const handleEdit = (user) => {
@@ -121,55 +144,64 @@ export default function AdminUserList() {
     setIsModalVisible(true);
   };
 
-  const handleDelete = async(id:string) => {
+  const handleChangeRole = (user) => {
+    setSelectedUser(user);
+  };
+
+  const handleDelete = async (id: string) => {
     const confirmed = window.confirm("Are you sure you want to delete User?");
     if (confirmed) {
       console.log("User deleted");
-    try{
-      await dispatch(deleteUser(id));
-      message.success('User deleted successfully');
-      dispatch(GetAllUsers()); // Refresh the user list
-    }
-    catch(error){
-      message.error("Error deleting user"+error.message);
-    }
+      try {
+        await dispatch(deleteUser(id));
+        message.success("User deleted successfully");
+        dispatch(GetAllUsers()); // Refresh the user list
+      } catch (error) {
+        message.error("Error deleting user" + error.message);
+      }
     }
   };
 
   const handleUpdate = async (user) => {
-    const confirmed=window.confirm("Are you sure you want to update User?");
-    if(confirmed){
-    try {
-      await dispatch(updateUser({
-        id: user.id,
-        credentials: {
-          firstName: user.firstName,
-          email: user.email,
-          password: user.password,
-          date: user.date,
-        },
-      }));
-      message.success('User updated successfully');
-      dispatch(GetAllUsers()); // Refresh the user list
-      setIsModalVisible(false);
-    } catch (error) {
-      message.error("Error updating user: " + error.message);
+    const confirmed = window.confirm("Are you sure you want to update User?");
+    if (confirmed) {
+      try {
+        await dispatch(
+          updateUser({
+            id: user.id,
+            credentials: {
+              firstName: user.firstName,
+              email: user.email,
+              // password: user.password,
+              date: user.date,
+            },
+          })
+        );
+        message.success("User updated successfully");
+        dispatch(GetAllUsers()); // Refresh the user list
+        setIsModalVisible(false);
+      } catch (error) {
+        message.error("Error updating user: " + error.message);
+      }
     }
-  }
   };
-  
 
   const handleBlock = () => {
-    message.info("You will block User");
+    const confirm = window.confirm("Are Sure you want to Block this User?");
+    if (confirm) {
+      message.info("You will block User");
+    }
   };
 
   const addUser = (newUser) => {
     newUser.id = users.length + 1;
+    dispatch(createUser(newUser)).then(() => {
     setUsers([...users, newUser]);
     setFilteredUsers([...users, newUser]);
     setIsModalVisible(false);
     message.success("New User Added Successfully");
-  };
+  });
+};
 
   const handleExportPDF = () => {
     const input = document.getElementById("User-table");
@@ -207,10 +239,25 @@ export default function AdminUserList() {
     });
   };
 
-  const handleSuccess=()=>{
+  const handleSuccess = () => {
     setIsModalVisible(false);
-  }
+  };
 
+  // const ChangeRole = () => {
+  //   const confirm = window.confirm("Are sure you want to change Role ?");
+
+  //   if (confirm) {
+  //     try {
+  //       dispatch(
+  //         changeRole({ id: selectedUser.id, credentials: { role: newRole } })
+  //       );
+  //       message.success("Role updated successfully");
+  //       setRolemodal(false);
+  //     } catch (error) {
+  //       message.error("Error updating role: " + error.message);
+  //     }
+  //   }
+  // };
   return (
     <div className="bg-white rounded-lg shadow-xl p-3">
       <div className="flex justify-between mb-4">
@@ -294,6 +341,12 @@ export default function AdminUserList() {
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Roles
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Change Roles
+            </th>
           </tr>
         </thead>
 
@@ -347,6 +400,27 @@ export default function AdminUserList() {
                   </button>
                 </div>
               </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <button onClick={() => handleChangeRole(user)}>
+                  <div className="text-sm leading-5 text-white bg-purple-600 p-1 rounded-md ">
+                    {/* // we need to display roles here */}
+                    {user.role ? user.role : "no Role assigned"}
+                  </div>
+                </button>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <select
+                  className="border text-black w-30 my-2 rounded-md p-2 "
+                  onChange={(e)=>handleTherapyRole(e,user)}
+          
+                  value={user.role||""}
+                >
+                  <option value="">Select Role</option>
+                  <option value="admin">Admin</option>
+                  <option value="patient">Patient</option>
+                  <option value="therapy">Therapy</option>
+                </select>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -386,7 +460,10 @@ export default function AdminUserList() {
                 className="p-1 mt-2 rounded-md border-2 border-gray-300 w-full"
                 value={selectedUser.firstName}
                 onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, firstName: e.target.value })
+                  setSelectedUser({
+                    ...selectedUser,
+                    firstName: e.target.value,
+                  })
                 }
               />
             </p>
@@ -404,20 +481,7 @@ export default function AdminUserList() {
                 }
               />
             </p>
-            <p className="text-black m-3">
-              <span>Password:</span>
-              <br />
 
-              <input
-                type="password"
-                className="p-1 mt-2 rounded-md border-2 border-gray-300 w-full"
-                value={selectedUser.password}
-                readOnly={!isEditable}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, password: e.target.value })
-                }
-              />
-            </p>
             {isEditable && (
               <button
                 onClick={() => handleUpdate(selectedUser)}
@@ -431,6 +495,16 @@ export default function AdminUserList() {
         ) : (
           <Create_User onSuccess={handleSuccess} addUser={addUser} />
         )}
+        {/* the following are for therapist */}
+      </Modal>
+      <Modal visible={TherapyRole} footer={null} onCancel={handleCancel}>
+        <CreateTherapy />
+      </Modal>
+
+      {/* the following are for Patient */}
+
+      <Modal visible={PatientRole} footer={null} onCancel={handleCancel}>
+        <CreatePatient />
       </Modal>
     </div>
   );

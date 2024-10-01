@@ -83,7 +83,7 @@ export default function CreateTherapy({onSuccess}) {
           name="name"
           rules={[{ required: true, message: "Please enter your Name" }]}
         >
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <Input value={name} onChange={(e) => setName(e.target.value)}  />
         </Form.Item>
 
 
@@ -142,7 +142,7 @@ export default function CreateTherapy({onSuccess}) {
           </Radio.Group>
         </Form.Item>
         <Form.Item className="text-center">
-          <Button type="primary" htmlType="submit" disabled={status === "loading"}>
+          <Button type="primary" htmlType="submit" disabled={status === "loading"} className="w-full">
             Submit
           </Button>
         </Form.Item>

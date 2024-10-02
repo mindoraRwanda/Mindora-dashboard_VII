@@ -506,7 +506,7 @@ export default function AdminUserList() {
 
       {/* the following are for Patient */}
       <Modal open={PatientRole} footer={null} onCancel={handleCancel}>
-        <CreatePatient/>
+        <CreatePatient />
       </Modal>
       
     </div>

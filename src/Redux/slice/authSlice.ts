@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { message } from 'antd';
 import axios from 'axios';
 
 interface AuthState {
@@ -27,16 +26,29 @@ export const loginUser = createAsyncThunk(
 );
 
 export const forgotPass = createAsyncThunk('auth/forgotPass',
-  async (credential:{email: string} , { rejectWithValue }) => {
+  async (credential: { email: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/forgot_password',credential);
+      const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/forgot_password', credential);
       return response.data;
     }
     catch (error) {
-      return rejectWithValue(error.response.data||{message:error.message});
+      return rejectWithValue(error.response.data || { message: error.message });
     }
   });
 
+// the following is for reset passpassword
+
+export const resertPass = createAsyncThunk('user/resertPass',
+  async (credentials: { token: string; password: string; confirmPass: string }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/reset_password/${credentials.token}`, { password: credentials.password, confirmPass: credentials.confirmPass });
+      return response.data;
+    }
+    catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: 'auth',

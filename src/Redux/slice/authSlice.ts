@@ -38,10 +38,12 @@ export const forgotPass = createAsyncThunk('auth/forgotPass',
 
 // the following is for reset passpassword
 
-export const resertPass = createAsyncThunk('user/resertPass',
-  async (credentials: { token: string; password: string; confirmPass: string }, { rejectWithValue }) => {
+export const resetPass = createAsyncThunk('user/resetPass',
+  async (credentials: { token: string; password: string; confirmPassword: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/reset_password/${credentials.token}`, { password: credentials.password, confirmPass: credentials.confirmPass });
+      const response = await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/reset_password/${credentials.token}`, 
+        { password: credentials.password, confirmPassword: credentials.confirmPassword }
+      );
       return response.data;
     }
     catch (error) {
@@ -80,6 +82,20 @@ const authSlice = createSlice({
       .addCase(forgotPass.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+
+      // The following are about reset password
+
+      .addCase(resetPass.pending, (state)=>{
+        state.status='loading';
+      })
+      .addCase(resetPass.fulfilled,(state,action)=>{
+        state.status='succeeded';
+        state.user = action.payload;
+      })
+      .addCase(resetPass.rejected,(state,action)=>{
+        state.status='failed';
+        state.error=action.payload as string;
       })
   },
 });

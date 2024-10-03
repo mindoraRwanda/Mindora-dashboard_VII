@@ -1,16 +1,22 @@
 import { Input, Button, Image, Typography, message } from "antd";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import Mindora from "../assets/Logo/logo.png";
 import { useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { forgotPass } from "../Redux/slice/authSlice";
+import { RootState } from "@reduxjs/toolkit/query";
 
 const Text = Typography;
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const dispatch = useDispatch();
+  const {status}=useSelector((state:RootState)=>state.auth);
+
 
   const handleSubmit = async () => {
+    if (!email) {
+      return message.warning("Please enter your email address.");
+    }
     try {
       const result = await dispatch(forgotPass({ email }));
 
@@ -47,14 +53,18 @@ const ForgotPassword = () => {
               Enter Your Email:
             </Text>
             <Input
+            type="email"
               className="my-2 py-2"
               placeholder="Enter Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+           
             />
             <div className=" justify-between">
-              <Button type="primary" className="w-full" onClick={handleSubmit}>
-                Reset password
+              <Button type="primary" className="w-full" onClick={handleSubmit}
+              disabled={status==="loading"}
+              >
+                Forgot Password
               </Button>
               <p className="text-black mt-2 flex flex-row gap-2">
                 <AiOutlineArrowLeft size={24}/>

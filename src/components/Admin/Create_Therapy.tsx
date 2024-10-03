@@ -70,10 +70,6 @@ export default function CreateTherapy({ userId,onSuccess }) {
     if (!dateOfBirth) {
       message.error("Please select a valid date of birth");
       return;
-    }
-    if (!dateOfBirth) {
-      message.error("Please select a valid date of birth");
-      return;
     };
 
     if (!diploma){

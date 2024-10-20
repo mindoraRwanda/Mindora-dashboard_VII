@@ -1,13 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slice/authSlice';
 import patientsReducer from './slice/Patients';
-import Appointment from './Appointment';
+import appointmentReducer from '../Redux/Appointment';
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     patients: patientsReducer,
-    Appointment:Appointment,
+    appointments: appointmentReducer,
   },
 });
 

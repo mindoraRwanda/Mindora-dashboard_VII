@@ -13,7 +13,7 @@ export default function AppointmentList() {
   useEffect(() => {
     console.log('Dispatching fetchAppointments...'); // Log dispatch action
     dispatch(fetchAppointments());
-  }, [dispatch]); // No need to track 'status' here
+  }, [dispatch]);
 
   useEffect(() => {
     console.log('Appointments:', appointments); // Log appointments data when updated
@@ -32,6 +32,7 @@ export default function AppointmentList() {
 
   // Handle empty appointments case
   if (appointments.length === 0) {
+    console.log('No appointments available'); // Log when no appointments are available
     return <div className='text-black'>No appointments available</div>;
   }
 
@@ -60,25 +61,28 @@ export default function AppointmentList() {
           </tr>
         </thead>
         <tbody>
-          {appointments.map((appointment, index) => (
-            <tr key={appointment.id || index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
-              <td className="px-6 py-4 border-b border-gray-300">
-                <div className="text-sm font-medium text-gray-900">{appointment.patientId}</div>
-              </td>
-              <td className="px-6 py-4 border-b border-gray-300">
-                <div className="text-sm text-gray-900">{new Date(appointment.startTime).toLocaleString()}</div>
-              </td>
-              <td className="px-6 py-4 border-b border-gray-300">
-                <div className="text-sm text-gray-900">{new Date(appointment.endTime).toLocaleString()}</div>
-              </td>
-              <td className="px-6 py-4 border-b border-gray-300">
-                <div className="text-sm text-gray-900">{appointment.location}</div>
-              </td>
-              <td className="px-6 py-4 border-b border-gray-300">
-                <div className="text-sm text-gray-900">{appointment.appointmentType}</div>
-              </td>
-            </tr>
-          ))}
+          {appointments.map((appointment, index) => {
+            console.log('Rendering appointment:', appointment); // Log each appointment being rendered
+            return (
+              <tr key={appointment.id || index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
+                <td className="px-6 py-4 border-b border-gray-300">
+                  <div className="text-sm font-medium text-gray-900">{appointment.patientId}</div>
+                </td>
+                <td className="px-6 py-4 border-b border-gray-300">
+                  <div className="text-sm text-gray-900">{new Date(appointment.startTime).toLocaleString()}</div>
+                </td>
+                <td className="px-6 py-4 border-b border-gray-300">
+                  <div className="text-sm text-gray-900">{new Date(appointment.endTime).toLocaleString()}</div>
+                </td>
+                <td className="px-6 py-4 border-b border-gray-300">
+                  <div className="text-sm text-gray-900">{appointment.location}</div>
+                </td>
+                <td className="px-6 py-4 border-b border-gray-300">
+                  <div className="text-sm text-gray-900">{appointment.appointmentType}</div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

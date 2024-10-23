@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Form, Input, Button, Radio, DatePicker } from "antd";
+import { Form, Input, Button, Radio, DatePicker, message } from "antd";
 import { MdFileUpload } from "react-icons/md";
 import { LuFileUp } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,42 +7,39 @@ import { RootState, AppDispatch } from "../../Redux/store";
 import { fetchTherapy, getAllTherapists } from "../../Redux/slice/ThearpySlice";
 import { featchUserById } from "../../Redux/slice/UserSlice";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import dayjs from "dayjs";
 
-export default function CreateTherapy({ userId,onSuccess }) {
+export default function CreateTherapy({ userId, onSuccess }) {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [diploma, setDiploma] = useState(null);
-  const [licence, setLicence] = useState(null);
+  const [license, setlicense] = useState(null);
   const [email, setEmail] = useState("");
 
   const [form] = Form.useForm();
   const fileDiplomaInputRef = useRef(null);
-  const fileLicenceInputRef = useRef(null);
+  const filelicenseInputRef = useRef(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { status, error } = useSelector((state: RootState) => state.Therapy);
-
+  const { status } = useSelector((state: RootState) => state.Therapy);
 
   // the Following is for getting User form users in table
-
+  console.log("CreateTherapy received userId:", userId);
   useEffect(() => {
-     console.log("CreateTherapy received userId:", userId); 
     if (userId) {
       const feactUserData = async () => {
         try {
           const result = await dispatch(featchUserById(userId));
           if (featchUserById.fulfilled.match(result)) {
             const userData = result.payload;
-          form.setFieldsValue({
-            name: `${userData.firstName || ""} ${userData.lastName || ""}`,
-            email:userData.email || "",
-            phoneNumber:userData.phoneNumber || "",
-          })
-           
+            form.setFieldsValue({
+              name: `${userData.firstName || ""} ${userData.lastName || ""}`,
+              email: userData.email || "",
+              phoneNumber: userData.phoneNumber || "",
+            });
           }
         } catch (error) {
           message.error("Failed to get User data" + error.message);
@@ -50,42 +47,43 @@ export default function CreateTherapy({ userId,onSuccess }) {
       };
       feactUserData();
     }
-  }, [dispatch,userId,form]);
+  }, [dispatch, userId, form]);
 
   // this is for Submitting form of creating Therapy
   const handleSubmit = async (values) => {
-    const{phoneNumber,gender,name}=values;
-    const formData= new FormData();
-    formData.append("name",name);
-    formData.append("gender",gender);
-    formData.append("dateOfBirth",dateOfBirth? dateOfBirth.format("YYYY-MM-DD") : "");
-    formData.append("address",address);
-    formData.append("phoneNumber",phoneNumber);
-    formData.append("diploma",diploma);
-    formData.append("licence",licence);
-    formData.append("userId", selectedUser.id); 
+    const { phoneNumber, gender, name } = values;
 
-    
+    const formData = new FormData();
+    formData.append("personalInformation[name]", name);
+    formData.append("personalInformation[gender]", gender);
+    formData.append("personalInformation[dateOfBirth]",
+      dayjs(dateOfBirth).format("YYYY-MM-DD")
+    );
+    formData.append("personalInformation[address]", address);
+    formData.append("personalInformation[phoneNumber]", phoneNumber);
+
+    formData.append("diploma", diploma);
+    formData.append("license", license);
+    formData.append("userId", userId);
 
     if (!dateOfBirth) {
       message.error("Please select a valid date of birth");
       return;
-    };
+    }
 
-    if (!diploma){
+    if (!diploma) {
       message.error("Please upload diploma");
       return;
-    };
+    }
 
-    if (!licence){
-      message.error("Please upload licence");
+    if (!license) {
+      message.error("Please upload license");
       return;
-    };
+    }
 
     try {
-      const resultAction = await dispatch(
-        fetchTherapy(formData));
-      
+      const resultAction = await dispatch(fetchTherapy(formData));
+      console.log("Server Therapy response:", resultAction);
       if (fetchTherapy.fulfilled.match(resultAction)) {
         message.success("New Therapies created successfully");
         dispatch(getAllTherapists());
@@ -96,7 +94,7 @@ export default function CreateTherapy({ userId,onSuccess }) {
         setAddress("");
         setPhoneNumber("");
         setDiploma(null);
-        setLicence(null);
+        setlicense(null);
 
         form.resetFields();
 
@@ -105,21 +103,30 @@ export default function CreateTherapy({ userId,onSuccess }) {
         }
         navigate("/dashboard");
       } else {
-        message.error(`Therapy creation failed ${error}`);
+        console.error("Error resultAction:", resultAction);
+        message.error(
+          `Therapy creation failed ${
+            resultAction.payload?.message || "Unknown error"
+          }`
+        );
       }
     } catch (error) {
       console.error("Failed to create therapy:", error);
-      message.error("An error occurred while creating therapy");
+      message.error(
+        `An error occurred while creating therapy: ${
+          error.message || "Unknown error"
+        }`
+      );
     }
   };
 
-  // function to upload licence information
-  const handleLicence=()=>{
-    fileLicenceInputRef.current.click();
+  // function to upload license information
+  const handlelicense = () => {
+    filelicenseInputRef.current.click();
   };
 
   // function to upload diploma information
-  const handleDiploma=()=>{
+  const handleDiploma = () => {
     fileDiplomaInputRef.current.click();
   };
   // function to open files for diploma
@@ -133,12 +140,12 @@ export default function CreateTherapy({ userId,onSuccess }) {
     }
   };
 
-  // function to open files for licence
-  const handleLicenceFileChange = (e) => {
+  // function to open files for license
+  const handlelicenseFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setLicence(file);
-      form.setFieldsValue({ licence: file.name });
+      setlicense(file);
+      form.setFieldsValue({ license: file.name });
       message.success(`Selected file: ${file.name}`);
     }
   };
@@ -153,7 +160,7 @@ export default function CreateTherapy({ userId,onSuccess }) {
           <Form.Item
             label="Name"
             name="name"
-            rules={[{ required: true, message: "Please enter your Name" }]}
+            // rules={[{ required: true, message: "Please enter your Name" }]}
           >
             <Input
               className="w-full p-1 rounded border border-blue-600"
@@ -165,27 +172,35 @@ export default function CreateTherapy({ userId,onSuccess }) {
           <Form.Item
             label="Email"
             name="email"
-            rules={[{ required: true, message: "Please enter your Email" }]}
+            // rules={[{ required: true, message: "Please enter your Email" }]}
           >
-            <Input 
-            className="w-full p-1 rounded border border-blue-600"
-            value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input
+              className="w-full p-1 rounded border border-blue-600"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </Form.Item>
 
           <Form.Item
             label="DateofBirth"
             name="dateOfBirth"
-            rules={[
-              { required: true, message: "Please select your Date of Birth" },
-            ]}
+            rules={
+              [
+                // { required: true, message: "Please select your Date of Birth" },
+              ]
+            }
           >
-            <DatePicker onChange={(date) => setDateOfBirth(date)} className="w-full p-1 rounded border border-blue-600"/>
+            <DatePicker
+              value={dateOfBirth}
+              onChange={(date) => setDateOfBirth(date)}
+              className="w-full p-1 rounded border border-blue-600"
+            />
           </Form.Item>
 
           <Form.Item
             label="Address"
             name="address"
-            rules={[{ required: true, message: "Please enter your Address" }]}
+            // rules={[{ required: true, message: "Please enter your Address" }]}
           >
             <Input
               className="w-full p-1 rounded border border-blue-600"
@@ -197,12 +212,14 @@ export default function CreateTherapy({ userId,onSuccess }) {
           <Form.Item
             label="Phone No"
             name="phoneNumber"
-            rules={[
-              { required: true, message: "Please enter your Phone Number" },
-            ]}
+            rules={
+              [
+                // { required: true, message: "Please enter your Phone Number" },
+              ]
+            }
           >
             <Input
-             className="w-full p-1 rounded border border-blue-600"
+              className="w-full p-1 rounded border border-blue-600"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
@@ -213,7 +230,7 @@ export default function CreateTherapy({ userId,onSuccess }) {
             name="diploma"
             rules={[{ required: true, message: "Please enter your Diploma" }]}
           >
-              <Input
+            <Input
               className="w-full p-1 rounded border border-blue-600"
               placeholder="Select diploma"
               value={diploma ? diploma.name : ""}
@@ -221,7 +238,7 @@ export default function CreateTherapy({ userId,onSuccess }) {
               suffix={<MdFileUpload onClick={handleDiploma} size={23} />}
               autoComplete="off"
             />
-               <input
+            <input
               type="file"
               ref={fileDiplomaInputRef}
               accept="application/pdf"
@@ -231,24 +248,24 @@ export default function CreateTherapy({ userId,onSuccess }) {
           </Form.Item>
 
           <Form.Item
-            label="Licence"
-            name="licence"
-            rules={[{ required: true, message: "Please enter your Licence" }]}
+            label="license"
+            name="license"
+            rules={[{ required: true, message: "Please enter your license" }]}
           >
             <Input
-              placeholder="Select Licence"
-              value={licence ? licence.name : ""}
+              placeholder="Select license"
+              value={license ? license.name : ""}
               readOnly
-              suffix={<LuFileUp onClick={handleLicence} size={23} />}
+              suffix={<LuFileUp onClick={handlelicense} size={23} />}
               autoComplete="off"
               className="w-full p-1 rounded border border-blue-600"
             />
-              <input
+            <input
               type="file"
-              ref={fileLicenceInputRef}
+              ref={filelicenseInputRef}
               accept="application/pdf"
               style={{ display: "none" }}
-              onChange={handleLicenceFileChange}
+              onChange={handlelicenseFileChange}
             />
           </Form.Item>
         </div>

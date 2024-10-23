@@ -1,6 +1,6 @@
 import { Form, Input, Button, Radio, message } from "antd";
 import { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { TiUploadOutline } from "react-icons/ti";
 import { NewUser, GetAllUsers } from "../../Redux/slice/UserSlice";
@@ -18,9 +18,9 @@ export default function CreateUser({ onSuccess }) {
   const [gender, setGender] = useState("");
   const [picture, setPicture] = useState(null);
   const [form] = Form.useForm();
-
   const fileInputRef = useRef(null);
 
+  const { status } = useSelector((state: RootState) => state.users);
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -58,6 +58,7 @@ export default function CreateUser({ onSuccess }) {
       console.log("Redux result: ", result);
 
       if (NewUser.fulfilled.match(result)) {
+        console.log('result: ', result);
         message.success("User created successfully");
         dispatch(GetAllUsers());
         if (onSuccess) {
@@ -224,7 +225,7 @@ export default function CreateUser({ onSuccess }) {
         </div>
 
         <Form.Item className="text-center">
-          <Button type="primary" htmlType="submit" className="w-full">
+          <Button type="primary" htmlType="submit" className="w-full" disabled={status === 'loading'}>
             Submit
           </Button>
         </Form.Item>

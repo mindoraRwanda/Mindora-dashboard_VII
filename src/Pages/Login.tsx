@@ -4,7 +4,7 @@ import { useNavigate,Link } from 'react-router-dom';
 import { RootState, AppDispatch } from '../Redux/store';
 import { loginUser } from '../Redux/slice/authSlice';
 import Mindora from '../assets/Logo/logo.png';
-// import ForgotPassword from './forgot-password';
+
 
 
 const Login = () => {
@@ -22,23 +22,27 @@ const Login = () => {
       navigate('/dashboard');
       try {
         const resultAction = await dispatch(loginUser({ email, password }));
+        console.log('Login Result:', resultAction);
         if (loginUser.fulfilled.match(resultAction)) {
           const role = resultAction.payload.user.role;
           if (role === 'admin') {
             navigate('/dashboard');
-          } else if (role === 'therapist') {
+          } else
+           if (role === 'therapist') {
             navigate('/therapy');
           } else {
             alert('Unauthorized access');
             navigate('/');
           }
-        } else {
+        } 
+        else {
+          console.log(resultAction);
           alert('Login failed');
         }
       } catch (error) {
-        console.error('Failed to login:', error);
-        alert('An error occurred during login');
+        alert('An unexpected error occurred. Please try again later.'+ error.message);
       }
+      
     };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
@@ -96,7 +100,8 @@ const Login = () => {
                   {status === 'loading' ? 'Logging in...' : 'Sign In'}
                 </button>
               </div>
-              {status === 'failed' && <p className="text-red-500">{error}</p>}
+              {status === 'failed' && error && <p className="text-red-500">{error}</p>}
+
             </form>
             <div className="mt-6 text-center">
               <Link to='/forgot-password' className="text-sm text-blue-500 hover:underline">Forgot password?

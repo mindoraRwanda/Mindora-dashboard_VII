@@ -136,7 +136,7 @@ export default function AdminTherapistList() {
               address: therapist.personalInformation.address,
               phoneNumber: therapist.personalInformation.phoneNumber,
               diploma: therapist.diploma,
-              licence: therapist.licence,
+              license: therapist.license,
               userId: therapist.userId,
             },
           })
@@ -311,7 +311,7 @@ export default function AdminTherapistList() {
               Diploma
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Licence
+              license
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Gender
@@ -351,7 +351,7 @@ export default function AdminTherapistList() {
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {therapist.licence}
+                  {therapist.license}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
@@ -359,16 +359,7 @@ export default function AdminTherapistList() {
                   {therapist.personalInformation.gender}
                 </div>
               </td>
-              {/* <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900 ">
-                  <button
-                    className="border-2 border-gray-300 rounded-md p-2 px-6 font-semibold"
-                    onClick={handleBlock}
-                  >
-                    Active
-                  </button>
-                </div>
-              </td> */}
+           
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="flex text-sm leading-5 text-gray-900">
                   <button
@@ -515,16 +506,16 @@ export default function AdminTherapistList() {
                 />
               </p>
               <p className="text-black m-3">
-                <span>Licence:</span> <br />
+                <span>license:</span> <br />
                 <input
                   type="text"
                   className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy.licence}
+                  value={selectedTherapy.license}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
                       ...selectedTherapy,
-                      licence: e.target.value,
+                      license: e.target.value,
                     })
                   }
                 />
@@ -560,7 +551,7 @@ export default function AdminTherapistList() {
                 onClick={() => handleUpdate(selectedTherapy)}
                 className=" w-full border-2 p-2 ml-3 mt-8 rounded-md bg-red-600 text-white font-semibold"
               >
-                Update
+            {status === 'loading' ? 'Updating...' : 'Update'}
               </button>
             )}
 

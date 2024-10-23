@@ -1,33 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import CreatePatient from "./Create_Patient";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { message, Modal } from "antd";
-import VideoCall from "../VideoCall";
 import { saveAs } from "file-saver";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import * as XLSX from 'xlsx';
+import { useDispatch, useSelector } from "react-redux";
+import { allPatients, deletePatient,updatePatient } from "../../Redux/slice/PatientSlice";
 
 export default function AdminPatientsList() {
 
-  const initialPatients = [
-    { id: 1, name: "John Doe", email: "john@example.com", gender: 'Male', lastLogin: "2024-07-18" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", gender: 'female', lastLogin: "2024-07-17" },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", gender: 'Male', lastLogin: "2024-07-16" },
-  ];
+  const patient = useSelector((state) => state.patients.patients); 
+  const status = useSelector((state) => state.patients.status);
+
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [filteredPatient, setFilteredPatient] = useState(initialPatients);
-  const [patient, setPatient] = useState(initialPatients);
+  const [filteredPatient, setFilteredPatient] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
+  const dispatch=useDispatch();
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(allPatients());
+    }
+  }, [dispatch,status]); 
+
+  useEffect(() => {
+    if (status === "succeeded") {
+      setFilteredPatient(patient);
+    }
+  }, [status,patient]);
 
   const handleEditClick = (patient) => {
     setIsEditable(true);
@@ -63,13 +74,18 @@ export default function AdminPatientsList() {
     setIsModalVisible(false);
   };
 
-  const handleDelete = (patientId) => {
+  const handleDelete = async(patientId) => {
     const confirmed = window.confirm('Do you want to delete patient ?');
     if (confirmed) {
-      const updatePatient = patient.filter((patient) => patient.id !== patientId);
-      setPatient(updatePatient);
-      setFilteredPatient(updatePatient);
-      message.success('Patient Deleted');
+   try{
+
+    dispatch(deletePatient(patientId));
+    message.success('Patient Deleted successfully');
+    dispatch(allPatients()); // Refresh the patient list
+   }
+   catch(error){
+    message.error(`Failed to delete patient ${error}`);
+   }
     }
   };
 
@@ -110,15 +126,33 @@ export default function AdminPatientsList() {
     });
   };
 
-  const handleUpdate = (updatedPatient) => {
-    const updatedPatients = patient.map((patient) =>
-      patient.id === updatedPatient.id ? updatedPatient : patient
-    );
-
-    setPatient(updatedPatients);
-    setFilteredPatient(updatedPatients);
-    setIsModalVisible(false);
-    message.success("Updated successfully");
+  const handleUpdate = async (selectedPatient) => {
+    const confirmed = window.confirm("Are you sure you want to update this patient?");
+    if (confirmed) {
+      try {
+        const updatePatientData = {
+          personalInformation: {
+            age: selectedPatient.personalInformation.age,
+            gender: selectedPatient.personalInformation.gender,
+          },
+          medicalProfile: {
+            lastVisit: selectedPatient.medicalProfile.lastVisit,
+            condition: selectedPatient.medicalProfile.condition,
+          },
+          emergencyContact: {
+            name: selectedPatient.emergencyContact.name,
+            email: selectedPatient.emergencyContact.email,
+            phoneNumber: selectedPatient.emergencyContact.phoneNumber,
+          }
+        };
+        await dispatch(updatePatient({ id: selectedPatient.id, updatePatientData })).unwrap();
+        message.success("Patient updated successfully");
+        setIsModalVisible(false);
+        dispatch(allPatients());
+      } catch (error) {
+        message.error(`Failed to update patient: ${error}`);
+      }
+    }
   };
 
   const addPatient = (newPatient) => {
@@ -228,15 +262,17 @@ export default function AdminPatientsList() {
               Name
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Email
+              phone
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Gender
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Age
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Last Visit
             </th>
-           
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
@@ -246,18 +282,20 @@ export default function AdminPatientsList() {
           {currentPatients.map((patient) => (
             <tr key={patient.id}>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 font-medium text-gray-900">{patient.name}</div>
+                <div className="text-sm leading-5 font-medium text-gray-900">{patient.user.firstName}</div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">{patient.email}</div>
+                <div className="text-sm leading-5 text-gray-900">{patient.user.email}</div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">{patient.gender}</div>
+                <div className="text-sm leading-5 text-gray-900">{patient.personalInformation.gender}</div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">{patient.lastLogin}</div>
+                <div className="text-sm leading-5 text-gray-900">{patient.personalInformation.age}</div>
               </td>
-              
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">{patient.medicalProfile.lastVisit}</div>
+              </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
               <div className="flex text-sm leading-5 text-gray-900">
                   <button
@@ -302,41 +340,86 @@ export default function AdminPatientsList() {
 <Modal open={isModalVisible}  footer={null} onCancel={handleCancel}>
     
 {selectedPatient ? (
-          <div>
-            <h2 className="text-xl font-semibold mb-4">
+          <div >
+            <h2 className="text-xl text-center font-semibold mb-4">
               {
                 isEditable ? " Edit Patient " :" Patient Details "
               }
             </h2>
-          
+            <div className="grid grid-cols-2">
             <p className="text-black m-3">
-              <span>Name:</span><br />
-              <input type="text"  className="p-1 mt-2 rounded-md border-2 border-gray-300"
-               value={selectedPatient.name}
-               readOnly={!isEditable}
-               onChange={(e)=>setSelectedPatient({...selectedPatient, name:e.target.value})}/>
+              <span className="font-semibold">lastVisit:</span><br />
+              <input type="text"  className="p-1 mt-2 w-full border-b-2 border-gray-300"
+                     value={selectedPatient.medicalProfile.lastVisit}
+                     readOnly={!isEditable}
+                     onChange={(e)=>setSelectedPatient({...selectedPatient,
+                       medicalProfile:{...selectedPatient.medicalProfile,lastVisit:e.target.value},
+                      })}
+              />
             </p>
             <p className="text-black m-3">
-              <span>Email:</span><br />
+              <span className="font-semibold">Condition:</span><br />
 
-              <input type="email"  className="p-1 mt-2 rounded-md border-2 border-gray-300"
-              value={selectedPatient.email}
+              <input type="email"  className="p-1 mt-2 w-full border-b-2 border-gray-300"
+              value={selectedPatient.medicalProfile.condition}
               readOnly={!isEditable}
-              onChange={(e)=>setSelectedPatient({...selectedPatient,email:e.target.value})}/>
+              onChange={(e)=>setSelectedPatient({...selectedPatient,
+                medicalProfile:{...selectedPatient.medicalProfile,condition:e.target.value},})}/>
             </p>
-            
-            <p className="text-black m-3 flex">
-              <span>Last Login:</span>
-             <p className="text-md font-semibold ml-2">
-               {selectedPatient.lastLogin}
-          </p>
+            <p className="text-black m-3">
+              <span className="font-semibold">Age:</span><br />
+
+              <input type="text"  className="p-1 mt-2 w-full border-b-2 border-gray-300"
+              value={selectedPatient.personalInformation.age}
+              readOnly={!isEditable}
+              onChange={(e)=>setSelectedPatient({...selectedPatient,
+              personalInformation:{...selectedPatient.personalInformation,age:e.target.value},})}
+                />
             </p>
-           
+            <p className="text-black m-3">
+              <span className="font-semibold">gender:</span><br />
+
+              <input type="text"  className="p-1 mt-2 w-full border-b-2 border-gray-300"
+              value={selectedPatient.personalInformation.gender}
+              readOnly={!isEditable}
+              onChange={(e)=>setSelectedPatient({...selectedPatient,
+              personalInformation:{...selectedPatient.personalInformation,gender:e.target.value},})}
+                />
+            </p>
+            <p className="text-black m-3">
+              <span className="font-semibold">EmergencyContact Name:</span><br />
+
+              <input type="text"  className="p-1 mt-2 w-full border-b-2 border-gray-300"
+              value={selectedPatient.emergencyContact.name}
+              readOnly={!isEditable}
+              onChange={(e)=>setSelectedPatient({...selectedPatient,
+                emergencyContact:{...selectedPatient.emergencyContact,name:e.target.value},})}/>
+            </p>
+            <p className="text-black m-3">
+              <span className="font-semibold">EmergencyContact email:</span><br />
+
+              <input type="text"  className="p-1 mt-2 w-full border-b-2 border-gray-300"
+              value={selectedPatient.emergencyContact.email}
+              readOnly={!isEditable}
+              onChange={(e)=>setSelectedPatient({...selectedPatient,
+                emergencyContact:{...selectedPatient.emergencyContact,email:e.target.value},})}/>
+            </p>
+            <p className="text-black m-3">
+              <span className="font-semibold">EmergencyContact Contact:</span><br />
+
+              <input type="text"  className="p-1 mt-2 w-full border-b-2 border-gray-300"
+              value={selectedPatient.emergencyContact.phoneNumber}
+              readOnly={!isEditable}
+              onChange={(e)=>setSelectedPatient({...selectedPatient,
+                emergencyContact:{...selectedPatient.emergencyContact,phoneNumber:e.target.value},})}/>
+            </p>
+           </div>
             {isEditable &&(
-              <button onClick={()=>handleUpdate(selectedPatient)} className="text-center border-2 p-2 ml-3 rounded-md bg-red-600 text-white font-semibold">Update
+              <button onClick={()=>handleUpdate(selectedPatient)} className="text-center border-2 p-2 ml-3 rounded-md bg-red-500 text-white font-semibold w-full">
+              {status === 'loading' ? 'Updating ...' : 'Update'}
               </button>
             )}
-             <VideoCall/>
+             {/* <VideoCall/> */}
           </div>
         ) : (
           <CreatePatient addPatient={addPatient}/>

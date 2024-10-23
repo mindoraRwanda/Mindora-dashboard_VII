@@ -44,17 +44,6 @@ interface TherapyState {
   error: string | null;
 };
 
-interface TherapyCredentials {
-  name: string;
-  gender: string;
-  dateOfBirth: string;
-  address: string;
-  phoneNumber: string;
-  diploma: string;
-  licence: string;
-  userId: string;
-};
-
 const initialState: TherapyState = {
   therapists: [],
   status: "idle",
@@ -64,25 +53,16 @@ const initialState: TherapyState = {
 // This is for creating new therapist
 export const fetchTherapy = createAsyncThunk(
   "Therapy/fetchTherapy",
-  async (credentials: TherapyCredentials, { rejectWithValue }) => {
+  async (formData: FormData, { rejectWithValue }) => {
     try {
       const response = await axios.post<Therapist>(
-        'https://mindora-backend-beta-version.onrender.com/api/therapists',
-        {
-          personalInformation: {
-            name: credentials.name,
-            gender: credentials.gender,
-            dateOfBirth: credentials.dateOfBirth,
-            address: credentials.address,
-            phoneNumber: credentials.phoneNumber,
-          },
-          diploma: credentials.diploma,
-          licence: credentials.licence,
-          userId: credentials.userId,
-        }
+        'https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists',
+      formData
       );
       return response.data;
+      console.log("Response from API:", response);
     } catch (err) {
+      console.error("Error response:", err.response || err); 
       return rejectWithValue(err?.response?.data || "An Unexpected error occurred");
     }
   }
@@ -135,7 +115,8 @@ export const updateTherapy=createAsyncThunk('update/updateTherapy',
       return response.data;
     }
     catch(error){
-      return rejectWithValue(error.response?.data);
+      console.error("API error:", err.response || error);
+      return rejectWithValue(error.response?.data?.message || "An Unexpected error occurred");
     }
   }
 )
@@ -146,9 +127,10 @@ const TherapySlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTherapy.pending, (state) => {
-        state.status = "loading";
-      })
+    .addCase(fetchTherapy.pending, (state) => {
+      state.status = "loading";
+    })
+    
       .addCase(fetchTherapy.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.therapists.push(action.payload);

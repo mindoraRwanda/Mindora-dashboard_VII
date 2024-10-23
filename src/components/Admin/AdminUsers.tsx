@@ -32,11 +32,11 @@ export default function AdminUserList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [TherapyRole, setTherapyRole] = useState(false);
   const [therapyUserId, setTherapyUserId] = useState(null);
+  const [PatientId, setPatientId] = useState(null);
   const [PatientRole, setPatientRole] = useState(false);
   const [newRole, setNewRole] = useState("");
 
   const itemsPerPage = 5;
-
 
   useEffect(() => {
     if (status === "idle") {
@@ -50,21 +50,20 @@ export default function AdminUserList() {
     }
   }, [users, status]);
 
-  const handleTherapyRole = (e,user) => {
+  const handleTherapyRole = (e, user) => {
     const selectedRole = e.target.value;
     setNewRole(selectedRole);
-    if (selectedRole === "therapy"|| selectedRole === "therapist") {
+    if (selectedRole === "therapy" || selectedRole === "therapist") {
       setTherapyRole(true);
       setTherapyUserId(user.id);
-    }
-    else if (selectedRole === "patient"){
+    } else if (selectedRole === "patient") {
       setPatientRole(true);
+      setPatientId(user.id);
     }
-    dispatch(updateUser({ id: user.id, credentials: { role: selectedRole }}));
+    dispatch(updateUser({ id: user.id, credentials: { role: selectedRole } }));
   };
 
   // this will handle the creation of Patient
-
 
   const handleSearch = useCallback(
     (event) => {
@@ -154,9 +153,9 @@ export default function AdminUserList() {
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm("Are you sure you want to delete User?");
     if (confirmed) {
-      console.log("User deleted");
       try {
         await dispatch(deleteUser(id));
+        console.log("User deleted successfully")
         message.success("User deleted successfully");
         dispatch(GetAllUsers()); // Refresh the user list
       } catch (error) {
@@ -175,7 +174,6 @@ export default function AdminUserList() {
             credentials: {
               firstName: user.firstName,
               email: user.email,
-              // password: user.password,
               date: user.date,
             },
           })
@@ -199,12 +197,12 @@ export default function AdminUserList() {
   const addUser = (newUser) => {
     newUser.id = users.length + 1;
     dispatch(createUser(newUser)).then(() => {
-    setUsers([...users, newUser]);
-    setFilteredUsers([...users, newUser]);
-    setIsModalVisible(false);
-    message.success("New User Added Successfully");
-  });
-};
+      setUsers([...users, newUser]);
+      setFilteredUsers([...users, newUser]);
+      setIsModalVisible(false);
+      message.success("New User Added Successfully");
+    });
+  };
 
   const handleExportPDF = () => {
     const input = document.getElementById("User-table");
@@ -414,9 +412,8 @@ export default function AdminUserList() {
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <select
                   className="border text-black w-30 my-2 rounded-md p-2 "
-                  onChange={(e)=>handleTherapyRole(e,user)}
-          
-                  value={user.role||""}
+                  onChange={(e) => handleTherapyRole(e, user)}
+                  value={user.role || ""}
                 >
                   <option value="">Select Role</option>
                   <option value="admin">Admin</option>
@@ -489,8 +486,9 @@ export default function AdminUserList() {
               <button
                 onClick={() => handleUpdate(selectedUser)}
                 className="text-center border-2 py-2 rounded-md bg-red-600 text-white font-semibold w-full"
+                disabled={status === 'loading'}
               >
-                Update
+               {status === 'loading' ? 'Updating...' : 'Update'}
               </button>
             )}
             <VideoCall />
@@ -501,14 +499,13 @@ export default function AdminUserList() {
         {/* the following are for therapist */}
       </Modal>
       <Modal open={TherapyRole} footer={null} onCancel={handleCancel}>
-        <CreateTherapy userId={therapyUserId} onSuccess={handleSuccess}/>
+        <CreateTherapy userId={therapyUserId} onSuccess={handleSuccess} />
       </Modal>
 
       {/* the following are for Patient */}
       <Modal open={PatientRole} footer={null} onCancel={handleCancel}>
-        <CreatePatient />
+        <CreatePatient userId={PatientId} onSuccess={handleSuccess}/>
       </Modal>
-      
     </div>
   );
 }

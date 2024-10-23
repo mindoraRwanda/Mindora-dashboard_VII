@@ -14,14 +14,19 @@ const initialState: AuthState = {
 };
 
 export const loginUser = createAsyncThunk(
-
+'auth/loginUser',
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('https://mindora-backend-beta-version.onrender.com/api/auth/login', credentials);
+      const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/login', credentials);
+      console.log("this is data from backend"+ response.data);
       return response.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
+    } catch (err: unknown) {
+      if(err.response && err.response.data){
+        return rejectWithValue(err.response.data.message);
+      }
+      else{
+      return rejectWithValue('An error occurred. Please try again later.');
+    }}
   }
 );
 

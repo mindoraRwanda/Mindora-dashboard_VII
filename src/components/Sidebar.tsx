@@ -60,7 +60,7 @@ export default function Sidebar({ userRole, setActiveComponent, setUserRole }) {
         </div>
         <nav className="mt-8">
           <a 
-            onClick={() => handleNavigation('Home')} 
+            onClick={() => setActiveComponent('Home')} 
             className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200"
           >
             <FaHome className="mr-3" /> Home

@@ -32,9 +32,9 @@ const PatientList = () => {
           <tbody>
             {patients.map((patient) => (
               <tr key={patient.id} className="hover:bg-gray-100">
-                <td className="px-6 text-black py-4 border-b text-gray-800">{patient.personalInformation.age}</td>
-                <td className="px-6 text-black py-4 border-b text-gray-800">{patient.medicalProfile.condition}</td>
-                <td className="px-6 text-black py-4 border-b text-gray-800">{patient.personalInformation?.gender}</td>
+                <td className="px-6  py-4 border-b text-gray-800">{patient.personalInformation.age}</td>
+                <td className="px-6  py-4 border-b text-gray-800">{patient.medicalProfile.condition}</td>
+                <td className="px-6  py-4 border-b text-gray-800">{patient.personalInformation?.gender}</td>
               </tr>
             ))}
           </tbody>

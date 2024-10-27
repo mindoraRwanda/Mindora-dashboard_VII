@@ -4,8 +4,8 @@ import { MdFileUpload } from "react-icons/md";
 import { LuFileUp } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../Redux/store";
-import { fetchTherapy, getAllTherapists } from "../../Redux/slice/ThearpySlice";
-import { featchUserById } from "../../Redux/slice/UserSlice";
+import { fetchTherapy, getAllTherapists } from "../../Redux/Adminslice/ThearpySlice";
+import { featchUserById } from "../../Redux/Adminslice/UserSlice";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 

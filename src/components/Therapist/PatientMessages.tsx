@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPatients } from '../../Redux/slice/Patients';
+import { fetchPatients } from '../../Redux/Adminslice/Patients';
 import { FaFileAlt, FaDownload, FaChartBar } from 'react-icons/fa';
 import { FaMessage } from 'react-icons/fa6';
 

@@ -3,7 +3,7 @@ import { useDispatch,useSelector } from "react-redux";
 import Mindora from "../assets/Logo/logo.png";
 import { useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { forgotPass } from "../Redux/slice/authSlice";
+import { forgotPass } from "../Redux/Adminslice/authSlice";
 import { RootState } from "@reduxjs/toolkit/query";
 
 const Text = Typography;

@@ -4,7 +4,7 @@ import Mindora from "../assets/Logo/logo.png";
 import { useDispatch,useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { resetPass } from "../Redux/slice/authSlice";
+import { resetPass } from "../Redux/Adminslice/authSlice";
 
 const { Text } = Typography;
   

@@ -64,6 +64,9 @@ export default function Sidebar({ userRole, setActiveComponent }) {
      
         {userRole === "therapist" ? (
            <>
+              <a onClick={() => setActiveComponent("Home")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
+             <FaHome className="mr-3" /> Home
+           </a>
            <a onClick={() => setActiveComponent("appointments")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
              <FaCalendarAlt className="mr-3" /> View Appointments
            </a>

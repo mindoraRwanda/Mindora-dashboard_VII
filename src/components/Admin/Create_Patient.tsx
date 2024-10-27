@@ -9,8 +9,8 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { allPatients, createPatient } from "../../Redux/slice/PatientSlice";
-import { featchUserById } from "../../Redux/slice/UserSlice";
+import { allPatients, createPatient } from "../../Redux/Adminslice/PatientSlice";
+import { featchUserById } from "../../Redux/Adminslice/UserSlice";
 import dayjs from "dayjs";
 
 const { Text } = Typography;

@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { TiUploadOutline } from "react-icons/ti";
-import { NewUser, GetAllUsers } from "../../Redux/slice/UserSlice";
+import { NewUser, GetAllUsers } from "../../Redux/Adminslice/UserSlice";
 
 export default function CreateUser({ onSuccess }) {
   const dispatch = useDispatch();

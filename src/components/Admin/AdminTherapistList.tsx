@@ -16,7 +16,7 @@ import {
   deleteTherapy,
   getAllTherapists,
   updateTherapy,
-} from "../../Redux/slice/ThearpySlice";
+} from "../../Redux/Adminslice/ThearpySlice";
 
 
 export default function AdminTherapistList() {

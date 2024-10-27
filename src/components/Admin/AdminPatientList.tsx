@@ -11,7 +11,7 @@ import html2canvas from 'html2canvas';
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import * as XLSX from 'xlsx';
 import { useDispatch, useSelector } from "react-redux";
-import { allPatients, deletePatient,updatePatient } from "../../Redux/slice/PatientSlice";
+import { allPatients, deletePatient,updatePatient } from "../../Redux/Adminslice/PatientSlice";
 
 export default function AdminPatientsList() {
 

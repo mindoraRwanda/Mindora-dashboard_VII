@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slice/authSlice';
-import TherapyReducer from './slice/ThearpySlice';
-import UserReducer from './slice/UserSlice';
-import PatientReducer from './slice/PatientSlice';
+import authReducer from './Adminslice/authSlice';
+import TherapyReducer from './Adminslice/ThearpySlice';
+import UserReducer from './Adminslice/UserSlice';
+import PatientReducer from './Adminslice/PatientSlice';
 
 
 

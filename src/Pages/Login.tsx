@@ -2,7 +2,7 @@ import  { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate,Link } from 'react-router-dom';
 import { RootState, AppDispatch } from '../Redux/store';
-import { loginUser } from '../Redux/slice/authSlice';
+import { loginUser } from '../Redux/Adminslice/authSlice';
 import Mindora from '../assets/Logo/logo.png';
 
 

@@ -44,7 +44,19 @@ export const allPatients = createAsyncThunk('getPatients',
         }
     }
 );
+// the following is for getting single patient
 
+export const getPatientById = createAsyncThunk('getPatientById',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`);
+            return response.data;
+        }
+        catch (err) {
+            return rejectWithValue(err.response?.data || 'uexpected error');
+        }
+    }
+);
 
 // the following Api is for Updating Patient
 

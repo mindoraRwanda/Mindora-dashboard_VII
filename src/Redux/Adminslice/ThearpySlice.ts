@@ -68,6 +68,17 @@ export const fetchTherapy = createAsyncThunk(
   }
 );
 
+// this is for getting single therapist
+export const getTherapy=createAsyncThunk('getTherapy',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "An Unexpected error occurred");
+    }
+  }
+);
 
 // This is for displaying all therapiest information
 export const getAllTherapists = createAsyncThunk(

@@ -4,7 +4,6 @@ import {
   Button,
   Radio,
   DatePicker,
-  Typography,
   message,
 } from "antd";
 import React, { useEffect, useState } from "react";
@@ -13,7 +12,7 @@ import { allPatients, createPatient } from "../../Redux/Adminslice/PatientSlice"
 import { featchUserById } from "../../Redux/Adminslice/UserSlice";
 import dayjs from "dayjs";
 
-const { Text } = Typography;
+// const { Text } = Typography;
 export default function CreatePatient({ userId, onSuccess }) {
   const [form] = Form.useForm();
   const [name, setName] = useState("");
@@ -21,7 +20,7 @@ export default function CreatePatient({ userId, onSuccess }) {
   const [condition, setCondition] = useState("");
   const [lastVisit, setlastVisit] = useState(null);
   const [age, setAge] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  // const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [EmergencyEmail, setEmergencyEmail] = useState("");
   const [EmergencyName, setEmergencyName]=useState("");

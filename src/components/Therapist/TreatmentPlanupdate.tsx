@@ -1,203 +1,205 @@
-import { useState } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import Modal from 'react-modal';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import React, { useState } from "react";
+import { HiOutlineClipboardList } from "react-icons/hi";
+import { AiOutlineSave } from 'react-icons/ai';
+import { MdCancel } from 'react-icons/md';
+import { BiPlus } from "react-icons/bi";
+import SetGoal from "./SetGoal";
 
-const localizer = momentLocalizer(moment);
+export default function TreatmentPlan() {
+  const [activeButton, setActiveButton] = useState("Create Plan");
+  const [showAdditionGoals, setShowAdditionGoals] = useState(false);
+  const[showAdditionMilistones, setShowAdditionMilistones] = useState(false);
+  const [showAdditionalTasks, setShowAdditionalTasks] = useState(false);
 
-const initialEvents = [
-  {
-    id: 0,
-    title: 'All Day Event',
-    allDay: true,
-    start: new Date(2024, 7, 1),
-    end: new Date(2024, 7, 1),
-    description: 'This is an all-day event.',
-  },
-  {
-    id: 1,
-    title: 'Long Event',
-    start: new Date(2024, 7, 7),
-    end: new Date(2024, 7, 10),
-    description: 'This event spans multiple days.',
-  },
-];
-
-const CalendarPage = () => {
-  const [events, setEvents] = useState(initialEvents);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [eventModalIsOpen, setEventModalIsOpen] = useState(false);
-  const [newEventTitle, setNewEventTitle] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
-
-  const openModal = (slotInfo) => {
-    setSelectedDate(slotInfo.start);
-    setSelectedEvent(null);
-    setModalIsOpen(true);
+  const handleActive = (buttonName) => {
+    setActiveButton(buttonName);
   };
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setNewEventTitle('');
-    setSelectedEvent(null);
+  const toggerGoals = () => {
+    setShowAdditionGoals(!showAdditionGoals);
+  };
+  const toggerMilistones = () => {
+    setShowAdditionMilistones(!showAdditionMilistones);
+  };
+  const toggerTasks = () => {
+    setShowAdditionalTasks(!showAdditionalTasks);
   };
 
-  const openEventModal = (event) => {
-    setSelectedEvent(event);
-    setEventModalIsOpen(true);
-  };
-
-  const closeEventModal = () => {
-    setEventModalIsOpen(false);
-    setSelectedEvent(null);
-  };
-
-  const handleAddEvent = () => {
-    if (selectedDate && newEventTitle) {
-      const newEvent = {
-        id: selectedEvent ? selectedEvent.id : events.length,
-        title: newEventTitle,
-        start: selectedDate,
-        end: selectedDate,
-        allDay: true,
-        description: 'No description available.', // Default description
-      };
-
-      if (selectedEvent) {
-        setEvents(events.map((event) => (event.id === selectedEvent.id ? newEvent : event)));
-      } else {
-        setEvents([...events, newEvent]);
-      }
-
-      closeModal();
-    }
-  };
-
-  const handleEditEvent = (event) => {
-    setSelectedEvent(event);
-    setNewEventTitle(event.title);
-    setSelectedDate(event.start);
-    setModalIsOpen(true);
-  };
-
-  const handleDeleteEvent = (eventId) => {
-    setEvents(events.filter((event) => event.id !== eventId));
-    closeEventModal();
-  };
-
-  const EventComponent = ({ event }) => (
-    <div className="relative group">
-      <span onClick={() => openEventModal(event)}>{event.title}</span>
-      <div className="absolute top-0 right-0 hidden group-hover:flex space-x-2">
-        <button
-          className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
-          onClick={() => handleEditEvent(event)}
-        >
-          Edit
-        </button>
-        <button
-          className="text-xs bg-red-500 text-white px-2 py-1 rounded"
-          onClick={() => handleDeleteEvent(event.id)}
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="h-screen p-4">
-      <div className="bg-white text-gray-600 rounded-lg shadow-xl p-4">
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          views={['month', 'week', 'day', 'agenda']}
-          defaultView="month"
-          style={{ height: '80vh' }}
-          selectable
-          onSelectSlot={openModal}
-          components={{
-            event: EventComponent,
-          }}
-        />
-      </div>
-
-      {/* Add/Edit Event Modal */}
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Add Event"
-        className="bg-purple-500 text-black p-6 rounded-lg shadow-xl max-w-md mx-auto mt-24"
-        overlayClassName="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center"
-      >
-        <h2 className="text-2xl mb-4">{selectedEvent ? 'Edit Event' : 'Add Event'}</h2>
+  const AdditionGoals = () => {
+    return (
+      <div className="flex flex-row gap-2">
+        {/* Addition Goals logic here */}
         <input
           type="text"
-          placeholder="Event Title"
-          value={newEventTitle}
-          onChange={(e) => setNewEventTitle(e.target.value)}
-          className="mb-4 p-2 border border-gray-300 rounded-lg w-full"
+          id="goal"
+          name="goal"
+          className="w-1/2 p-1 border-2 rounded-md text-black my-3"
+          placeholder="Goal discription..."
         />
-        <div className="flex space-x-4">
-          <button
-            onClick={handleAddEvent}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {selectedEvent ? 'Update Event' : 'Add Event'}
-          </button>
-          <button
-            onClick={closeModal}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
-            Cancel
-          </button>
-        </div>
-      </Modal>
+        <select className="w-1/2 p-1 border-2 rounded-md text-black my-3">
+          <option value="">Select Status</option>
+          <option value="Active">Active</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+          <option value="Overdue">Overdue</option>
+        </select>
+      </div>
+    );
+  };
 
-      {/* Event Details Modal */}
-      <Modal
-        isOpen={eventModalIsOpen}
-        onRequestClose={closeEventModal}
-        contentLabel="Event Details"
-        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto mt-24"
-        overlayClassName="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center"
-      >
-        <h2 className="text-2xl mb-4">Event Details</h2>
-        {selectedEvent && (
-          <>
-            <p><strong>Title:</strong> {selectedEvent.title}</p>
-            <p><strong>Start:</strong> {moment(selectedEvent.start).format('MMMM Do YYYY, h:mm a')}</p>
-            <p><strong>End:</strong> {moment(selectedEvent.end).format('MMMM Do YYYY, h:mm a')}</p>
-            <p><strong>Description:</strong> {selectedEvent.description}</p>
-            <div className="mt-4 flex space-x-2">
-              <button
-                className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
-                onClick={() => handleEditEvent(selectedEvent)}
-              >
-                Edit
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                onClick={() => handleDeleteEvent(selectedEvent.id)}
-              >
-                Delete
-              </button>
-              <button
-                onClick={closeEventModal}
-                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-              >
-                Close
-              </button>
-            </div>
-          </>
-        )}
-      </Modal>
+  const AdditionMilistones = () => {
+    return(
+      <div className="flex flex-row gap-2">
+        <input
+        type="text"
+        id="milistone"
+        name="milistone"
+        className="w-1/3 p-1 border-2 rounded-md text-black my-3"
+        placeholder="Milistone description..."
+        />
+        {/* Logic for date */}
+        <input
+        type="date"
+        id="date"
+        name="date"
+        className="w-1/3 p-1 border-2 rounded-md text-black my-3"
+        />
+        {/* logic for status */}
+        <select
+        className="w-1/3 p-1 border-2 rounded-md text-black my-3"
+        >
+          <option value="">Select Status</option>
+          <option value="Active">Active</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+          <option value="Overdue">Overdue</option>
+        </select>
+      </div>
+    )
+  };
+
+  const AdditionalTasks = () => {
+    return(
+      <div className="flex flex-row gap-2">
+        <input
+        type="text"
+        id="task"
+        name="task"
+        className="w-1/3 p-1 border-2 rounded-md text-black my-3"
+        placeholder="Task description..."
+        />
+        {/* Logic for date */}
+        <input
+        type="date"
+        id="date"
+        name="date"
+        className="w-1/3 p-1 border-2 rounded-md text-black my-3"
+        />
+        {/* Logic for status */}
+        <select
+        className="w-1/3 p-1 border-2 rounded-md text-black my-3"
+        >
+          <option value="">Select Status</option>
+          <option value="Active">Active</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+          <option value="Overdue">Overdue</option>
+        </select>
+      </div>
+    )
+  };
+
+ 
+
+  return (
+    <div className="bg-white rounded-lg shadow-xl border p-6">
+      <div className="text-black flex flex-row">
+        <HiOutlineClipboardList size={32} />
+        <h1 className="text-black text-2xl font-semibold">
+          Treatment Plan Management
+        </h1>
+      </div>
+      <div className="flex flex-row gap-9 mt-10">
+        {["Create Plan", "View Plans"].map((buttonName) => (
+          <button
+            key={buttonName}
+            className={`text-lg font-semibold p-1 rounded ${
+              activeButton === buttonName
+                ? "bg-purple-600 text-white hover:bg-purple-800"
+                : "bg-gray-200 text-black hover:bg-gray-400"
+            }`}
+            onClick={() => handleActive(buttonName)}
+          >
+            {buttonName}
+          </button>
+        ))}
+        ;
+      </div>
+      {activeButton === "Create Plan" && (
+        <div className="bg-white rounded-lg shadow-xl border p-6 mt-3">
+          <label className="text-black" for="patientName">
+            {" "}
+            Patient Name:
+          </label>
+          <br />
+          <input
+            type="text"
+            id="patientName"
+            name="patientName"
+            className="w-full p-1 border-2 rounded-md text-black my-3"
+            placeholder="Enter patient name..."
+          />
+          <div className="flex flex-row justify-between mt-5">
+            <h1 className="font-semibold text-black text-xl">Goals</h1>
+            <button
+              className="border-purple-600 border text-black p-1 rounded font-semibold flex flex-row "
+              onClick={toggerGoals}
+            >
+              <BiPlus size={25} />
+              Add Goal
+            </button>
+          </div>
+          {showAdditionGoals && <AdditionGoals />}
+            {/* For milestones */}
+        <div className="flex flex-row justify-between mt-5">
+        <h1 className="font-semibold text-black text-xl">Milestones</h1>
+        <button className="border-purple-600 border  text-black p-1 rounded font-semibold flex flex-row "
+         onClick={toggerMilistones}>
+          <BiPlus size={25} />
+          Add Milestone
+        </button>
+      </div>
+      {showAdditionMilistones && <AdditionMilistones />}
+
+      {/* Logic of Task */}
+      <div className="flex flex-row justify-between mt-5">
+        <h1 className="font-semibold text-black text-xl">Tasks</h1>
+        <button className="border-purple-600 border  text-black p-1 rounded font-semibold flex flex-row "
+         onClick={toggerTasks}>
+          <BiPlus size={25} />
+          Add Task
+        </button>
+      </div>
+      {showAdditionalTasks && <AdditionalTasks />}
+
+      {/* Logic of Save and Cancel */}
+      <div className="flex flex-row gap-2 mt-5">
+    
+        <button className="bg-purple-600 border text-white p-1 rounded font-semibold flex flex-row gap-1 w-3/4 justify-center hover:bg-purple-800 ">
+         <AiOutlineSave size={22}/> Save Treatment Plan
+        </button>
+        <button className="border-red-400 border text-white bg-red-500 p-1 rounded font-semibold flex flex-row gap-1 w-1/4 hover:bg-red-600">
+        <MdCancel size={22}/>  Cancel
+        </button>
+     
+        </div>
+        </div>
+      )};
+
+    
+      {activeButton === "View Plans" && (
+        <SetGoal/>
+      )}
     </div>
   );
-};
-
-export default CalendarPage;
+}

@@ -6,7 +6,6 @@ import { Modal,Form ,Input,Button,Select, message, Switch} from "antd";
 import { RootState } from "../../Redux/store";
 import PatientsList from "../Therapist/PatientsList";
 import { resetStatus } from "../../Redux/TherapistSlice/Appointment_Slot";
-
 import { createAvailableSlot, getAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
 
 export default function AppointmentList() {
@@ -93,8 +92,6 @@ export default function AppointmentList() {
 // function to handle form submission
 const handleSubmit = async (values) => {
   try {
-  
-
     const appointmentData = {
       therapistId,
       startTime: new Date(`${values.date}T${values.startTime}`).toISOString(), 
@@ -234,7 +231,7 @@ const handleSubmit = async (values) => {
     <h1 className="text-black text-lg font-semibold my-2 text-center">
       Create New Appointment Slot
     </h1>
-  
+{/*   
     <Form.Item
   label="TherapyId"
   name="TherapistId"
@@ -245,7 +242,7 @@ const handleSubmit = async (values) => {
     readOnly
     className="w-full p-1 border rounded text-black bg-red-100"
   />
-</Form.Item>
+</Form.Item> */}
 
    <Form.Item
    label="Availlable Day"

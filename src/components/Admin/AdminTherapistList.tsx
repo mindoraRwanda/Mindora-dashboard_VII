@@ -3,6 +3,8 @@ import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { useCallback, useEffect, useState } from "react";
+import { FiDownload } from 'react-icons/fi';
+
 import { message, Modal} from "antd";
 import Create_Therapy from "./Create_Therapy";
 import jsPDF from "jspdf";
@@ -218,6 +220,19 @@ export default function AdminTherapistList() {
       message.success("Data copied to clipboard!");
     });
   };
+  const handleDiploma = (diplomaUrl) => {
+    const link = document.createElement("a");
+    link.href = diplomaUrl;
+    link.download = "diploma.pdf";
+    link.click();
+  };
+  
+  const handleLicense = (LicenseUrl) => {
+    const link = document.createElement("a");
+    link.href = LicenseUrl;
+    link.download = "license.pdf";
+    link.click();
+  };
 
   const handleClodeModal = () => {
     setShowModal(false);
@@ -307,10 +322,10 @@ export default function AdminTherapistList() {
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Phone Number
             </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Diploma
             </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               license
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
@@ -345,13 +360,22 @@ export default function AdminTherapistList() {
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {therapist.diploma}
+                <div className="text-sm w-40 leading-5 text-gray-900">
+                  <button className="bg-transparent text-black flex flex-row gap-2 border-purple-600 border rounded p-2" 
+                  onClick={()=>handleDiploma(therapist.diploma)}>
+                    Get Diploma <FiDownload/>
+                  </button>
+                  {/* {therapist.diploma} */}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {therapist.license}
+                <div className="text-sm w-40 leading-5 text-gray-900">
+                <button className="bg-transparent text-black flex flex-row gap-2 border-purple-600 border rounded p-2"
+                onClick={()=>handleLicense(therapist.license)}
+                >
+                    Get License <FiDownload/>
+                  </button>
+                  {/* {therapist.license} */}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">

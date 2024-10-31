@@ -5,23 +5,11 @@ import Home from '../components/Therapist/Home';
 import AppointmentList from '../components/Therapist/ViewAppointment';
  import VideoCall from '../components/Therapist/VideoCall';
 import Reports from '../components/Therapist/Reports';
-// import Settings from './Components/Therapist/Settings';
 import PatientsList from '../components/Therapist/PatientsList';
 import PatientMessages from '../components/Therapist/PatientMessages';
 import TreatmentPlanupdate from '../components/Therapist/TreatmentPlanupdate';
  import SetGoal from '../components/Therapist/SetGoal';
 import TrackPatient from '../components/Therapist/TrackPatient';
-// import Recommendations from './Components/Therapist/Recommandation';
-// import PatientChart from './Components/Therapist/PatientChart';
-// import SearchingPatient from './Components/Therapist/SearchingPatient'; // Updated import path
-// import ClinicRecord from './Components/Therapist/ClinicRecord';
-// import PatientsSurvey from './Components/Therapist/PatientsSurvey';
-// import Emergency from './Components/Therapist/Emergency';
-// import EducationResource from './Components/Therapist/EducationResources';
-// import Invoice from './Components/Therapist/Invoice';
-// import Chat from './Components/Therapist/Chat';
-// import NotificationsPage from './Components/Therapist/Notification';
-// import SendNotificationPage from './Components/Therapist/SendNotification';
 
 const UserRole = {
   THERAPIST: "therapist",
@@ -37,30 +25,12 @@ export default function DashboardPage() {
         return <Home />
         case 'videoCall':
           return <VideoCall />
-      // case 'sendNot':
-      //   return <SendNotificationPage />;
-      // case 'Notification':
-      //   return <NotificationsPage />;
-      // case 'Emegency':
-      //   return <Emergency />;
-      // case 'patients feedback':
-      //   return <PatientsSurvey />;
-      // case 'Record':
-      //   return <ClinicRecord />;
-      // case 'Searching':
-      //   return <SearchingPatient />;
       case 'TreatmentPlan':
       return <TreatmentPlanupdate />;
       case 'SetGoal':
       return <SetGoal />;
       case 'TrackPatient':
       return <TrackPatient />;
-      // case 'Recommandation':
-      //   return <Recommendations />;
-      // case 'patientChat':
-      //   return <PatientChart />;
-      // case 'Chat':
-      //   return <Chat />;
       case 'appointments':
        return <AppointmentList />;
       case 'Patients':
@@ -69,12 +39,6 @@ export default function DashboardPage() {
         return <PatientMessages />;
       case 'reports':
         return <Reports />;
-      // case 'invoice':
-      //   return <Invoice />;
-      // case 'education':
-      //   return <EducationResource />;
-      // case 'settings':
-      //   return <Settings />;
       default:
        return <AppointmentList />;
     }

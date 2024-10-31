@@ -16,12 +16,8 @@ import {
   FaCalendarCheck,
   FaReadme,
   FaEdit,
-  FaFileInvoice,
-  FaResearchgate,
-  FaTemperatureHigh,
 } from "react-icons/fa";
 import { FaBarsProgress, FaNotesMedical, FaRegFaceSurprise } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
 import { GoChevronDown } from "react-icons/go";
 import { IoPeople } from "react-icons/io5";
 import { LuDot } from "react-icons/lu";
@@ -32,11 +28,6 @@ import { SiArkecosystem, SiFiles, SiDatabricks } from "react-icons/si";
 export default function Sidebar({ userRole, setActiveComponent }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [SidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
-
-  const handleNavigation = (component) => {
-    navigate(`/${userRole}/${component}`);
-  };
 
   const toggleDropdown = (dropdown) => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
@@ -55,7 +46,7 @@ export default function Sidebar({ userRole, setActiveComponent }) {
           <FaBars className="text-2xl text-gray-700" />
         )}
       </button>
-    <div className={`fixed inset-y-0 left-0 transform ${SidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 w-64 bg-white bg-opacity-90 overflow-y-auto transition duration-200 ease-in-out z-10 md:relative`}>
+    <div className={`fixed inset-y-0   transform ${SidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 w-62 bg-white bg-opacity-90 overflow-y-auto transition duration-200 ease-in-out z-10 md:relative`}>
       <div className="p-6">
         <h2 className="text-3xl font-bold text-purple-600">Dashboard</h2>
       
@@ -68,8 +59,32 @@ export default function Sidebar({ userRole, setActiveComponent }) {
              <FaHome className="mr-3" /> Home
            </a>
            <a onClick={() => setActiveComponent("appointments")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
-             <FaCalendarAlt className="mr-3" /> View Appointments
+             <FaCalendarAlt className="mr-3" /> View MyAppointments
            </a>
+           <div className="relative">
+             <a
+               onClick={() => toggleDropdown("TreatmentPlan")}
+               className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
+             >
+               <FaCalendarCheck className="mr-3" /> Treatment Plan <GoChevronDown className="ml-1" />
+             </a>
+             {openDropdown === "TreatmentPlan" && (
+               <div className="ml-6">
+                 <a
+                   onClick={() => setActiveComponent("TreatmentPlan")}
+                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
+                 >
+                   <p className="flex"><LuDot className="m-1" />Treatment Plan Operations</p>
+                 </a>
+                 <a
+                   onClick={() => setActiveComponent("SetGoal")}
+                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
+                 >
+                   <p className="flex"><LuDot className="m-1 text-sm" /> Treatment Details</p>
+                 </a>
+               </div>
+             )}
+           </div>
            <a onClick={() => setActiveComponent("videoCall")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
              <FaVideo className="mr-3" /> Make Video Call
            </a>
@@ -88,30 +103,7 @@ export default function Sidebar({ userRole, setActiveComponent }) {
            >
              <FaChartBar className="mr-3" /> View Reports
            </a>
-           <div className="relative">
-             <a
-               onClick={() => toggleDropdown("TreatmentPlan")}
-               className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
-             >
-               <FaCalendarCheck className="mr-3" /> Treatment Plan <GoChevronDown className="ml-1" />
-             </a>
-             {openDropdown === "TreatmentPlan" && (
-               <div className="ml-6">
-                 <a
-                   onClick={() => setActiveComponent("TreatmentPlan")}
-                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
-                 >
-                   <p className="flex"><LuDot className="m-1" />Create and Update</p>
-                 </a>
-                 <a
-                   onClick={() => setActiveComponent("SetGoal")}
-                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
-                 >
-                   <p className="flex"><LuDot className="m-1 text-sm" /> Set Goals and Milestones</p>
-                 </a>
-               </div>
-             )}
-           </div>
+         
            <div className="relative">
              <a
                onClick={() => toggleDropdown("MedicationManagement")}

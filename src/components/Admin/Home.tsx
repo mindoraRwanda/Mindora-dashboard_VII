@@ -102,7 +102,7 @@ const Home = ({ userRole }) => {
         },
       });
     }
-  });
+  },[]);
 
   useEffect(() => {
     if (chartPat.current) {
@@ -123,7 +123,7 @@ const Home = ({ userRole }) => {
         },
       });
     }
-  });
+  },[]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

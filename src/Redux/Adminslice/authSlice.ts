@@ -2,15 +2,19 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 interface AuthState {
-  user;
+  user: {
+    therapistId?: string;
+  } | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  therapistId:string| null;
 }
 
 const initialState: AuthState = {
   user: null,
   status: 'idle',
   error: null,
+  therapistId: null, 
 };
 
 export const loginUser = createAsyncThunk(
@@ -18,7 +22,12 @@ export const loginUser = createAsyncThunk(
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/login', credentials);
-      console.log("this is data from backend"+ response.data);
+     console.log("Login Response:", {
+        fullData: response.data,
+        user: response.data.user,
+        therapistId: response.data.user?.therapist?.id 
+
+      });
       return response.data;
     } catch (err: unknown) {
       if(err.response && err.response.data){
@@ -69,6 +78,10 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload;
+        console.log("Login payload:", action.payload);
+        state.TherapistId = action.payload.user?.therapist?.id;
+        localStorage.setItem('TherapistId', action.payload.user?.therapist?.id || '');
+        console.log("therapy id stored:", state.TherapistId);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';

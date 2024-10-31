@@ -12,9 +12,12 @@ interface appointment {
     location: string;
     date: string | number;
     appointmentType: string;
+    appointmentSlot:number | string;
     duration: number;
     notes: string
 };
+
+
 // This is for create new appointment
 export const CreateAppointment = createAsyncThunk('createAppointment',
     async (AppointmentData: appointment, { rejectWithValue }) => {
@@ -25,7 +28,7 @@ export const CreateAppointment = createAsyncThunk('createAppointment',
             return response.data;
           
         } catch (error) {
-           return rejectWithValue(error.response?.message || "unexpected error with creating appointment");
+           return rejectWithValue(error.response?.data?.message || "unexpected error with creating appointment");
         }
     }
 );
@@ -35,10 +38,11 @@ export const GetAppointments = createAsyncThunk('GetAppointments',
     async (_, { rejectWithValue }) => {
         try {
             const response = await axios.get<appointment[]>('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments');
-            return response.data;
             console.log('All Appointments fetched', response.data);
+            return response.data;
+          
         } catch (error) {
-            rejectWithValue(error.response?.message || "unexpected error with fetching appointments");
+           return rejectWithValue(error.response?.data?.message || "unexpected error with fetching appointments");
         }
     }
 );
@@ -47,11 +51,12 @@ export const GetAppointments = createAsyncThunk('GetAppointments',
 export const CancelAppointment = createAsyncThunk('cancelAppointment',
     async (appointmentId: number, { rejectWithValue }) => {
         try {
-            await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${appointmentId}`);
-            return response.data;
+           const response=await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${appointmentId}`);
             console.log('Appointment cancelled', appointmentId);
+            return response.data;
+           
         } catch (error) {
-            rejectWithValue(error.response?.message || "unexpected error with cancelling appointment");
+          return rejectWithValue(error.response?.data?.message || "unexpected error with cancelling appointment");
         }
     }
 );
@@ -61,11 +66,12 @@ export const CancelAppointment = createAsyncThunk('cancelAppointment',
 export const UpdateAppointment = createAsyncThunk('updateAppointment',
     async (formData: appointment, { rejectWithValue }) => {
         try {
-            await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${formData.id}`, formData);
-            return response.data;
+           const response= await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${formData.id}`, formData);
             console.log('Appointment updated', formData.id);
+            return response.data;
+          
         } catch (error) {
-            rejectWithValue(error.response?.message || "unexpected error with updating appointment");
+          return rejectWithValue(error.response?.data?.message || "unexpected error with updating appointment");
         }
     }
 );
@@ -108,6 +114,7 @@ const appointmentSlice = createSlice({
             // This is for getting all appointments
             .addCase(GetAppointments.pending, (state) => {
                 state.status = 'loading';
+                state.error=null;
 
             })
             .addCase(GetAppointments.fulfilled, (state, action) => {
@@ -121,6 +128,7 @@ const appointmentSlice = createSlice({
             // This is for canceling the appointments
             .addCase(CancelAppointment.pending, (state) => {
                 state.status = 'loading';
+                state.error=null;
             })
             .addCase(CancelAppointment.fulfilled, (state, action) => {
                 state.status = 'succeeded';
@@ -135,6 +143,7 @@ const appointmentSlice = createSlice({
 
             .addCase(UpdateAppointment.pending, (state) => {
                 state.status = 'loading';
+                state.error=null;
             })
             .addCase(UpdateAppointment.fulfilled, (state, action) => {
                 state.status = 'succeeded';
@@ -146,5 +155,5 @@ const appointmentSlice = createSlice({
             })
     },
 });
-
+export const { resetStatus } = appointmentSlice.actions;
 export default appointmentSlice.reducer;

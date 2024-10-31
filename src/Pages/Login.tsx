@@ -19,11 +19,23 @@ const Login = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      navigate('/dashboard');
+      // navigate('/dashboard');
       try {
         const resultAction = await dispatch(loginUser({ email, password }));
-        console.log('Login Result:', resultAction);
+        
         if (loginUser.fulfilled.match(resultAction)) {
+
+          if (loginUser.fulfilled.match(resultAction)) {
+            // Log the full user data
+            console.log('Login successful! Full user data:', {
+              fullPayload: resultAction.payload,
+              user: resultAction.payload.user,
+              role: resultAction.payload.user.role,
+              therapistId: resultAction.payload.user.therapistId,
+              token: resultAction.payload.token,
+              additionalInfo: resultAction.payload.user.additionalInfo,
+            });
+          };
           const role = resultAction.payload.user.role;
           if (role === 'admin') {
             navigate('/dashboard');
@@ -35,6 +47,7 @@ const Login = () => {
             navigate('/');
           }
         } 
+
         else {
           console.log(resultAction);
           alert('Login failed');
@@ -44,6 +57,7 @@ const Login = () => {
       }
       
     };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
       <div className="bg-white flex flex-col items-center rounded-md p-8 space-y-4">

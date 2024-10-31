@@ -4,6 +4,8 @@ import TherapyReducer from './Adminslice/ThearpySlice';
 import UserReducer from './Adminslice/UserSlice';
 import PatientReducer from './Adminslice/PatientSlice';
 import AppointmentReducer from './TherapistSlice/Appointment';
+import AvailableSlotReducer from './TherapistSlice/Appointment_Slot';
+
 
 
 
@@ -14,6 +16,8 @@ const store = configureStore({
     users: UserReducer,
     patients: PatientReducer,
     appointment: AppointmentReducer,
+    availableSlot:AvailableSlotReducer,
+   
   },
 });
 

@@ -6,7 +6,7 @@ import AppointmentList from '../components/Therapist/ViewAppointment';
  import VideoCall from '../components/Therapist/VideoCall';
 import Reports from '../components/Therapist/Reports';
 // import Settings from './Components/Therapist/Settings';
-import PatientsList from '../components/PatientsList';
+import PatientsList from '../components/Therapist/PatientsList';
 import PatientMessages from '../components/Therapist/PatientMessages';
 import TreatmentPlanupdate from '../components/Therapist/TreatmentPlanupdate';
  import SetGoal from '../components/Therapist/SetGoal';

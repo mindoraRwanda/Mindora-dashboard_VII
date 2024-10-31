@@ -2,115 +2,67 @@ import { useEffect, useState } from "react";
 import { FaUser, FaCalendar } from "react-icons/fa";
 import { BiTime } from 'react-icons/bi';
 import { useSelector,useDispatch } from "react-redux";
-import { Modal,Form ,Input,Button,Select, message} from "antd";
-import { CreateAppointment } from "../../Redux/TherapistSlice/Appointment";
-import { getPatientById } from "../../Redux/Adminslice/PatientSlice";
-import { fetchTherapy } from "../../Redux/Adminslice/ThearpySlice";
+import { Modal,Form ,Input,Button,Select, message, Switch} from "antd";
+import { RootState } from "../../Redux/store";
+import PatientsList from "../Therapist/PatientsList";
+import { resetStatus } from "../../Redux/TherapistSlice/Appointment_Slot";
 
-
-
+import { createAvailableSlot, getAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
 
 export default function AppointmentList() {
-  const [activeButton, setActiveButton] = useState("Schedule");
+  const [activeButton, setActiveButton] = useState("AllPatients");
   const [modalVisible, setModalVisible] = useState(false);
+
   const dispatch=useDispatch();
   const [form] = Form.useForm();
-  const [name,setName] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [typeApp, setTypeApp] = useState("");
-  const [statusApp, setStatusApp] = useState("Scheduled");
-  const [duration, setDuration] = useState("");
-  const [notes, setNotes] = useState("");
-  const [location, setLocation] = useState("");
-// These are used in useEffect hooks but not defined
-const [patientId, setPatientId] = useState(null);
-const [therapistId, setTherapistId] = useState(null);
 
-  const{status,error}=useSelector((state)=>({
-    status: state.appointment.status,
-    error: state.appointment.error,
+  const [availableDay, setavailableDay] =useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+
+  const [timeZone,setTimezone] = useState('');
+  const [startTime, setStartTime] = useState("");
+
+  const [endTime, setEndTime] = useState("");
+  const [therapistId, setTherapistId] = useState('');
+  const [formData, setFormData] = useState({recurring: false});
+ 
+
+  const { status, error } = useSelector((state: RootState) => ({
+    status: state.availableSlot?.status,
+    error: state.availableSlot?.error,
   }));
 
-    // Add useEffect to handle status changes
-  useEffect(()=>{
-    if(status==='succeeded'){
-      message.success("Appointment successfully");
+  // Add useEffect to handle status changes
+  useEffect(() => {
+    if (status === 'succeeded') {
+      message.success("Appointment slot successfully created");
       setModalVisible(false);
-      form. resetFields();
+      form.resetFields();
+      dispatch(resetStatus());
+    } else if (status === 'rejected' && error) {
+      message.error(error || "Failed to create appointment");
+      dispatch(resetStatus());
     }
-    else if(status==='rejected'&& error){
-      message.error("Failed to schedule appointment: "+error);
-     
+  }, [status, error, form, dispatch]);
+  
+  
+
+   //  useEffect to get TherapistId from localStorage when component mounts
+   useEffect(() => {
+    const storedTherapistId = localStorage.getItem('TherapistId');
+    if (storedTherapistId) {
+      console.log("Retrieved Therapist LoggedIn ID:", storedTherapistId);
+      setTherapistId(storedTherapistId);
+      form.setFieldsValue({
+        TherapistId: storedTherapistId,
+      });
     }
-  },[status, error, form]);
-
-// useEffect for handling patient data
-
-
-  useEffect(()=>{
-    if(patientId){
-      const fetchAppData =async()=>{
-        try{
-       const result=await dispatch(getPatientById(patientId));
-       if(getPatientById.fulfilled.match(result)){
-        const userData = result.payload;
-        form.setFieldsValue({
-          name: userData.name,
-        });
-       }
-        }
-        catch(error){
-          message.error("Failed to get patient data: "+error);
-        }
-  };
-  fetchAppData();
-}
-},[dispatch, form]);
-
-// the following Effect is for getting the therapist
-
-  useEffect(()=>{
-    if(therapistId){
-      const featchTherapy=async()=>{
-        try{
-       const result=await dispatch(fetchTherapy(therapistId));
-       if(fetchTherapy.fulfilled.match(result)){
-        const therapyData = result.payload;
-        form.setFieldsValue({
-        typeApp: therapyData.type,
-        duration: therapyData.duration,
-        });
-       }
-      }
-       catch(error){
-          message.error("Failed to get therapist data: "+error);
-        }
-    }
-    featchTherapy();
-  }},[dispatch,form]);
-
+  }, [form]);
+  
 
   const [appointmentData, setAppointmentData] = useState({
-    Schedule: [
-      {
-        name: "John Doe",
-        session: "Therapy Session",
-        type: "General checkup",
-        time: "09:00",
-        duration: "30 minutes",
-        statusApp: "confirmed",
-      },
-      {
-        name: "Placide Ikundabayo",
-        session: "General checkup",
-        type: "General checkup",
-        time: "11:00",
-        duration: "30 minutes",
-        statusApp: "pending",
-      },
-    ],
+  AllPatients:[],
+    Schedule: [],
     // Placeholder for other button data
     MyAppointments: [
       {
@@ -121,34 +73,7 @@ const [therapistId, setTherapistId] = useState(null);
         patient: "John Doe",
         therapist: "Placide Ikundabayo",
         statusApp: "completed",
-      },
-      {
-        id: 2,
-        date: "oct 29 2024",
-        time: "10:00",
-        duration: "45 minutes",
-        patient: "Jane Smith",
-        therapist: "Bob Johnson",
-        statusApp: "Pending",
-      },
-      {
-        id: 3,
-        date: "oct 30 2024",
-        time: "11:00",
-        duration: "60 minutes",
-        patient: "Alice Johnson",
-        therapist: "Bob Johnson",
-        statusApp: "waiting",
-      },
-      {
-        id: 4,
-        date: "oct 31 2024",
-        time: "12:00",
-        duration: "45 minutes",
-        patient: "Bob Johnson",
-        therapist: "Alice Johnson",
-        statusApp: "canceled",
-      },
+      }
     ],
     Notifications: [],
   });
@@ -165,162 +90,47 @@ const [therapistId, setTherapistId] = useState(null);
     form.resetFields();
     dispatch(resetStatus());
   };
-  const handleResert=()=>{
-    form.resetFields();
-    dispatch(resetStatus());
-  }
 // function to handle form submission
-
-const handleSubmit=async()=>{
-  // handle form submission logic here
-
-  try{
-  const AppointmentData={
+const handleSubmit = async (values) => {
+  try {
   
-    therapistId:therapistId,
-    patientId: patientId,
-    name: name,
-    date: date,
-    startTime: startTime,
-    endTime: endTime,
-    appointmentType:typeApp,
-    statusApp: statusApp,
-    duration:parseInt(duration),
-    location: location || 'DefaultLocation',
-    notes: notes,
-  };
-    console.log("that is data to be submitted", AppointmentData);
-    const result=await dispatch(CreateAppointment(AppointmentData));
-    console.log("Server Patient response:", result);
-}
-  catch(error){
-    message.error("Failed to create Appointment: " + error.message);
-    form.resetFields();
+
+    const appointmentData = {
+      therapistId,
+      startTime: new Date(`${values.date}T${values.startTime}`).toISOString(), 
+      endTime: new Date(`${values.date}T${values.endTime}`).toISOString(),
+      recurring: values.recurring || formData.recurring,
+      date: values.date,
+      availableDay: values.availableDay,
+      timeZone: values.timeZone,
+    };
+
+    await dispatch(createAvailableSlot(appointmentData));
+    if (status === 'succeeded') {
+      dispatch(getAvailableSlot());  // Refresh the list after successful creation
+  } 
+  } catch (error) {
+    message.error("Failed to create appointment: " + error.message);
   }
 };
-
-
-
   const renderScheduleContent = () => (
     <div className="bg-white rounded-lg shadow-xl border p-6 mt-3">
-      {/* the following is for days schedule */}
-
-      <h1 className="text-black text-lg font-semibold ">
-        {" "}
-        Schedule Management
-      </h1>
-      <div className="bg-white rounded-lg shadow-xl border p-6 mt-3">
-        <h1 className="text-black text-lg">Schedule Appointment</h1>
-        {/* days */}
-
-        <div className="flex flex-row gap-4 m-3">
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            Monday
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            Tuesday
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            Wednesday
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            Thursday
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            Friday
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            Saturday
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            Sunday
-          </button>
-        </div>
-        <h1 className=" text-black text-lg"> Available Time Slot</h1>
-        {/* time slots */}
-        <div className="flex flex-row gap-4 m-3">
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            09:00 - 10:00
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            10:00 - 11:00
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            11:00 - 12:00
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            12:00 - 13:00
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            13:00 - 14:00
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            14:00 - 15:00
-          </button>
-          <button className="border-2 border-gray-200 text-black p-2 rounded-md">
-            15:00 - 16:00
-          </button>
-        </div>
+      <div className="flex flex-row justify-between">
+      <h1 className="text-2xl capitalize text-black font-semibold">Appointment Availlable Slots </h1>
+      <button className="bg-purple-600 text-white p-2 rounded font-semibold flex flex-row gap-2" onClick={showModal}><FaCalendar size={20} />Add New Slot</button>
       </div>
-
-      {/* This is schedule of the Day */}
-      <h1 className="text-black text-lg font-semibold mt-10">
-        Today's Schedule
-      </h1>
-      {appointmentData.Schedule.map((item, index) => (
-        <div
-          key={index}
-          className="bg-white rounded-lg flex flex-row justify-between border-2 p-6 mt-3"
-        >
-          <div className="ml-2">
-            <p className="text-black text-sm font-semibold flex flex-row gap-2">
-              <FaUser size={23} /> {item.name} - {item.session}
-            </p>
-            <p className="text-gray-500 text-sm">{item.type}</p>
-            <input
-              type="time"
-              className="w-full p-1 border rounded text-black my-2"
-              value={item.time}
-              onChange={(e) => {
-                const updatedData = [...appointmentData.Schedule];
-                updatedData[index].time = e.target.value;
-                setAppointmentData((prev) => ({
-                  ...prev,
-                  Schedule: updatedData,
-                }));
-              }}
-            />
-            <p className="text-black text-sm flex flex-row my-2"><BiTime size={18}/>Duration: {item.duration}</p>
-            <div className="my-2">
-              <button className="text-white text-sm bg-purple-700 p-1 rounded">
-                ReSchedule
-              </button>
-              <button className="text-white text-sm bg-red-500 m-1 p-1 rounded ml-2">
-                Cancel
-              </button>
-              <button className="text-white text-sm bg-gray-500 m-1 p-1 rounded">
-                Remainder
-              </button>
-            </div>
-          </div>
-          <p
-            className={`text-green-900 italic m-5 p-2 ${
-              item.statusApp === "confirmed" ? "text-green-500" : "text-orange-500"
-            }`}
-          >
-            {item.statusApp}
-          </p>
-        </div>
-      ))}
-    </div>
+    <div className="bg-white rounded-lg shadow-xl border p-6 mt-3">
+      <h1 className="text-black">No appointment availlable</h1>
+      </div>
+  </div>
   );
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
       {/* Button selection */}
       <div className="flex flex-row gap-9">
-        {[
-          "Schedule",
+        {[ "AllPatients",
+          "Availlable Slots",
           "My Appointments",
           "Notifications",
         ].map((buttonName) => (
@@ -337,22 +147,12 @@ const handleSubmit=async()=>{
           </button>
         ))}
       </div>
-
+    {activeButton === "AllPatients" && <PatientsList/>}
       {/* Conditional content based on active button */}
-      {activeButton === "Schedule" && renderScheduleContent()}
+      {activeButton === "Availlable Slots" && renderScheduleContent()}
 
       {activeButton === "My Appointments" && (
         <div className="bg-white rounded-lg shadow-xl p-6 mt-3">
-          <div className="flex flex-row justify-between">
-            <h1 className="text-black text-lg font-semibold">
-              List of All My Appointments
-            </h1>
-            <button className="bg-purple-700 text-md text-white p-2 rounded flex flex-row gap-1 mb-3" onClick={showModal}>
-              <FaCalendar size={20} /> create new Appointment
-            </button>
-          </div>
-
-
             {/* List of all appointments */}
             {appointmentData.MyAppointments.map((item, index) => (
               <div
@@ -425,42 +225,48 @@ const handleSubmit=async()=>{
               </div>
             ))}
           </div>
-        // </div>
+       
       )}
 
 <Modal open={modalVisible} footer={null} onCancel={handleCancel} >
   <Form form={form} className="bg-white rounded p-6"
   layout="vertical" onFinish={handleSubmit}>
     <h1 className="text-black text-lg font-semibold my-2 text-center">
-      Create New Appointment
+      Create New Appointment Slot
     </h1>
-    <div className="grid grid-cols-2 gap-2">
+  
     <Form.Item
-      label="Patient Name"
-      name="name"
-      // rules={[{ required: true, message: "Please enter the patient's name" }]}
-    > 
-      <Input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Enter Patient Name"
-        className="w-full p-1 border rounded "
-      />
-    </Form.Item>
+  label="TherapyId"
+  name="TherapistId"
+>
+  <Input
+    type="text"
+    value={therapistId} 
+    readOnly
+    className="w-full p-1 border rounded text-black bg-red-100"
+  />
+</Form.Item>
 
-    <Form.Item
-      label="Date"
-      name="date"
-      // rules={[{ required: true, message: "Please select a date" }]}
+   <Form.Item
+   label="Availlable Day"
+   name="availableDay"
+   // rules={[{ required: true, message: "Please select a day" }]}
     >
-      <Input
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-        className="w-full p-1  border rounded"
-      />
+      <Select
+        value={availableDay}
+        onChange={(value) => setavailableDay(value)}
+        className="w-full p-1  rounded"
+      >
+        <Select.Option value="Monday">Monday</Select.Option>
+        <Select.Option value="Tuesday">Tuesday</Select.Option>
+        <Select.Option value="Wednesday">Wednesday</Select.Option>
+        <Select.Option value="Thursday">Thursday</Select.Option>
+        <Select.Option value="Friday">Friday</Select.Option>
+        <Select.Option value="Saturday">Saturday</Select.Option>
+        <Select.Option value="Sunday">Sunday</Select.Option>
+      </Select>
     </Form.Item>
-
+<div className="grid grid-cols-2 gap-2">
     <Form.Item
       label="Start Time"
       name="startTime"
@@ -486,99 +292,49 @@ const handleSubmit=async()=>{
         className="w-full p-1 border rounded"
       />
     </Form.Item>
-
-    <Form.Item
-      label="Appointment Type"
-      name="type"
-      // rules={[{ required: true, message: "Please select an appointment type" }]}
-    >
-      <Select
-        value={typeApp}
-        onChange={(value) => setTypeApp(value)}
-        className="w-full p-1  rounded"
-      >
-        <Select.Option value="General checkup">General checkup</Select.Option>
-        <Select.Option value="Routine checkup">Routine checkup</Select.Option>
-        <Select.Option value="Follow-up checkup">Follow-up checkup</Select.Option>
-        <Select.Option value="Physical therapy">Physical therapy</Select.Option>
-      </Select>
-    </Form.Item>
-
-    <Form.Item
-      label="Status"
-      name="statusApp"
-      // rules={[{ required: true, message: "Please select a status" }]}
-    >
-      <Select
-        value={statusApp}
-        onChange={(value) => setStatusApp(value)}
-        className="w-full p-1  rounded"
-      >
-        <Select.Option value="scheduled">Scheduled</Select.Option>
-        <Select.Option value="completed">Completed</Select.Option>
-        <Select.Option value="waiting">Waiting</Select.Option>
-        <Select.Option value="pending">Pending</Select.Option>
-        <Select.Option value="canceled">Canceled</Select.Option>
-      </Select>
-    </Form.Item>
-
-    <Form.Item
-      label="Duration (Minutes)"
-      name="duration"
-      // rules={[{ required: true, message: "Please specify duration in minutes" }]}
-    >
-      <Input
-        type="number"
-        value={duration}
-        onChange={(e) => setDuration(e.target.value)}
-        className="w-full p-1 border rounded"
-        placeholder="Minutes"
-      />
-    </Form.Item>
-    <Form.Item
-      label="location (place)"
-      name="location"
-      // rules={[{ required: true, message: "Please specify duration in minutes" }]}
-    >
-      <Input
-        type="text"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-        className="w-full p-1 border rounded"
-        placeholder="place"
-      />
-    </Form.Item>
     </div>
-    <Form.Item label="Notes" name="notes">
-      <Input.TextArea
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        placeholder="Text information here ...."
+  <Form.Item
+  label="Date"
+  name="date"
+      // rules={[{ required: true, message: "Please select a date" }]}
+      >
+      <Input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
         className="w-full p-1 border rounded"
-        rows={3}
       />
     </Form.Item>
+<Form.Item
+label="Time Zone"
+  name="timeZone"
+      // rules={[{ required: true, message: "Please select a timeZone" }]}
+      >
+      <Select
+        value={timeZone}
+        onChange={(value) => setTimezone(value)}
+        className="w-full p-1  rounded"
+      >
+        <Select.Option value="Africa/Khartoum">Africa/Khartoum</Select.Option>
+        <Select.Option value="America/New_York">America/New_York</Select.Option>
+        <Select.Option value="Asia/Kolkata">Asia/Kolkata</Select.Option>
+        <Select.Option value="Europe/London">Europe/London</Select.Option>
+      </Select>
+    </Form.Item>
+    <Form.Item name="recurring" valuePropName="checked">
+  <Switch checked={formData.recurring} onChange={(checked) => setFormData(prev => ({ ...prev, recurring: checked }))} />
+</Form.Item>
 
-    <Form.Item className="text-right">
-    <Button
-        className="text-sm bg-transparent border-red-500 text-black p-1 rounded mr-2 hover:bg-blue-400"
-        onClick={handleResert}
-      >
-        Resert
-      </Button>
-      <Button
-        className="text-black text-sm bg-transparent border-gray-500 p-1 rounded mr-2"
-        onClick={handleCancel}
-      >
-        Cancel
-      </Button>
-      <Button
-  type="primary"
+
+
+  <Form.Item>
+  <Button
+  className="w-full bg-purple-600 text-white font-semibold"
   htmlType="submit"
-  loading={status === "loading"}
-  disabled={status==="loading"}
+  loading={status === 'loading'}
+  disabled={status === 'loading'}
 >
-  {status === "loading" ? "Creating..." : "Create Appointment"}
+  {status === 'loading' ? "Creating..." : "Create Slot"}
 </Button>
 
     </Form.Item>

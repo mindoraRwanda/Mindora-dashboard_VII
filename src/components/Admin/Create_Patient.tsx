@@ -37,7 +37,9 @@ export default function CreatePatient({ userId, onSuccess }) {
         try {
           const result = await dispatch(featchUserById(userId));
           if (featchUserById.fulfilled.match(result)) {
+            console.log("User data:", result.payload);
             const userData = result.payload;
+
             form.setFieldsValue({
               name: `${userData.firstName || ""} ${userData.lastName || ""}`,
               email: userData.email || "",

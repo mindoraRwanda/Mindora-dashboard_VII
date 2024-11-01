@@ -1,228 +1,161 @@
-import React, { useState } from "react";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
-import { Modal } from "antd";
+import React from "react";
 
-interface User {
-  id: number;
-  action: string;
-  name: string;
-  MilestoneDate: string;
-  TaskDate: string;
-  status: string;
-}
 
-export default function SetGoal() {
-  // Initial list of users
-  const initialUsers: User[] = [
-    {
-      id: 1,
-      action: "Visiting patients",
-      name: "John Doe",
-      Milestonedate: "2024-07-10",
-      TaskDate: "2024-07-18",
-      status: "AHEAD",
-    },
-    {
-      id: 2,
-      action: "Testing patients",
-      name: "Jane Smith",
-      MilestoneDate: "2024-07-21",
-      TaskDate: "2024-07-29",
-      status: "ON TRACK",
-    },
-    {
-      id: 3,
-      action: "Checking patient and report",
-      name: "Bob Johnson",
-      MilestoneDate: "2024-08-11",
-      TaskDate: "2024-08-01",
-      status: "ENDING",
-    },
-  ];
+import { MdCancel } from "react-icons/md";
+import { BiPlus, BiEdit } from "react-icons/bi";
+import { FaTrash } from "react-icons/fa";
+import { Form, Input, Select } from "antd";
+import TextArea from "antd/es/input/TextArea";
 
-  // State to manage the list of users and the user being edited or created
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function TreatmentPlan() {
+  const { form } = Form.useForm();
+     const Goaldata=[
+      {
+        id:1,
+        title: "Goal 1",
+        solt: 1,
+        description: "This is a goal description",
+        status: "Pending"
+      },
+      {
+        id:2,
+        title: "Goal 2",
+        solt: 2,
+        description: "This is a goal description",
+        status: "Completed"
+      },
+      {
+        id:3,
+        title: "Goal 3",
+        solt: 3,
+        description: "This is a goal description",
+        status: "Pending"
+      }
+    ];
 
-  const showModal = (user:user|null) => {
-    setEditingUser(user);
-    setIsModalOpen(true);
-  };
-  const handleCancelModal = () => {
-    setIsModalOpen(false);
-    setEditingUser(null);
-  };
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-6 border">
-      <table className="min-w-full ">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Patient Names
-            </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Plan
-            </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              MilestoneDate
-            </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Task Date
-            </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Milestone Status
-            </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Task Status
-            </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr
-              key={user.id}
-              className="odd:bg-white even:bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 font-medium text-gray-900">
-                  {user.name}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 font-medium text-gray-900">
-                  {user.action}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {user.MilestoneDate}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {user.TaskDate}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {user.status}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {user.status}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500 flex space-x-3">
-                <button
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent  leading-5 font-medium rounded text-white bg-purple-600 hover:bg-blue-700 transition-colors"
-                  title="View more"
-                  onClick={()=>showModal(user)}
-                >
-                  <FaEye className="mr-1" />
-                  View
-                </button>
-                <button
-                  className="inline-flex items-center px-3 py-1.5 border border-purple-600 text-sm leading-5 font-medium rounded text-black bg-transparent hover:bg-white transition-colors"
-                  title="Edit"
-                  onClick={()=>showModal(user)}
-                >
-                  <FaEdit className="mr-1 text-purple-900" />
-                  Edit
-                </button>
-                <button
-                  className="inline-flex items-center px-3 py-1.5 border border-red-500 text-sm leading-5  rounded text-black bg-transparent hover:bg-white transition-colors"
-                  title="Delete"
-                >
-                  <FaTrash className="mr-1 text-red-500" />
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="bg-white rounded shadow-xl border p-6">
+      <div className="text-black flex flex-row">
+        <h1 className="text-white text-3xl w-full p-2 font-semibold bg-purple-600 ">Treatment Plan Management - Goals Management</h1>
+      </div>
+      <div className="bg-white rounded-lg shadow-xl border p-6 mt-5">
+        <h1 className="text-black text-2xl font-semibold ml-6">Create Goals</h1>
+        <Form form={form} className="p-6" layout="vertical">
+          <div className="flex flex-row gap-2">
+            {/* logic for title */}
+            <Form.Item className="w-3/4">
+              <label htmlFor="title">GoalTitle:</label>
+              <Input
+                name="goalTitle"
+                type="text"
+                placeholder="Enter Goal Title"
+              />
+            </Form.Item>
+            {/* logic for solt */}
+            <Form.Item className="w-1/4 rounded">
+              <label htmlFor="sorting">Sorting</label>
+              <Select name="solt" id="solt" className="w-full" defaultValue="1">
+                <Option value="1">Option 1</Option>
+                <Option value="2">Option 2</Option>
+                <Option value="3">Option 3</Option>
+              </Select>
+            </Form.Item>
+          </div>
+          <Form.Item>
+            <label htmlFor="description">Goal Description:</label>
+            <TextArea
+              name="goalDescription"
+              type="text"
+              placeholder="Enter Goal Description"
+            />
+          </Form.Item>
+          {/* logic for date */}
+          <div className="flex flex-row gap-2">
+            <Form.Item className="w-3/4">
+              <label htmlFor="targetDate">TargetDate:</label>
+              <Input name="date" type="date" placeholder="Enter Goal Date" />
+            </Form.Item>
+            {/* logic for status */}
 
-      <Modal visible={isModalOpen} footer={null} onCancel={handleCancelModal}>
-        <h3 className="text-xl font-semibold mb-2">
-          {editingUser ? "Edit Goal" : "Add New Goal"}
-        </h3>
-        <form>
-          <div className="my-3">
-            <label className="block text-sm font-medium text-gray-700">
-              Action
-              <input
-                type="text"
-                name="action"
-                value={editingUser?.action}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 "
-                
-               
-              />
-            </label>
-          </div>
-          <div className="my-3">
-            <label className="block text-sm font-medium text-gray-700">
-              Responsible
-              <input
-                type="text"
-                name="name"
-                value={editingUser?.name}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-           
-              />
-            </label>
-          </div>
-          <div className="my-3">
-            <label className="block text-sm font-medium text-gray-700">
-              Starting Date
-              <input
-                type="date"
-                name="MilestoneDate"
-                value={editingUser?.MilestoneDate}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              />
-            </label>
-          </div>
-          <div className="my-3">
-            <label className="block text-sm font-medium text-gray-700">
-              Ending Date
-              <input
-                type="date"
-                name="TaskDate"
-                value={editingUser?.TaskDate}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-          
-              />
-            </label>
-          </div>
-          <div className="my-3">
-            <label className="block text-sm font-medium text-gray-700">
-              Status
-              <select
+            <Form.Item className="w-1/4 rounded ">
+              <label htmlFor="status">Status:</label>
+              <Select
                 name="status"
-                value={editingUser?.status}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                id="status"
+                className="w-full"
+                defaultValue="Completed"
               >
-                <option value="ON TRACK">ON TRACK</option>
-                <option value="AHEAD">AHEAD</option>
-                <option value="ENDING">ENDING</option>
-              </select>
-            </label>
+                < Select.Option value="Completed">Completed</Select.Option>
+                <Select.Option value="progress">In Progress</Select.Option>
+                <Select.Option value="waiting">Not Started</Select.Option>
+              </Select>
+            </Form.Item>
           </div>
-          <button
-            type="submit"
-            className="mt-2 px-4  text-md w-full py-2 bg-purple-600 text-white rounded-md hover:bg-purple-800 transition-colors"
-          >
-            Save Changes
-          </button>
-        </form>
-      </Modal>
+          {/* logic for button */}
+          <div className="flex flex-row gap-2 mt-5">
+            <button className="text-white bg-purple-600 border w-3/4 border-gray-300 px-2 py-1 rounded justify-center text-xl font-semibold gap-1 flex">
+              <BiPlus size={27}/>
+              Add Goal
+            </button>
+            <button className="text-white bg-red-500 border w-1/4 border-gray-300 px-2 py-1 rounded items-center font-semibold gap-1 flex">
+              <MdCancel size={24} />
+              Cancel
+            </button>
+          </div>
+        </Form>
+      </div>
+      <div className="bg-white rounded-lg shadow-xl border p-6 mt-4">
+        <h1 className="text-black text-2xl font-semibold ">
+          {" "}
+          List Of All Goals
+        </h1>
+        {/* logic for table */}
+        <div className="flex flex-row gap-2 mt-5">
+          <table className="w-full border-collapse">
+            <thead className="border-b-2 ">
+              <tr>
+                <th className="px-2 py-2 text-left text-md font-semibold text-gray-700">
+                  Goals
+                </th>
+                <th className="px-2 py-2 text-left text-md font-semibold text-gray-700">
+                  Description
+                </th>
+                <th className="px-2 py-2 text-left text-md font-semibold text-gray-700">
+                  Status
+                </th>
+                <th className="px-2 py-2 text-left text-md font-semibold text-gray-700">
+                  Operations
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {Goaldata.map((Goal)=>(              <tr className="text-gray-800" key={Goaldata.id}>
+                <td className="px-2 py-3">
+                  <h1 className="text-black">{Goal.title}</h1>
+                </td>
+                <td className="px-2 py-3">
+                  <h1 className="text-black"> {Goal.description}</h1>
+                </td>
+                <td className="px-2 py-3">
+                  <h1 className="text-black"> {Goal.status}</h1>
+                </td>
+                <td className="px-2 py-3">
+                  <div className="flex gap-2">
+                    <button >
+                      <BiEdit size={25} color="purple" />
+                    </button>
+                    <button >
+                      <FaTrash size={23} color="red" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // import { BiClinic } from "react-icons/bi";
-import { BiClinic } from "react-icons/bi";
+
 import {
   FaCalendarAlt,
   FaVideo,
@@ -66,7 +66,7 @@ export default function Sidebar({ userRole, setActiveComponent }) {
                onClick={() => toggleDropdown("TreatmentPlan")}
                className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
              >
-               <FaCalendarCheck className="mr-3" /> Treatment Plan <GoChevronDown className="ml-1" />
+               <FaCalendarCheck className="mr-3" /> Treatment Plan Management <GoChevronDown className="ml-1" />
              </a>
              {openDropdown === "TreatmentPlan" && (
                <div className="ml-6">
@@ -74,13 +74,19 @@ export default function Sidebar({ userRole, setActiveComponent }) {
                    onClick={() => setActiveComponent("TreatmentPlan")}
                    className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
                  >
-                   <p className="flex"><LuDot className="m-1" />Treatment Plan Operations</p>
+                   <p className="flex"><LuDot className="m-1" />Treatment Plan</p>
                  </a>
                  <a
                    onClick={() => setActiveComponent("SetGoal")}
                    className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
                  >
-                   <p className="flex"><LuDot className="m-1 text-sm" /> Treatment Details</p>
+                   <p className="flex"><LuDot className="m-1 text-sm" /> Treatment Goals</p>
+                 </a>
+                 <a
+                   onClick={() => setActiveComponent("SetMilestones")}
+                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
+                 >
+                   <p className="flex"><LuDot className="m-1 text-sm" /> Treatment Milestones</p>
                  </a>
                </div>
              )}

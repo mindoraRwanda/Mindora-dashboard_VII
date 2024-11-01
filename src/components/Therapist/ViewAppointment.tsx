@@ -231,18 +231,7 @@ const handleSubmit = async (values) => {
     <h1 className="text-black text-lg font-semibold my-2 text-center">
       Create New Appointment Slot
     </h1>
-{/*   
-    <Form.Item
-  label="TherapyId"
-  name="TherapistId"
->
-  <Input
-    type="text"
-    value={therapistId} 
-    readOnly
-    className="w-full p-1 border rounded text-black bg-red-100"
-  />
-</Form.Item> */}
+
 
    <Form.Item
    label="Availlable Day"

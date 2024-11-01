@@ -10,6 +10,7 @@ import PatientMessages from '../components/Therapist/PatientMessages';
 import TreatmentPlanupdate from '../components/Therapist/TreatmentPlanupdate';
  import SetGoal from '../components/Therapist/SetGoal';
 import TrackPatient from '../components/Therapist/TrackPatient';
+ import SetMilestone from '../components/Therapist/SetMilestones';
 
 const UserRole = {
   THERAPIST: "therapist",
@@ -39,6 +40,8 @@ export default function DashboardPage() {
         return <PatientMessages />;
       case 'reports':
         return <Reports />;
+        case 'SetMilestones':
+          return <SetMilestone/>
       default:
        return <AppointmentList />;
     }

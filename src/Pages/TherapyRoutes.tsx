@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Home from '../components/Therapist/Home';
  import Sidebar from '../components/Sidebar';
  import TopBar from '../components/TopBar';
-import AppointmentList from '../components/Therapist/ViewAppointment';
+import ManageAppointMents from '../components/Therapist/Appointment AvaillableSlot';
  import VideoCall from '../components/Therapist/VideoCall';
 import Reports from '../components/Therapist/Reports';
 import PatientsList from '../components/Therapist/PatientsList';
@@ -11,6 +11,8 @@ import TreatmentPlanupdate from '../components/Therapist/TreatmentPlanupdate';
  import SetGoal from '../components/Therapist/SetGoal';
 import TrackPatient from '../components/Therapist/TrackPatient';
  import SetMilestone from '../components/Therapist/SetMilestones';
+import Appointmets from '../components/Therapist/Appointmets';
+import AppointmentChange from '../components/Therapist/Appointment Change';
 
 const UserRole = {
   THERAPIST: "therapist",
@@ -32,8 +34,8 @@ export default function DashboardPage() {
       return <SetGoal />;
       case 'TrackPatient':
       return <TrackPatient />;
-      case 'appointments':
-       return <AppointmentList />;
+      case 'AvaillableSlots':
+       return <ManageAppointMents />;
       case 'Patients':
        return <PatientsList />;
       case 'Messages':
@@ -42,6 +44,10 @@ export default function DashboardPage() {
         return <Reports />;
         case 'SetMilestones':
           return <SetMilestone/>
+          case 'Appointmets':
+            return <Appointmets/>
+            case 'Appointment Changes':
+              return<AppointmentChange/>
       default:
        return <AppointmentList />;
     }

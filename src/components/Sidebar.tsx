@@ -58,9 +58,36 @@ export default function Sidebar({ userRole, setActiveComponent }) {
               <a onClick={() => setActiveComponent("Home")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
              <FaHome className="mr-3" /> Home
            </a>
-           <a onClick={() => setActiveComponent("appointments")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
-             <FaCalendarAlt className="mr-3" /> View MyAppointments
-           </a>
+           <div className="relative">
+             <a
+               onClick={() => toggleDropdown("appointments")}
+               className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
+             >
+               <FaNotesMedical className="mr-3" /> Appointments Management <GoChevronDown className="ml-1" />
+             </a>
+             {openDropdown === "appointments" && (
+               <div className="ml-6">
+                 <a
+                   onClick={() => setActiveComponent("AvaillableSlots")}
+                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
+                 >
+                   <p className="flex"><LuDot className="m-1" /> Availlable slots</p>
+                 </a>
+                 <a
+                   onClick={() => setActiveComponent("Appointmets")}
+                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
+                 >
+                   <p className="flex"><LuDot className="m-1 text-sm" /> Appointments</p>
+                 </a>
+                 <a
+                   onClick={() => setActiveComponent("Appointment Changes")}
+                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
+                 >
+                   <p className="flex"><LuDot className="m-1 text-sm" /> Appointment Changes</p>
+                 </a>
+               </div>
+             )}
+           </div>
            <div className="relative">
              <a
                onClick={() => toggleDropdown("TreatmentPlan")}

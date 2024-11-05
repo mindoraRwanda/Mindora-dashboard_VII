@@ -47,6 +47,7 @@ export default function ManageAppointMents() {
       setEditMOdal(false);
       form.resetFields();
       dispatch(resetStatus());
+      dispatch(getAllAvailableSlot());
     } else if (status === "rejected" && error) {
       message.error(error || "Failed to create appointment");
       dispatch(resetStatus());

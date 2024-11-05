@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, message } from "antd";
-// import { AiOutlineSave } from "react-icons/ai";
-import { MdCancel } from "react-icons/md";
+import { Button, Form, Input, message, Select } from "antd";
+import { AiOutlineSave } from "react-icons/ai";
+// import { MdCancel } from "react-icons/md";
 import { BiTime } from "react-icons/bi";
 import { FaUser, FaSync, FaTrash } from "react-icons/fa";
 import PatientsList from "./PatientsList";
 import { useDispatch, useSelector } from "react-redux";
 import { getPatientById } from "../../Redux/Adminslice/PatientSlice";
 import { createPlan,resetStatus} from "../../Redux/TherapistSlice/TreatmentPlan";
+import { RootState } from "../../Redux/store";
 
 
 export default function TreatmentPlan() {
   const [activeButton, setActiveButton] = useState("All Patients");
 
-  const { status } = useSelector((state: RootState) => ({
+  const { status,error} = useSelector((state: RootState) => ({
     status: state.treatmentPlan?.status,
-    error: state.treatmentPlan?.error,
+    error: state.treatmentPlan?.error
+
   }));
   const [form] = Form.useForm();
   const dispatch = useDispatch();
@@ -61,29 +63,42 @@ export default function TreatmentPlan() {
   const handleCreatePlan = async (values) => {
     try {
       const formData = {
-        TherapistId: values.TherapistId,
+        therapistId: values.TherapistId,
         patientId: values.patientId,
         startDate: new Date(values.startDate).toISOString(),
         endDate: new Date(values.endDate).toISOString(),
         title: values.treatmentTitle,
         description: values.description,
-        status: values.status,
+        statusInput: values.status,
       };
-      // Add new treatment plan to database
       const result = await dispatch(createPlan(formData));
       if (createPlan.fulfilled.match(result)) {
-        message.success("Treatment plan created successfully!");
         form.resetFields();
-        dispatch(resetStatus);
+        dispatch(resetStatus());
         setActiveButton("All Patients");
       } else if (createPlan.rejected.match(result)) {
         message.error("Failed to create treatment plan.");
-        dispatch(resetStatus);
+        dispatch(resetStatus());
       }
     } catch (error) {
-      message.destroy("Failed to create treatment plan:", error.message);
+      message.error(`Failed to create treatment plan: ${error.message}`);
     }
   };
+  
+
+  // Ensure form handling is clear and status reset happens after submission
+useEffect(() => {
+  if (status === "succeeded") {
+    message.success("Treatment plan created successfully!");
+    form.resetFields();
+    dispatch(resetStatus());
+    setActiveButton("All Patients");
+  } else if (status === "rejected"&& error) {
+    message.error(error||"Failed to create treatment plan.");
+    dispatch(resetStatus());
+  }
+}, [status, dispatch, form, error]);
+
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [TreatmentData, setTreatmentData] = useState({
@@ -99,19 +114,7 @@ export default function TreatmentPlan() {
         description: " This time we are going to do some test",
         therapist: "Placide Ikundabayo",
         statusApp: "completed",
-      },
-      {
-        id: 1,
-        date: "oct 28 2024",
-        startTime: "09:00",
-        endTime: "09:00",
-        duration: "30 minutes",
-        patient: "John Doe",
-        title: "Mental checking",
-        description: " This time we are going to do some test",
-        therapist: "Placide Ikundabayo",
-        statusApp: "Pending",
-      },
+      }
     ],
   });
 
@@ -144,12 +147,12 @@ export default function TreatmentPlan() {
       ;
       {activeButton === "Create Plan" && (
         <div className="bg-white rounded-lg shadow-xl border p-6 mt-3">
-          <Form
-            form={form}
-            className="bg-white rounded "
-            layout="vertical"
-            onFinish={handleCreatePlan}
-          >
+         <Form
+          form={form}
+          className="bg-white rounded p-6"
+          layout="vertical"
+          onFinish={handleCreatePlan}
+        >
             <h1 className="text-black text-2xl font-semibold mb-5 ">
               Create Patient Plan
             </h1>
@@ -166,41 +169,45 @@ export default function TreatmentPlan() {
             <Form.Item label="Description:" name="description">
               <Input type="textarea" placeholder="Enter description..." />
             </Form.Item>
-            <Form.Item label="Start Date:" name="startDate">
-              <Input type="date" placeholder="Enter startDate..." />
+            <div className="flex gap-2">
+            <Form.Item label="Start Date:" name="startDate" className="w-1/2">
+              <Input type="date" placeholder="Enter startDate..."  />
             </Form.Item>
-            <Form.Item label="End Date:" name="endDate">
+            <Form.Item label="End Date:" name="endDate" className="w-1/2">
               <Input type="date" placeholder="Enter endDate..." />
             </Form.Item>
+            </div>
             <Form.Item label="Status:">
-              <select name="status" id="status" className="w-full border p-2">
-                <option value="">Select Status</option>
-                <option value="Active">Pending</option>
-                <option value="Inactive">Ongoing</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
-              </select>
+              <Select name="status" id="status" className="w-full">
+                <Select.Option value="">Select Status</Select.Option >
+                <Select.Option  value="Active">Pending</Select.Option >
+                <Select.Option  value="Inactive">Ongoing</Select.Option >
+                <Select.Option  value="Completed">Completed</Select.Option >
+                <Select.Option  value="Cancelled">Cancelled</Select.Option >
+              </Select>
             </Form.Item>
-          </Form>
-
-          <Form.Item className="flex justify-between">
-            <Button
-              className="w-3/4 bg-purple-600 px-10 text-white font-semibold"
+         
+       <div className="flex gap-2">
+         <Form.Item>
+           <Button
+              className="w-full bg-purple-600 text-white font-semibold"
               htmlType="submit"
-              loading={status === "loading"} 
+              loading={status === "loading"}
               disabled={status === "loading"}
             >
-              {status === "loading" ? "Creating..." : "Create Treatment Plan"}
+            <AiOutlineSave/>  {status === "loading" ? "Creating..." : "Create Treatment Plan"}
             </Button>
-
-            <Button
-              className="border-red-400 border text-white bg-red-500 px-10 rounded
-               font-semibold flex flex-row gap-1 w-1/4 hover:bg-red-600"
+            </Form.Item>
+            </div>
+            </Form>
+  
+            {/* <Button className="bg-red-500 text-white w-1/3"
               onClick={() => form.resetFields()} // Reset form or add cancel action
             >
               <MdCancel size={22} /> Cancel
-            </Button>
-          </Form.Item>
+            </Button> */}
+   
+            
         </div>
       )}
       ;

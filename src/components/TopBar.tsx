@@ -15,7 +15,7 @@ export default function TopBar({ userRole, items = [], }) {
 
   useEffect(() => {
     setFilteredItems(items);
-  }, []);
+  }, [items]);
 
   const navigate = useNavigate();
   
@@ -48,7 +48,7 @@ export default function TopBar({ userRole, items = [], }) {
     <header className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <h1 className=" lg:text-2xl font-semibold text-purple-600 sm:text-sm md:text-sm">
-          {userRole === "therapist" ? t('therapist_dashboard') : t('admin_dashboard')}
+          {userRole === "therapist" ? t('Therapist_dashboard') : t('Admin_dashboard')}
         </h1>
 
         <div className="flex gap-4 items-center">

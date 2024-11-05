@@ -5,9 +5,7 @@ import UserReducer from './Adminslice/UserSlice';
 import PatientReducer from './Adminslice/PatientSlice';
 import AppointmentReducer from './TherapistSlice/Appointment';
 import AvailableSlotReducer from './TherapistSlice/Appointment_Slot';
-
-
-
+import treatmentPlanReducer from './TherapistSlice/TreatmentPlan';
 
 const store = configureStore({
   reducer: {
@@ -17,7 +15,7 @@ const store = configureStore({
     patients: PatientReducer,
     appointment: AppointmentReducer,
     availableSlot:AvailableSlotReducer,
-   
+    treatmentPlan:treatmentPlanReducer,
   },
 });
 

@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import Login from './Pages/Login';
 import AdminDashboard from './Pages/Routes';
-import TherapyDashboard from './Pages/TherapyDashboard';
+import TherapyDashboard from './Pages/TherapyRoutes';
 import ForgotPassword from './Pages/forgot-password';
 import { ResetPassword } from './Pages/resertPassword';
-import ViewAppointment from '../src/components/Therapist/ViewAppointment';
+import ViewAppointment from './components/Therapist/Appointment AvaillableSlot';
 
 function App() {
   return (

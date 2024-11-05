@@ -201,8 +201,8 @@ export default function AdminPatientsList() {
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
-      <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-semibold mb-4 text-purple-600">List of Patients</h2>
+      <div className="flex justify-between ">
+        <h2></h2>
         <div className="items-center border rounded bg-white flex float-right">
           <input
             type="text"

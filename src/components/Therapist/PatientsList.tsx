@@ -13,7 +13,7 @@ import * as XLSX from 'xlsx';
 import { useDispatch, useSelector } from "react-redux";
 import { allPatients, deletePatient,updatePatient } from "../../Redux/Adminslice/PatientSlice";
 
-export default function PatientsList() {
+export default function PatientsList({goToPlan}) {
 
   const patient = useSelector((state) => state.patients.patients); 
   const status = useSelector((state) => state.patients.status);
@@ -28,12 +28,15 @@ export default function PatientsList() {
   const itemsPerPage = 4;
   const dispatch=useDispatch();
 
+// This used to get all patient in system
   useEffect(() => {
     if (status === "idle") {
       dispatch(allPatients());
     }
   }, [dispatch,status]); 
 
+
+  // This used for status change
   useEffect(() => {
     if (status === "succeeded") {
       setFilteredPatient(patient);
@@ -78,7 +81,6 @@ export default function PatientsList() {
     const confirmed = window.confirm('Do you want to delete patient ?');
     if (confirmed) {
    try{
-
     dispatch(deletePatient(patientId));
     message.success('Patient Deleted successfully');
     dispatch(allPatients()); // Refresh the patient list
@@ -126,6 +128,11 @@ export default function PatientsList() {
     });
   };
 
+  // function to get individual patient information
+
+
+
+// Function to Update the Patient
   const handleUpdate = async (selectedPatient) => {
     const confirmed = window.confirm("Are you sure you want to update this patient?");
     if (confirmed) {
@@ -202,7 +209,7 @@ export default function PatientsList() {
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
       <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-semibold mb-4 text-purple-600">List of Patients</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-purple-600"></h2>
         <div className="items-center border rounded bg-white flex float-right">
           <input
             type="text"
@@ -210,7 +217,7 @@ export default function PatientsList() {
             placeholder="Search"
             value={searchQuery}
             onChange={handleSearch}
-            className="rounded-l outline-none text-black m-3"
+            className="rounded outline-none text-black -m-3 pl-6 "
           />
           <button
             type="submit"
@@ -222,11 +229,11 @@ export default function PatientsList() {
       </div>
 
       <div className="flex gap-4 mb-8">
-        {/* <div className="flex float-left border-2 border-slate-300 rounded-md mt-4">
+        <div className="flex float-left border-2 border-slate-300 rounded-md mt-4">
           <button onClick={showModal} className="text-white font-bold p-2 px-2 cursor-pointer bg-purple-600 rounded-md">
             + Add New
           </button>
-        </div> */}
+        </div>
         <div className="flex ml-auto gap-3 rounded-md mt-4">
           <button
             className="text-white font-bold border-2 border-slate-300 p-2 cursor-pointer bg-purple-600 rounded-md flex"
@@ -276,6 +283,9 @@ export default function PatientsList() {
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Select
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -319,6 +329,11 @@ export default function PatientsList() {
                     <MdDelete size={25} />
                     
                   </button>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                  <button className="bg-purple-600 text-white p-2 rounded font-semibold" onClick={()=>goToPlan(patient.id)}>Select To Plan</button>
                 </div>
               </td>
             </tr>

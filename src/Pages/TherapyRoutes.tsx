@@ -2,26 +2,17 @@ import React, { useState } from 'react';
 import Home from '../components/Therapist/Home';
  import Sidebar from '../components/Sidebar';
  import TopBar from '../components/TopBar';
-import AppointmentList from '../components/Therapist/ViewAppointment';
+import ManageAppointMents from '../components/Therapist/Appointment AvaillableSlot';
  import VideoCall from '../components/Therapist/VideoCall';
 import Reports from '../components/Therapist/Reports';
-// import Settings from './Components/Therapist/Settings';
 import PatientsList from '../components/Therapist/PatientsList';
 import PatientMessages from '../components/Therapist/PatientMessages';
 import TreatmentPlanupdate from '../components/Therapist/TreatmentPlanupdate';
  import SetGoal from '../components/Therapist/SetGoal';
 import TrackPatient from '../components/Therapist/TrackPatient';
-// import Recommendations from './Components/Therapist/Recommandation';
-// import PatientChart from './Components/Therapist/PatientChart';
-// import SearchingPatient from './Components/Therapist/SearchingPatient'; // Updated import path
-// import ClinicRecord from './Components/Therapist/ClinicRecord';
-// import PatientsSurvey from './Components/Therapist/PatientsSurvey';
-// import Emergency from './Components/Therapist/Emergency';
-// import EducationResource from './Components/Therapist/EducationResources';
-// import Invoice from './Components/Therapist/Invoice';
-// import Chat from './Components/Therapist/Chat';
-// import NotificationsPage from './Components/Therapist/Notification';
-// import SendNotificationPage from './Components/Therapist/SendNotification';
+ import SetMilestone from '../components/Therapist/SetMilestones';
+import Appointmets from '../components/Therapist/Appointmets';
+import AppointmentChange from '../components/Therapist/Appointment Change';
 
 const UserRole = {
   THERAPIST: "therapist",
@@ -37,44 +28,26 @@ export default function DashboardPage() {
         return <Home />
         case 'videoCall':
           return <VideoCall />
-      // case 'sendNot':
-      //   return <SendNotificationPage />;
-      // case 'Notification':
-      //   return <NotificationsPage />;
-      // case 'Emegency':
-      //   return <Emergency />;
-      // case 'patients feedback':
-      //   return <PatientsSurvey />;
-      // case 'Record':
-      //   return <ClinicRecord />;
-      // case 'Searching':
-      //   return <SearchingPatient />;
       case 'TreatmentPlan':
       return <TreatmentPlanupdate />;
       case 'SetGoal':
       return <SetGoal />;
       case 'TrackPatient':
       return <TrackPatient />;
-      // case 'Recommandation':
-      //   return <Recommendations />;
-      // case 'patientChat':
-      //   return <PatientChart />;
-      // case 'Chat':
-      //   return <Chat />;
-      case 'appointments':
-       return <AppointmentList />;
+      case 'AvaillableSlots':
+       return <ManageAppointMents />;
       case 'Patients':
        return <PatientsList />;
       case 'Messages':
         return <PatientMessages />;
       case 'reports':
         return <Reports />;
-      // case 'invoice':
-      //   return <Invoice />;
-      // case 'education':
-      //   return <EducationResource />;
-      // case 'settings':
-      //   return <Settings />;
+        case 'SetMilestones':
+          return <SetMilestone/>
+          case 'Appointmets':
+            return <Appointmets/>
+            case 'Appointment Changes':
+              return<AppointmentChange/>
       default:
        return <AppointmentList />;
     }

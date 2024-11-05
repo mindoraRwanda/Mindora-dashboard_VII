@@ -44,8 +44,8 @@ export const allPatients = createAsyncThunk('getPatients',
         }
     }
 );
-// the following is for getting single patient
 
+// the following is for getting single patient
 export const getPatientById = createAsyncThunk('getPatientById',
     async (id, { rejectWithValue }) => {
         try {

@@ -55,10 +55,10 @@
     // Logics for deleting TreatmentPlans
 
     export const deleteTreatmentPlan=createAsyncThunk('deletePlan/delete',
-        async(id,{rejectWithValue})=>{
+        async(id:string,{rejectWithValue})=>{
             try{
                 const response=await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment_plans/${id}`);
-                return response.id;
+                return response.data;
             }
             catch (err){
                 return rejectWithValue(err.message);

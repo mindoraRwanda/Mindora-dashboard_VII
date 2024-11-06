@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Input, message, Modal, Select } from "antd";
 import { AiOutlineSave } from "react-icons/ai";
 import { MdCancel } from "react-icons/md";
+// import { BiTime } from "react-icons/bi";
 import { FaSync, FaTrash } from "react-icons/fa";
 import PatientsList from "./PatientsList";
 import { useDispatch, useSelector } from "react-redux";
@@ -77,6 +78,13 @@ export default function TreatmentPlan() {
     getTreatmentData();
   }, [dispatch]);
 
+  useEffect(() => {
+    if (status === "succeeded") {
+      setEditModalVisible(false);
+      form.resetFields();
+    }
+  }, [status, form]);
+  
   const showModal=(plan)=>{
     setSelectedPlan(plan);
     form.setFieldsValue({
@@ -170,10 +178,11 @@ export default function TreatmentPlan() {
       const result = await dispatch(updateTreatmentPlan(formData));
       if (updateTreatmentPlan.fulfilled.match(result)) {
         message.success("Treatment plan updated successfully!");
+        setEditModalVisible(false);
         form.resetFields();
         dispatch(resetStatus());
-        setEditModalVisible(false); 
         setActiveButton("View Plans");
+      
       } else if (updateTreatmentPlan.rejected.match(result)) {
         message.error("Failed to update treatment plan.");
         dispatch(resetStatus());
@@ -194,9 +203,10 @@ export default function TreatmentPlan() {
         const result = await dispatch(deleteTreatmentPlan(id));
         if (deleteTreatmentPlan.fulfilled.match(result)) {
           message.success("Treatment plan deleted successfully!");
+          setEditModalVisible(false);
           setActiveButton("View Plans");
           dispatch(resetStatus());
-          setEditModalVisible(false);
+        
         } else if (deleteTreatmentPlan.rejected.match(result)) {
           message.error("Failed to delete treatment plan.");
         }

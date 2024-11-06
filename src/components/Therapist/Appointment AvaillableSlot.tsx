@@ -82,7 +82,7 @@ export default function ManageAppointMents() {
   const showModal = () => {
     setModalVisible(true);
   };
-  const handleCancelCreateModal = () => {
+  const handleCancelModal = () => {
     setModalVisible(false);
     form.resetFields();
     dispatch(resetStatus());
@@ -276,7 +276,7 @@ const handleActive = (buttonName) => {
       <Modal
         open={modalVisible}
         footer={null}
-        onCancel={handleCancelCreateModal}
+        onCancel={handleCancelModal}
       >
         <Form
           form={form}
@@ -407,14 +407,12 @@ const handleActive = (buttonName) => {
           </Form.Item>
           <div className="grid grid-cols-2 gap-2">
           <Form.Item label="Start Time:" name="startTime">
-  <Input type="time" className="w-full p-1 border text-black rounded" />
-</Form.Item>
+         <Input type="time" className="w-full p-1 border text-black rounded" />
+         </Form.Item>
 
             <Form.Item label="End Time:" name="endTime">
               <Input
                 type="time"
-                // value={SlotData.endTime}
-                // onChange={(e) => setSlotData(prev => ({...prev, endTime: e.target.value }))}
                 className="w-full p-1 border rounded "
               />
             </Form.Item>
@@ -422,8 +420,6 @@ const handleActive = (buttonName) => {
           <Form.Item label="Date:" name="date">
             <Input
               type="date"
-              // value={SlotData.date}
-              // onChange={(e) => setSlotData(prev => ({...prev, date: e.target.value }))}
               className="w-full p-1 border rounded"
             />
           </Form.Item>

@@ -15,6 +15,7 @@ import {
   updateTreatmentPlan,
 } from "../../Redux/TherapistSlice/TreatmentPlan";
 import { RootState } from "../../Redux/store";
+import TextArea from "antd/es/input/TextArea";
 
 export default function TreatmentPlan() {
   const [activeButton, setActiveButton] = useState("All Patients");
@@ -233,7 +234,7 @@ export default function TreatmentPlan() {
               <h1 className="text-black text-2xl font-semibold mb-5 ">
                 Create Patient Plan
               </h1>
-              <Form.Item label="PatientId:" name="patientId">
+              <Form.Item label="PatientId:" name="patientId" hidden>
                 <Input type="text" placeholder="Enter patientId ..." readOnly />
               </Form.Item>
 
@@ -241,6 +242,7 @@ export default function TreatmentPlan() {
                 label="TherapistId:"
                 name="TherapistId"
                 initialValue={therapistId}
+                hidden
               >
                 <Input
                   type="text"
@@ -252,7 +254,7 @@ export default function TreatmentPlan() {
                 <Input type="text" placeholder="Enter treatmentTitle..." />
               </Form.Item>
               <Form.Item label="Description:" name="description">
-                <Input type="textarea" placeholder="Enter description..." />
+                <TextArea type="textarea" placeholder="Enter description..." />
               </Form.Item>
               <div className="flex gap-2">
                 <Form.Item
@@ -423,7 +425,7 @@ export default function TreatmentPlan() {
           </Form.Item>
 
           <Form.Item name="description" label="Description">
-            <Input type="textarea" placeholder="Enter description..." />
+            <TextArea type="textarea" placeholder="Enter description..." />
           </Form.Item>
 
           <Form.Item name="startDate" label="Start Date">

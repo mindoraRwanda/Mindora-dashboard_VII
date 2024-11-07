@@ -96,6 +96,12 @@ const GoalPlanSlice = createSlice({
         .addCase(createGoal.fulfilled, (state, action) => {
           state.status = 'succeeded';
           state.goals.push(action.payload);
+          const goalId=action.payload?.id||action.payload.goalId;
+          if(goalId){
+              state.goalId=goalId;
+              localStorage.setItem('goalId', goalId);
+              console.log('Saved goalId:', goalId);
+          }
         })
         .addCase(createGoal.rejected, (state, action) => {
           state.status = 'rejected';

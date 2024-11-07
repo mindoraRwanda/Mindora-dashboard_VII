@@ -148,7 +148,7 @@ const handleUpdateGoal=async (values) => {
             name="treatmentPlanId"
             label="TreatmentPlanId:"
             initialValue={treatmentPlanId}
-            hidden
+            // hidden
           >
             <Input type="text" readOnly />
           </Form.Item>
@@ -172,7 +172,7 @@ const handleUpdateGoal=async (values) => {
                 <Select.Option value="">Select Status</Select.Option>
                 <Select.Option value="completed">completed</Select.Option>
                 <Select.Option value="pending">pending</Select.Option>
-                <Select.Option value="waiting">waiting</Select.Option>
+                <Select.Option value="in-progress">in-progress</Select.Option>
               </Select>
             </Form.Item>
           </div>
@@ -187,13 +187,13 @@ const handleUpdateGoal=async (values) => {
                 disabled={status === "loading"}
               >
                 <AiOutlineSave size={20} />
-                {status === "loading" ? "Creating Goal..." : "Create Goal"}
+                {status === "loading" ? " Loading..." : "Create Goal"}
               </Button>
               <Button
                 className="bg-red-500 text-white w-1/3 "
                 onClick={() => form.resetFields()}
               >
-                <MdCancel size={20} /> Cancel
+                <MdCancel size={20} /> Resert
               </Button>
             </Form.Item>
           </div>
@@ -220,10 +220,10 @@ const handleUpdateGoal=async (values) => {
                 </div>
 
                 <p
-                  className={`italic m-5 p-2 text-sm font-semibold ${
+                  className={`italic m-5 p-2 text-sm  ${
                     Goal.status === "completed"
                       ? "text-purple-600"
-                      : Goal.status === "ongoing"
+                      : Goal.status === "in-progress"
                       ? "text-green-500"
                       : Goal.status === "pending"
                       ? "text-orange-400"
@@ -285,7 +285,7 @@ const handleUpdateGoal=async (values) => {
                 disabled={status === "loading"}
               >
                 <AiOutlineSave size={20} />{" "}
-                {status === "loading" ? "Updating..." : "Update Treatment Goals"}
+                {status === "loading" ? "Loading..." : "Update Treatment Goals"}
               </Button>
               <Button
                 className="bg-red-500 text-white w-1/3 "

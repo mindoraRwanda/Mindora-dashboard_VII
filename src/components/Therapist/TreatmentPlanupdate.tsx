@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, message, Modal, Select } from "antd";
+import { Button, Form, Input, message, Modal, Select,Spin } from "antd";
 import { AiOutlineSave } from "react-icons/ai";
 import { MdCancel } from "react-icons/md";
-// import { BiTime } from "react-icons/bi";
 import { FaSync, FaTrash } from "react-icons/fa";
 import PatientsList from "./PatientsList";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,9 +20,9 @@ export default function TreatmentPlan() {
   const [activeButton, setActiveButton] = useState("All Patients");
   const [TreatmentData, setTreatmentData] = useState([]);
   const [therapistId, setTherapistId] = useState(null);
-  const [loading, setLoading] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const { status, error } = useSelector((state: RootState) => ({
     status: state.treatmentPlan?.status,
@@ -50,7 +49,6 @@ export default function TreatmentPlan() {
   // This used for status
   useEffect(() => {
     try {
-      setLoading(true);
       if (status === "succeeded") {
         form.resetFields();
         dispatch(resetStatus());
@@ -62,22 +60,28 @@ export default function TreatmentPlan() {
     } catch (error) {
       console.log("Failed to create treatment plan:", error);
       message.error("Failed to create treatment plan");
-    } finally {
-      setLoading(false);
-    }
+    } 
   }, [status, dispatch, form, error]);
 
   // Logic for getting all TreatmentPlan
   useEffect(() => {
     const getTreatmentData = async () => {
+      try{
+        setLoading(true);
       const result = await dispatch(getAllTreatmentPlan());
       if (getAllTreatmentPlan.fulfilled.match(result)) {
         const treatData = result.payload;
         setTreatmentData(treatData);
+      }}
+      catch (error) {
+        message.error(`Failed to fetch treatment plan: ${error.message}`);
+      }
+      finally{
+        setLoading(false);
       }
     };
     getTreatmentData();
-  }, [dispatch]);
+  }, [dispatch, setLoading]);
 
   useEffect(() => {
     if (status === "succeeded") {
@@ -303,20 +307,19 @@ export default function TreatmentPlan() {
           </div>
         );
       case "View Plans":
-        return (
+        return loading? (
+            <div className="flex items-center justify-center text-red-600 min-h-screen">
+            <Spin size="large" />
+          </div>
+                   ):(
           <div className="bg-white rounded-lg shadow-xl p-6">
-            {loading ? (
-              <div className="text-center text-xl text-black py-8">
-                Loading...
-              </div>
-            ) : TreatmentData.length === 0 ? (
-              <div className="text-center py-8">No treatment plans found</div>
-            ) : (
-              TreatmentData.map((item) => (
+         
+              {TreatmentData.map((item) => (
                 <div
                   key={item.id}
                   className="bg-white rounded-lg border p-2 mt-2"
                 >
+ 
                   <div className="flex justify-between">
                     <div>
                       <p className="text-purple-600 text-2xl font-semibold">
@@ -373,11 +376,12 @@ export default function TreatmentPlan() {
                       </p>
                     </div>
                   </div>
+          
                 </div>
-              ))
+              )
             )}
           </div>
-        );
+                   )
       default:
         return null;
     }
@@ -449,7 +453,7 @@ export default function TreatmentPlan() {
               <Button
                 className="w-2/3 bg-purple-600 text-white font-semibold"
                 htmlType="submit"
-                isLoading={status === "loading"}
+                Loading={status === "loading"}
                 disabled={status === "loading"}
               >
                 <AiOutlineSave size={20} />{" "}

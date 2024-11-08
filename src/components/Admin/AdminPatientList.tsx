@@ -4,7 +4,7 @@ import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import CreatePatient from "./Create_Patient";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
-import { message, Modal } from "antd";
+import { message, Modal,Spin } from "antd";
 import { saveAs } from "file-saver";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -25,14 +25,25 @@ export default function AdminPatientsList() {
   const [isEditable, setIsEditable] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const itemsPerPage = 4;
   const dispatch=useDispatch();
 
   useEffect(() => {
     if (status === "idle") {
+      try{
+        setLoading(true);
       dispatch(allPatients());
+      }catch(error){
+        message.error(`Failed to fetch milestones: ${error.message}`);
+      }
+      finally{
+        setLoading(false);
+      }
+
     }
   }, [dispatch,status]); 
+
 
   useEffect(() => {
     if (status === "succeeded") {
@@ -255,6 +266,11 @@ export default function AdminPatientsList() {
         </div>
       </div>
 
+     <div> {loading ? (
+        <div className="flex justify-center items-center min-h-screen">
+          <Spin size="large" />
+        </div>
+      ) : (
       <table id="Patient-table" className="min-w-full">
         <thead>
           <tr>
@@ -325,7 +341,10 @@ export default function AdminPatientsList() {
           ))}
         </tbody>
       </table>
-          {/* Pagination Controls */}
+    )}
+    </div>
+
+{/* // Pagination controls */}
           <div className="flex justify-end mt-4">
         {Array.from({ length: Math.ceil(filteredPatient.length / itemsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
           <button
@@ -337,6 +356,7 @@ export default function AdminPatientsList() {
           </button>
         ))}
       </div>
+     
 <Modal open={isModalVisible}  footer={null} onCancel={handleCancel}>
     
 {selectedPatient ? (

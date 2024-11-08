@@ -2,9 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 interface appointment {
-    id: number;
-    startTime: number | string;
-    endTime: number | string;
     therapistId: number | string;
     patientId: number | string;
     name: string;
@@ -23,7 +20,7 @@ export const CreateAppointment = createAsyncThunk('createAppointment',
     async (AppointmentData: appointment, { rejectWithValue }) => {
         console.log('Sending data to the server:', AppointmentData);
         try {
-            const response = await axios.post<appointment>('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments', AppointmentData);
+            const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments', AppointmentData);
             console.log('Appointment created', response.data);
             return response.data;
           
@@ -34,10 +31,10 @@ export const CreateAppointment = createAsyncThunk('createAppointment',
 );
 
 // This is for getting all the appointment
-export const GetAppointments = createAsyncThunk('GetAppointments',
-    async (_, { rejectWithValue }) => {
+export const GetAllAppointments = createAsyncThunk('GetAppointments',
+    async (therapistId:string, { rejectWithValue }) => {
         try {
-            const response = await axios.get<appointment[]>('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments');
+            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${therapistId}`);
             console.log('All Appointments fetched', response.data);
             return response.data;
           
@@ -47,19 +44,6 @@ export const GetAppointments = createAsyncThunk('GetAppointments',
     }
 );
 
-// This for canceling the appointments
-export const CancelAppointment = createAsyncThunk('cancelAppointment',
-    async (appointmentId: number, { rejectWithValue }) => {
-        try {
-           const response=await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${appointmentId}`);
-            console.log('Appointment cancelled', appointmentId);
-            return response.data;
-           
-        } catch (error) {
-          return rejectWithValue(error.response?.data?.message || "unexpected error with cancelling appointment");
-        }
-    }
-);
 
 // This for updating the appointments
 
@@ -112,29 +96,16 @@ const appointmentSlice = createSlice({
 
             })
             // This is for getting all appointments
-            .addCase(GetAppointments.pending, (state) => {
+            .addCase(GetAllAppointments.pending, (state) => {
                 state.status = 'loading';
                 state.error=null;
 
             })
-            .addCase(GetAppointments.fulfilled, (state, action) => {
+            .addCase(GetAllAppointments.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.appointments = action.payload;
             })
-            .addCase(GetAppointments.rejected, (state, action) => {
-                state.status = 'rejected';
-                state.error = action.payload;
-            })
-            // This is for canceling the appointments
-            .addCase(CancelAppointment.pending, (state) => {
-                state.status = 'loading';
-                state.error=null;
-            })
-            .addCase(CancelAppointment.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.appointments = state.appointments.filter(appointment => appointment.id !== action.payload);
-            })
-            .addCase(CancelAppointment.rejected, (state, action) => {
+            .addCase(GetAllAppointments.rejected, (state, action) => {
                 state.status = 'rejected';
                 state.error = action.payload;
             })

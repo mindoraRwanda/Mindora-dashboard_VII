@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Modal, Form, Input, Button, Select, message, Switch } from "antd";
+import { Modal, Form, Input, Button, Select, message, Switch,Spin } from "antd";
 import { BiEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { RootState } from "../../Redux/store";
@@ -20,6 +20,7 @@ export default function ManageAppointMents() {
   const [editMOdal, setEditMOdal] = useState(false);
   const [SlotData, setSlotData] = useState([]);
   const [currentSlot, setCurrentSlot] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const [form] = Form.useForm();
@@ -69,11 +70,23 @@ export default function ManageAppointMents() {
   // This useEffect will help us to get all availableslot of Therapist
   useEffect(() => {
     const fetchAllSlots = async () => {
+
+      try{
+        setLoading(true);
       const result = await dispatch(getAllAvailableSlot(therapistId));
       if (getAllAvailableSlot.fulfilled.match(result)) {
         setSlotData(result.payload);
       }
+    }
+    catch (error) {
+      message.error(`Failed to fetch milestones: ${error.message}`);
+    }
+    finally {
+      setLoading(false);
+    }
     };
+
+    
     fetchAllSlots();
   }, [dispatch, therapistId]);
 
@@ -205,6 +218,11 @@ const handleActive = (buttonName) => {
             key={index}
             className="bg-white rounded-md shadow-xl border p-6 my-2"
           >
+                 {loading? (
+   <div className="flex items-center justify-center text-red-600 min-h-screen">
+   <Spin size="large" />
+ </div>
+          ):(
             <div className="flex justify-between">
               <div>
                 <h1 className="text-purple-600 text-3xl font-semibold mb-5">
@@ -244,6 +262,7 @@ const handleActive = (buttonName) => {
                 </div>
               </div>
             </div>
+          )}
           </div>
         );
       })}

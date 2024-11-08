@@ -1,7 +1,8 @@
-import { Input, Modal, Form, Select, Button, message } from "antd";
+import { Input, Modal, Form, Select, Button, message,Spin } from "antd";
 import { useForm } from "antd/es/form/Form";
 import React, { useEffect, useState } from "react";
 import { BiEdit, BiPlus } from "react-icons/bi";
+
 import { FaTrash } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +17,7 @@ import {
 
 export default function SetMilestones() {
   const [showModal, setShowModal] = useState(false);
-  const [Loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [goalId, setGoalId] = useState(null);
   const [currentMilestone, setCurrentMilestone] = useState(null);
   const [milestoneData, SetMilestones] = useState([]);
@@ -48,16 +49,21 @@ export default function SetMilestones() {
       form.setFieldsValue({ goalId: storedGoalId });
     }
   }, [form]);
+
   // To get all milestones
   useEffect(() => {
     const fetchAllMilestones = async () => {
       try {
+        setLoading(true);
         const result = await dispatch(getAllMilestones());
         if (result && result.payload) {
           SetMilestones(result.payload);
         }
       } catch (error) {
         message.error(`Failed to fetch milestones: ${error.message}`);
+      }
+      finally{
+        setLoading(false);
       }
     };
 
@@ -124,6 +130,8 @@ export default function SetMilestones() {
     }
   };
 
+
+
   return (
     <div className="bg-white rounded shadow-xl border p-6">
       <h1 className="text-white font-semibold rounded-sm text-3xl bg-purple-600 p-2 w-full">
@@ -131,8 +139,8 @@ export default function SetMilestones() {
       </h1>
       <div className="bg-white rounded  p-6 my-3">
         <div className="bg-slate-100 p-2 flex justify-between">
-          <h2 className="text-purple-600 text-2xl font-semibold">
-            Create Milestones
+          <h2 className="text-purple-600 text-3xl font-semibold">
+             Milestones
           </h2>
           <button
             className="text-white mr-4 p-2 bg-purple-600 rounded-md flex font-semibold"
@@ -144,12 +152,13 @@ export default function SetMilestones() {
           </button>
         </div>
         <div className="bg-gray-100 rounded shadow-xl border p-6 my-3">
-          <h1 className="text-2xl font-semibold text-black">
-            {" "}
-            List Of Mistones
-          </h1>
-
-          <div className="bg-white rounded-md shadow-xl border p-6 my-3 ">
+         
+          {loading? (
+   <div className="flex items-center justify-center text-red-600 min-h-screen">
+   <Spin size="large" />
+ </div>
+          ):(
+            <div className="bg-white rounded-md shadow-xl border p-6 my-3 ">
             {milestoneData.map((milestone) => (
               <div key={milestone.id} className="flex justify-between">
                 <div>
@@ -194,6 +203,7 @@ export default function SetMilestones() {
               </div>
             ))}
           </div>
+          )};
         </div>
       </div>
       <Modal footer={null} visible={showModal} onCancel={handleCancelModal}>
@@ -234,7 +244,7 @@ export default function SetMilestones() {
             </Select>
           </Form.Item>
           <div className="flex">
-          <Button className="w-3/4 p-2 bg-purple-600 text-white font-semibold" htmlType="submit" loading={status === "loading"} disabled={status === "loading"}>
+          <Button className="w-3/4 p-2 bg-purple-600 text-white font-semibold" htmlType="submit" loading={loading} disabled={loading}>
               <BiPlus size={23} />
               {status === "loading" ? "Loading..." : currentMilestone ? "Update Milestone" : "Create Milestone"}
             </Button>

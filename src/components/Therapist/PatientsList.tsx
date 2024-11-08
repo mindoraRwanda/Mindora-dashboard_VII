@@ -4,7 +4,7 @@ import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import CreatePatient from "../Admin/Create_Patient";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
-import { message, Modal } from "antd";
+import { message, Modal,Spin } from "antd";
 import { saveAs } from "file-saver";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -25,13 +25,23 @@ export default function PatientsList({goToPlan}) {
   const [isEditable, setIsEditable] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const itemsPerPage = 4;
   const dispatch=useDispatch();
 
 // This used to get all patient in system
   useEffect(() => {
     if (status === "idle") {
+      setLoading(true);
+      try{
       dispatch(allPatients());
+      }catch(error){
+        message.error(`Failed to fetch milestones: ${error.message}`);
+      }
+      finally{
+        setLoading(false);
+      }
+
     }
   }, [dispatch,status]); 
 
@@ -261,8 +271,13 @@ export default function PatientsList({goToPlan}) {
           </button>
         </div>
       </div>
-
+      {loading ? (
+        <div className="flex justify-center items-center min-h-screen">
+          <Spin size="large" />
+        </div>
+      ) : (
       <table id="Patient-table" className="min-w-full">
+        
         <thead>
           <tr>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
@@ -340,6 +355,7 @@ export default function PatientsList({goToPlan}) {
           ))}
         </tbody>
       </table>
+      )};
           {/* Pagination Controls */}
           <div className="flex justify-end mt-4">
         {Array.from({ length: Math.ceil(filteredPatient.length / itemsPerPage) }, (_, i) => i + 1).map((pageNumber) => (

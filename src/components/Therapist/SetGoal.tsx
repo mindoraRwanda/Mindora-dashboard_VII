@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MdCancel } from "react-icons/md";
 import { FaSync, FaTrash } from "react-icons/fa";
 import { AiOutlineSave } from "react-icons/ai";
-import { Button, Form, Input, message, Modal, Select } from "antd";
+import { Button, Form, Input, message, Modal, Select,Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { createGoal, deleteGoals, getAllGoals, updateGoals } from "../../Redux/TherapistSlice/Goals";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +11,7 @@ import { RootState } from "../../Redux/store";
 
 export default function TreatmentPlan() {
   const status = useSelector((state: RootState) => state.goalPlan.status);
-  const [Loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [treatmentPlanId, setTreatmentPlanId] = useState(null);
   const [Goaldata, setGoalData] = useState([]);
@@ -54,12 +54,16 @@ export default function TreatmentPlan() {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
+        setLoading(true);
         const result = await dispatch(getAllGoals());
         if (result && result.payload) {
           setGoalData(result.payload);
         }
       } catch (error) {
         console.error("Failed to fetch goals:", error);
+      }
+      finally{
+        setLoading(false);
       }
     };
     fetchGoals();
@@ -183,8 +187,8 @@ const handleUpdateGoal=async (values) => {
               <Button
                 className="w-2/3 bg-purple-600 text-white font-semibold"
                 htmlType="submit"
-                loading={status === "loading"}
-                disabled={status === "loading"}
+                loading={loading}
+                disabled={loading}
               >
                 <AiOutlineSave size={20} />
                 {status === "loading" ? " Loading..." : "Create Goal"}
@@ -204,7 +208,11 @@ const handleUpdateGoal=async (values) => {
           {" "}
           List Of All Goals
         </h1>
-        {/* logic for table */}
+        {loading? (
+   <div className="flex items-center justify-center text-red-600 min-h-screen">
+   <Spin size="large" />
+ </div>
+          ):(
         <div className="bg-white rounded-lg shadow-xl p-6">
           {Goaldata.map((Goal) => (
             <div key={Goal.id} className="bg-white rounded-lg border p-2 mt-2">
@@ -254,6 +262,7 @@ const handleUpdateGoal=async (values) => {
             </div>
           ))}
         </div>
+          )}
       </div>
       <Modal open={editModalVisible} footer={null} onCancel={handleCancelModal} title="Update Goal">
         <Form
@@ -281,8 +290,8 @@ const handleUpdateGoal=async (values) => {
               <Button
                 className="w-2/3 bg-purple-600 text-white font-semibold"
                 htmlType="submit"
-                loading={status === "loading"} 
-                disabled={status === "loading"}
+                loading={loading} 
+                disabled={loading}
               >
                 <AiOutlineSave size={20} />{" "}
                 {status === "loading" ? "Loading..." : "Update Treatment Goals"}

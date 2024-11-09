@@ -12,6 +12,7 @@ export default function TopBar({ userRole, items = [], }) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [calendarModal, setCalendarModal] = useState(false);
   const [name, setName] = useState('');
+  const [profilePhoto, setProfilePhoto] = useState('');
   const [value, onChange] = useState(new Date());
 
   useEffect(() => {
@@ -32,17 +33,17 @@ export default function TopBar({ userRole, items = [], }) {
     setCalendarModal(false);
   };
 
-  // Example user object for demonstration purposes
-  const user = {
-    profilePhoto: "/Images/PEREZIDA.jpeg" // Make sure this path is correct
-  };
 
   // function to get name of logedIn user stored at local storage
 
   useEffect(()=>{
     const storedName = localStorage.getItem("fullName");
+    const storedProfileImage = localStorage.getItem("profileImage");
     if(storedName){
       setName(storedName);
+    }
+    if(storedProfileImage){
+     setProfilePhoto(storedProfileImage);
     }
   }, []);
 
@@ -92,7 +93,7 @@ export default function TopBar({ userRole, items = [], }) {
           {/* Profile Section */}
           <div className="flex items-center gap-2">
             <img
-              src={user.profilePhoto}
+             src={profilePhoto || "https://via.placeholder.com/40"}
               alt="User Profile"
               className="w-10 h-10 rounded-full"
             />

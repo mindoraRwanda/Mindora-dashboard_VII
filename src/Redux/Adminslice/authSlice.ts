@@ -82,10 +82,17 @@ const authSlice = createSlice({
         state.TherapistId = action.payload.user?.therapist?.id;
         localStorage.setItem('TherapistId', action.payload.user?.therapist?.id || '');
         console.log("therapy id stored:", state.TherapistId);
+
        // To store name of any User logedIn
        const fullName = `${action.payload.user?.firstName || ''} ${action.payload.user?.lastName || ''}`.trim();
        localStorage.setItem('fullName', fullName);
        console.log("full Name stored:", fullName);
+
+       // To store Profile in localStorage
+       localStorage.setItem('profileImage', action.payload.user?.profileImage || '');
+       console.log("Profile Image stored:", action.payload.user?.profileImage);
+
+
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';

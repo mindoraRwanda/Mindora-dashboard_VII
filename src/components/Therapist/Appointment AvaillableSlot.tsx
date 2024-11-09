@@ -70,7 +70,6 @@ export default function ManageAppointMents() {
   // This useEffect will help us to get all availableslot of Therapist
   useEffect(() => {
     const fetchAllSlots = async () => {
-
       try{
         setLoading(true);
       const result = await dispatch(getAllAvailableSlot(therapistId));
@@ -272,7 +271,10 @@ const handleActive = (buttonName) => {
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
       {/* Button selection */}
-      <div className="flex flex-row gap-9">
+      <h1 className="text-white bg-purple-600  w-full p-2 text-3xl font-semibold">
+          Treatment Plan Management - Availlable Slot
+        </h1>
+      <div className="flex flex-row gap-9  mt-9">
         {["AllPatients", "Availlable Slots", "Notifications"].map(
           (buttonName) => (
             <button

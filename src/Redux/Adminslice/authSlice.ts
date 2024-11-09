@@ -78,10 +78,14 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload;
-        console.log("Login payload:", action.payload);
+        //To store TherapistId on Local storage if User is Therapist
         state.TherapistId = action.payload.user?.therapist?.id;
         localStorage.setItem('TherapistId', action.payload.user?.therapist?.id || '');
         console.log("therapy id stored:", state.TherapistId);
+       // To store name of any User logedIn
+       const fullName = `${action.payload.user?.firstName || ''} ${action.payload.user?.lastName || ''}`.trim();
+       localStorage.setItem('fullName', fullName);
+       console.log("full Name stored:", fullName);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';

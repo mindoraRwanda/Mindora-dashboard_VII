@@ -389,12 +389,12 @@ export default function TreatmentPlan() {
 
   return (
     <div className="bg-white rounded shadow-xl border p-6">
-      <div className="text-black flex flex-row">
+     
         <h1 className="text-white bg-purple-600  w-full p-2 text-3xl font-semibold">
-          Treatment Plan Management - Create Treatment Plan
+          Treatment Plan Management - Treatment Plan
         </h1>
-      </div>
-      <div className="flex flex-row gap-9 mt-10">
+    
+      <div className="flex flex-row gap-9 mt-9">
         {["All Patients", "Create Plan", "View Plans"].map((buttonName) => (
           <button
             key={buttonName}

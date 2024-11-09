@@ -4,7 +4,7 @@ import { FiSearch } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
-import { message, Modal } from "antd";
+import { message, Modal,Spin } from "antd";
 import Create_User from "./Create_User";
 import VideoCall from "../VideoCall";
 import { saveAs } from "file-saver";
@@ -35,14 +35,28 @@ export default function AdminUserList() {
   const [PatientId, setPatientId] = useState(null);
   const [PatientRole, setPatientRole] = useState(false);
   const [newRole, setNewRole] = useState("");
-
   const itemsPerPage = 5;
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(GetAllUsers());
-    }
-  }, [status, dispatch]);
+
+// Effect to get all users
+useEffect(() => {
+ const fetchAllusers=async()=>{
+    try{
+    setLoading(true);
+    await dispatch(GetAllUsers());
+  }
+  catch(error){
+    message.error(`Failed to update goal: ${error.message}`);
+  }
+finally{
+  setLoading(false);
+}
+  };
+  fetchAllusers();
+}, [dispatch]);
+
+
 
   useEffect(() => {
     if (status === "succeeded") {
@@ -81,12 +95,12 @@ export default function AdminUserList() {
     },
     [users]
   );
-
   const paginate = (pageNumber) => {
-    if (pageNumber < 1) return;
-    if (pageNumber > Math.ceil(filteredUsers.length / itemsPerPage)) return;
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    if (pageNumber < 1 || pageNumber > totalPages || pageNumber === currentPage) return;
     setCurrentPage(pageNumber);
   };
+  
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -244,22 +258,11 @@ export default function AdminUserList() {
     setIsModalVisible(false);
   };
 
-  // const ChangeRole = () => {
-  //   const confirm = window.confirm("Are sure you want to change Role ?");
-
-  //   if (confirm) {
-  //     try {
-  //       dispatch(
-  //         changeRole({ id: selectedUser.id, credentials: { role: newRole } })
-  //       );
-  //       message.success("Role updated successfully");
-  //       setRolemodal(false);
-  //     } catch (error) {
-  //       message.error("Error updating role: " + error.message);
-  //     }
-  //   }
-  // };
-  return (
+  return loading ? (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spin size="large" />
+      </div>
+    ) : (
     <div className="bg-white rounded-lg shadow-xl p-3">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-semibold mb-4 text-purple-600">Users</h2>
@@ -322,7 +325,9 @@ export default function AdminUserList() {
         </div>
       </div>
 
-      {/* User table */}
+   
+
+  
       <table id="User-table" className="min-w-full">
         <thead>
           <tr>
@@ -424,7 +429,9 @@ export default function AdminUserList() {
             </tr>
           ))}
         </tbody>
+        
       </table>
+  
 
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">
@@ -487,6 +494,7 @@ export default function AdminUserList() {
                 onClick={() => handleUpdate(selectedUser)}
                 className="text-center border-2 py-2 rounded-md bg-red-600 text-white font-semibold w-full"
                 disabled={status === 'loading'}
+                loading={status === 'loading'}
               >
                {status === 'loading' ? 'Updating...' : 'Update'}
               </button>

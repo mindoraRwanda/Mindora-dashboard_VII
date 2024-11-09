@@ -60,7 +60,7 @@ export default function TreatmentPlan() {
           setGoalData(result.payload);
         }
       } catch (error) {
-        console.error("Failed to fetch goals:", error);
+        message.error(`Failed to update goal: ${error.message}`);
       }
       finally{
         setLoading(false);

@@ -11,6 +11,7 @@ export default function TopBar({ userRole, items = [], }) {
   const { t, i18n } = useTranslation(); 
   const [filteredItems, setFilteredItems] = useState(items);
   const [calendarModal, setCalendarModal] = useState(false);
+  const [name, setName] = useState('');
   const [value, onChange] = useState(new Date());
 
   useEffect(() => {
@@ -33,14 +34,26 @@ export default function TopBar({ userRole, items = [], }) {
 
   // Example user object for demonstration purposes
   const user = {
-    name: "John Doe",
     profilePhoto: "/Images/PEREZIDA.jpeg" // Make sure this path is correct
   };
+
+  // function to get name of logedIn user stored at local storage
+
+  useEffect(()=>{
+    const storedName = localStorage.getItem("fullName");
+    if(storedName){
+      setName(storedName);
+    }
+  }, []);
+
+  
  
   const handleLanguageChange = (e) => {
     const selectedLanguage = e.target.value;
     i18n.changeLanguage(selectedLanguage).then(() => {
-      setFilteredItems([...filteredItems]); // Force re-render by updating state
+      if (filteredItems !== items) {
+        setFilteredItems([...items]);
+      }
     });
   };
 
@@ -83,7 +96,7 @@ export default function TopBar({ userRole, items = [], }) {
               alt="User Profile"
               className="w-10 h-10 rounded-full"
             />
-            <span className="text-gray-700 font-medium">{user.name}</span>
+            <span className="text-gray-700 font-medium capitalize text-xl">{name}</span>
           </div>
           <button
             onClick={handleLogout}
@@ -97,7 +110,7 @@ export default function TopBar({ userRole, items = [], }) {
       <Modal
         title="Calendar"
         footer={null}
-        visible={calendarModal}
+        open={calendarModal}
         onCancel={handleCancel}
         className="text-center"
       >

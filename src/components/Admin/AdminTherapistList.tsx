@@ -5,7 +5,7 @@ import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { useCallback, useEffect, useState } from "react";
 import { FiDownload } from 'react-icons/fi';
 
-import { message, Modal} from "antd";
+import { message, Modal,Spin} from "antd";
 import Create_Therapy from "./Create_Therapy";
 import jsPDF from "jspdf";
 import { saveAs } from "file-saver";
@@ -34,15 +34,27 @@ export default function AdminTherapistList() {
   const [ChangePassModal, SetChangePassModal] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedTherapy, setSelectedTherapy] = useState(null);
+  const [loading, setLoading] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(getAllTherapists());
+    const getAll=async()=>{
+      try{
+      setLoading(true);
+      await dispatch(getAllTherapists());
     }
+    catch(error){
+      message.error(`Failed to update goal: ${error.message}`);
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+  getAll();
   }, [status, dispatch]);
+
 
   useEffect(() => {
     if (status === "succeeded") {
@@ -242,7 +254,11 @@ export default function AdminTherapistList() {
     SetChangePassModal(false);
   };
 
-  return (
+  return       loading ? (
+    <div className="flex justify-center items-center min-h-screen">
+      <Spin size="large" />
+    </div>
+  ) : (
     <div className="bg-white rounded-lg shadow-xl p-6">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-semibold mb-4 text-purple-600">
@@ -305,8 +321,10 @@ export default function AdminTherapistList() {
           </button>
         </div>
       </div>
+     <div>
+      {/* logic gfor loading */}
 
-      <table id="therapist-table" className="min-w-full">
+          <table id="therapist-table" className="min-w-full">
         <thead>
           <tr>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
@@ -410,6 +428,8 @@ export default function AdminTherapistList() {
           ))}
         </tbody>
       </table>
+          
+      </div>
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">
         {Array.from(

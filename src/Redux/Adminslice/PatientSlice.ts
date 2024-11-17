@@ -1,21 +1,41 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-interface Patient {
-    userId: string;
-    name: string;
-    email: string;
-    age: number;
-    gender: string;
-    lastVisit: number | string;
-    phoneNumber: number | string;
-    condition: string;
+import { Patient } from "../../components/Therapist/PatientsList";
 
-};
+export interface Patient {
+    id: number | string;
+    userId?: string;
+    user: {
+        email: string;
+        firstName: string;
+    };
+    personalInformation: {
+        age: number;
+        gender: string;
+        address: string;
+    };
+    medicalProfile: {
+        lastVisit: string;
+        condition: string;
+    };
+    emergencyContact: {
+        name: string;
+        email: string;
+        phoneNumber: string;
+    };
+    lastLogin?: string;
+    totalUsers?: number;
+}
+
+
+export interface PatientsListProps {
+    goToPlan: (patientId: number | string) => void;
+  }
 
 
 // the following ia about creating new patient
 export const createPatient = createAsyncThunk('Patient/createPatient',
-    async (PatientData: patientData, { rejectWithValue }) => {
+    async (PatientData: patientData<Patient>, { rejectWithValue }) => {
         console.log('Sending data to the server:', PatientData); 
         try {
             const response = await axios.post<Patient>('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients', 
@@ -25,7 +45,7 @@ export const createPatient = createAsyncThunk('Patient/createPatient',
         }
         catch (err) {
             console.error('Error in createPatient:', err.response||err); 
-            return rejectWithValue(err.response?.data?.message || 'Unexpected error occurred while creating the patient');
+            return rejectWithValue((err as Error).message);
          }
          
     }
@@ -40,20 +60,20 @@ export const allPatients = createAsyncThunk('getPatients',
             return response.data;
         }
         catch (err) {
-            return rejectWithValue(err.response?.data || 'uexpected error');
+            return rejectWithValue((err as Error).message);
         }
     }
 );
 
 // the following is for getting single patient
-export const getPatientById = createAsyncThunk('getPatientById',
-    async (id, { rejectWithValue }) => {
+export const getPatientById = createAsyncThunk( 'patient/getById',
+    async (id:string, { rejectWithValue }) => {
         try {
             const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`);
             return response.data;
         }
         catch (err) {
-            return rejectWithValue(err.response?.data || 'uexpected error');
+            return rejectWithValue((err as Error).message);
         }
     }
 );
@@ -61,27 +81,27 @@ export const getPatientById = createAsyncThunk('getPatientById',
 // the following Api is for Updating Patient
 
 export const updatePatient = createAsyncThunk('updatePatient',
-    async ({id,updatePatientData}, { rejectWithValue }) => {
+    async ({id,updatePatientData}: { id: number | string; updatePatientData: Partial<Patient> }, { rejectWithValue }) => {
         
         try {
             const response = await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`,updatePatientData);
             return response.data;
         }
         catch (err) {
-            return rejectWithValue(err.message);
+            return rejectWithValue((err as Error).message);
         }
     }
 );
 // the followinf codes are for deleting the patient
 
 export const deletePatient = createAsyncThunk('deletePatient',
-    async (id, { rejectWithValue }) => {
+    async (id:number|string, { rejectWithValue }) => {
         try {
-            const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`);
-            return response.data;
+         await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`);
+            return id;
         }
         catch (err) {
-            return rejectWithValue(err.message);
+            return rejectWithValue((err as Error).message);
         }
     }
 );
@@ -89,11 +109,13 @@ export const deletePatient = createAsyncThunk('deletePatient',
 const patientSlice = createSlice({
     name: 'patients',
     initialState: {
-        patients: [],
+        patients: [] as Patient[],
         status: 'idle',
         error: null,
     },
-    reducers: {},
+    reducers: {   setPatients: (state, action) => {
+        state.patients = action.payload;
+    },},
     extraReducers: (builder) => {
         builder
             // this is for creating patient
@@ -107,7 +129,7 @@ const patientSlice = createSlice({
             .addCase(createPatient.rejected, (state, action) => {
                 console.log('Error payload:', action.payload);
                 console.log('Error message:', action.error.message);
-                state.status = 'failed';
+                state.status = 'rejected';
                 state.error = action.payload;
             })
             // this is for getting
@@ -121,12 +143,24 @@ const patientSlice = createSlice({
             })
 
             .addCase(allPatients.rejected, (state, action) => {
-                state.status = 'failed';
+                state.status = 'rejected';
                 state.error = action.payload;
+            })
+            .addCase(getPatientById.pending,(state)=>{
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(getPatientById.fulfilled,(state,action) => {
+                state.status ='succeeded';
+                state.error = null;
+                state.selectedPatient = action.payload;
+            })
+            .addCase(getPatientById.rejected, (state,action)=>{
+                state.status = 'rejected';
+                state.error = action.payload as string;
             })
 
             // The Following Extra redux are for Updating patient
-
             .addCase(updatePatient.pending, (state) => {
                 state.status = 'loading';
             })
@@ -137,7 +171,7 @@ const patientSlice = createSlice({
                 }
               })
             .addCase(updatePatient.rejected, (state, action) => {
-                state.status = 'failed';
+                state.status = 'rejected';
                 state.error = action.payload as string;
             })
 
@@ -151,13 +185,14 @@ const patientSlice = createSlice({
 
             })
             .addCase(deletePatient.rejected, (state, action) => {
-                state.status = 'failed';
+                state.status = 'rejected';
                 state.error = action.payload as string;
             })
     }
 }
 
 );
+export const {setPatients}=patientSlice.actions;
 export default patientSlice.reducer;
 
 

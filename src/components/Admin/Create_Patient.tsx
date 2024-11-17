@@ -6,14 +6,19 @@ import {
   DatePicker,
   message,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { allPatients, createPatient } from "../../Redux/Adminslice/PatientSlice";
 import { featchUserById } from "../../Redux/Adminslice/UserSlice";
+import { RootState,AppDispatch } from "../../Redux/store";
 import dayjs from "dayjs";
 
-// const { Text } = Typography;
-export default function CreatePatient({ userId, onSuccess }) {
+interface CreatePatientProps {
+  userId: any;
+  onSuccess: any;
+  addPatient: (newPatient:any) => void; 
+}
+export default function CreatePatient({ userId, onSuccess,addPatient }:CreatePatientProps) {
   const [form] = Form.useForm();
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -27,8 +32,8 @@ export default function CreatePatient({ userId, onSuccess }) {
   const [EmergencyPhoneNumber, setEmergencyPhoneNumber]=useState("");
 
 
-  const status = useSelector((state: RootState) => state.patients.status);
-  const dispatch = useDispatch();
+  const  status  = useSelector((state: RootState) => state.users.status);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     console.log("User Identification received userId:", userId);
@@ -43,18 +48,19 @@ export default function CreatePatient({ userId, onSuccess }) {
             form.setFieldsValue({
               name: `${userData.firstName || ""} ${userData.lastName || ""}`,
               email: userData.email || "",
-              phoneNumber: userData.phoneNumber || "",
+              // phoneNumber: userData.phoneNumber || "",
             });
           }
         } catch (error) {
-          message.error("Failed to get User data" + error.message);
+          const errorMessage = (error as Error).message;
+          message.error(`Failed to get user data: ${errorMessage}`);
         }
       };
       feactUserData();
     }
   }, [dispatch, userId, form]);
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values:any) => {
     const { age, lastVisit, gender, condition, } = values;
 
     const patientData = {
@@ -80,20 +86,20 @@ export default function CreatePatient({ userId, onSuccess }) {
       console.log("Server Patient response:", result);
       if (createPatient.fulfilled.match(result)) {
         message.success("Patient created successfully");
+        addPatient(result.payload);
         onSuccess();
         form.resetFields();
-        dispatch(allPatients());
+        await dispatch(allPatients());
       } else {
         console.log("Error details:", result.payload);
-        message.error(
-          `Patient creation failed ${
-            result.payload?.message || "Unknown error"
-          }`
-        );
+        const errorMessage = result.payload && typeof result.payload === 'object' && 'message' in result.payload
+        ? String(result.payload.message)
+        : "Unknown error";
+      message.error(`Patient creation failed: ${errorMessage}`);
       }
     } catch (error) {
-      console.log("Error:", error);
-      message.error("Error creating Patient" + error.message);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to create patient: ${errorMessage}`);
     }
   };
 

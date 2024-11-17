@@ -1,130 +1,129 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface appointment {
-    therapistId: number | string;
-    patientId: number | string;
-    name: string;
-    statusApp: string;
-    location: string;
-    date: string | number;
-    appointmentType: string;
-    appointmentSlot:number | string;
-    duration: number;
-    notes: string
+export interface Appointment {
+  id: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  appointmentType: string;
+  status: string;
+  notes: string;
+}
+interface AppointmentState {
+  appointments: Appointment[];
+  loading: boolean;
+  status: 'idle' | 'loading' | 'succeeded' | 'rejected';
+  error: string | null;
+}
+
+const initialState: AppointmentState = {
+  appointments: [],
+  loading: false,
+  status: 'idle',
+  error: null,
 };
 
-
-// This is for create new appointment
-export const CreateAppointment = createAsyncThunk('createAppointment',
-    async (AppointmentData: appointment, { rejectWithValue }) => {
-        console.log('Sending data to the server:', AppointmentData);
-        try {
-            const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments', AppointmentData);
-            console.log('Appointment created', response.data);
-            return response.data;
-          
-        } catch (error) {
-           return rejectWithValue(error.response?.data?.message || "unexpected error with creating appointment");
-        }
+export const getAppointmentById = createAsyncThunk(
+  "getAppointmentById/getAll",
+  async (therapistId: string | number, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${therapistId}/appointments`);
+      console.log("API Response:", response.data);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
     }
+  }
 );
 
-// This is for getting all the appointment
-export const GetAllAppointments = createAsyncThunk('GetAppointments',
-    async (therapistId:string, { rejectWithValue }) => {
-        try {
-            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${therapistId}`);
-            console.log('All Appointments fetched', response.data);
-            return response.data;
-          
-        } catch (error) {
-           return rejectWithValue(error.response?.data?.message || "unexpected error with fetching appointments");
-        }
+export const updateAppointments = createAsyncThunk(
+  'updateAppointments/update',
+  async (appointmentData: Appointment, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${appointmentData.id}`,
+        appointmentData
+      );
+      console.log("Data to be updated", response.data);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
     }
+  }
 );
+// Logic to delete the appointment
 
-
-// This for updating the appointments
-
-export const UpdateAppointment = createAsyncThunk('updateAppointment',
-    async (formData: appointment, { rejectWithValue }) => {
-        try {
-           const response= await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${formData.id}`, formData);
-            console.log('Appointment updated', formData.id);
-            return response.data;
-          
-        } catch (error) {
-          return rejectWithValue(error.response?.data?.message || "unexpected error with updating appointment");
-        }
+export const deleteAppointment = createAsyncThunk(
+  "deleteAppointment/delete",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${id}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
     }
+  }
 );
-
 
 const appointmentSlice = createSlice({
-    name: 'appointment',
-    initialState: {
-        appointments: [],
-        loading: false,
-        status: 'idle',
-        error: null,
+  name: "appointments",
+  initialState,
+  reducers: {
+    resetStatus: (state) => {
+      state.loading = false;
+      state.status = "idle";
+      state.error = null;
+      state.appointments = [];
     },
-    reducers: {
-        // Add your reducers here
-        resetStatus:(state)=>{
-            state.status = 'idle';
-            state.error = null;
-            state.appointments = [];
-        },
-    },
-    extraReducers: (builder) => {
-        builder
-
-            // This is for creating a new appointment
-            .addCase(CreateAppointment.pending, (state) => {
-                state.status = 'loading';
-                state.error=null;
-            })
-            .addCase(CreateAppointment.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.appointments.push(action.payload);
-                state.error = null;
-            })
-            .addCase(CreateAppointment.rejected, (state, action) => {
-                state.status = ' rejected';
-                state.error = action.payload as string;
-
-            })
-            // This is for getting all appointments
-            .addCase(GetAllAppointments.pending, (state) => {
-                state.status = 'loading';
-                state.error=null;
-
-            })
-            .addCase(GetAllAppointments.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.appointments = action.payload;
-            })
-            .addCase(GetAllAppointments.rejected, (state, action) => {
-                state.status = 'rejected';
-                state.error = action.payload;
-            })
-
-            //This is for Updating the Appointments
-
-            .addCase(UpdateAppointment.pending, (state) => {
-                state.status = 'loading';
-                state.error=null;
-            })
-            .addCase(UpdateAppointment.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.appointments = state.appointments.map(appointment => appointment.id === action.payload.id ? action.payload : appointment);
-            })
-            .addCase(UpdateAppointment.rejected, (state, action) => {
-                state.status = 'rejected';
-                state.error = action.payload;
-            })
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getAppointmentById.pending, (state) => {
+        state.loading = true;
+        state.status = "loading";
+      })
+      .addCase(getAppointmentById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = "succeeded";
+        state.appointments = Array.isArray(action.payload) ? action.payload : [action.payload];
+      })
+      .addCase(getAppointmentById.rejected, (state, action) => {
+        state.loading = false;
+        state.status = "rejected";
+        state.error = action.payload;
+      })
+      .addCase(updateAppointments.pending,(state)=>{
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAppointments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = "succeeded";
+        state.appointments = state.appointments.map(app =>
+          app.id === action.payload.id ? action.payload : app);
+      })
+      .addCase(updateAppointments.rejected,(state,action)=>{
+        state.loading = false;
+        state.status = "rejected";
+        state.error = action.payload;
+      })
+      .addCase(deleteAppointment.pending,(state)=>{
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAppointment.fulfilled, (state, action)=>{
+        state.loading = false;
+        state.status = "succeeded";
+        state.appointments = state.appointments.filter(app => app.id!== action.payload);
+      })
+      .addCase(deleteAppointment.rejected, (state, action)=>{
+        state.loading = false;
+        state.status = "rejected";
+        state.error = action.payload;
+      })
+  },
 });
+
 export const { resetStatus } = appointmentSlice.actions;
 export default appointmentSlice.reducer;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Home from '../components/Therapist/Home';
  import Sidebar from '../components/Sidebar';
  import TopBar from '../components/TopBar';
@@ -6,6 +6,7 @@ import ManageAppointMents from '../components/Therapist/Appointment AvaillableSl
  import VideoCall from '../components/Therapist/VideoCall';
 import Reports from '../components/Therapist/Reports';
 import PatientsList from '../components/Therapist/PatientsList';
+import AdminPatientsList from '../components/Admin/AdminPatientList';
 import PatientMessages from '../components/Therapist/PatientMessages';
 import TreatmentPlanupdate from '../components/Therapist/TreatmentPlanupdate';
  import SetGoal from '../components/Therapist/SetGoal';
@@ -13,6 +14,7 @@ import TrackPatient from '../components/Therapist/TrackPatient';
  import SetMilestone from '../components/Therapist/SetMilestones';
 import Appointmets from '../components/Therapist/Appointmets';
 import AppointmentChange from '../components/Therapist/Appointment Change';
+import { useNavigate } from 'react-router-dom';
 
 const UserRole = {
   THERAPIST: "therapist",
@@ -21,7 +23,10 @@ const UserRole = {
 export default function DashboardPage() {
   const [userRole, setUserRole] = useState(UserRole.THERAPIST);
   const [activeComponent, setActiveComponent] = useState("Home");
-
+  const navigate = useNavigate();
+  const goToPlan = () => {
+    navigate("/treatment-plan"); 
+  };
   const renderComponent = () => {
     switch (activeComponent) {
       case 'Home':
@@ -37,7 +42,10 @@ export default function DashboardPage() {
       case 'AvaillableSlots':
        return <ManageAppointMents />;
       case 'Patients':
-       return <PatientsList />;
+       return <PatientsList goToPlan={goToPlan} />;
+       case "PatientsList":
+        return <AdminPatientsList />
+ 
       case 'Messages':
         return <PatientMessages />;
       case 'reports':
@@ -49,7 +57,9 @@ export default function DashboardPage() {
             case 'Appointment Changes':
               return<AppointmentChange/>
       default:
-       return <AppointmentList />;
+       return (
+        <div><h1 className='text-black text-2xl'>No Data</h1></div>
+       );
     }
   };
 

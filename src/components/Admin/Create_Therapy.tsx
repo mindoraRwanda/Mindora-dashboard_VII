@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useRef, useState } from "react";
 import { Form, Input, Button, Radio, DatePicker, message } from "antd";
 import { MdFileUpload } from "react-icons/md";
@@ -10,19 +10,23 @@ import { featchUserById } from "../../Redux/Adminslice/UserSlice";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
-export default function CreateTherapy({ userId, onSuccess }) {
+interface CreateTherapyProps {
+  userId: string;
+  onSuccess?: () => void;
+}
+export default function CreateTherapy({ userId, onSuccess }: CreateTherapyProps) {
   const [name, setName] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender,setGender] = useState<string>("");
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [diploma, setDiploma] = useState(null);
-  const [license, setlicense] = useState(null);
+  const [diploma, setDiploma] = useState<File | null>(null);
+  const [license, setLicense] = useState<File | null>(null);
   const [email, setEmail] = useState("");
 
-  const [form] = Form.useForm();
-  const fileDiplomaInputRef = useRef(null);
-  const filelicenseInputRef = useRef(null);
+  const [form] = Form.useForm(); 
+  const fileDiplomaInputRef = useRef<HTMLInputElement>(null);
+  const filelicenseInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { status } = useSelector((state: RootState) => state.Therapy);
@@ -43,7 +47,8 @@ export default function CreateTherapy({ userId, onSuccess }) {
             });
           }
         } catch (error) {
-          message.error("Failed to get User data" + error.message);
+          const errorMessage = (error as Error).message;
+          message.error(`Failed to get user data: ${errorMessage}`);
         }
       };
       feactUserData();
@@ -51,9 +56,9 @@ export default function CreateTherapy({ userId, onSuccess }) {
   }, [dispatch, userId, form]);
 
   // this is for Submitting form of creating Therapy
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values:any) => {
     const { phoneNumber, gender, name } = values;
-
+  
     const formData = new FormData();
     formData.append("personalInformation[name]", name);
     formData.append("personalInformation[gender]", gender);
@@ -62,43 +67,47 @@ export default function CreateTherapy({ userId, onSuccess }) {
     );
     formData.append("personalInformation[address]", address);
     formData.append("personalInformation[phoneNumber]", phoneNumber);
-
-    formData.append("diploma", diploma);
-    formData.append("license", license);
+  
+    if (diploma) {
+      formData.append("diploma", diploma);
+    }
+    if (license) {
+      formData.append("license", license);
+    }
     formData.append("userId", userId);
-
+  
     if (!dateOfBirth) {
       message.error("Please select a valid date of birth");
       return;
     }
-
+  
     if (!diploma) {
       message.error("Please upload diploma");
       return;
     }
-
+  
     if (!license) {
       message.error("Please upload license");
       return;
     }
-
+      
     try {
       const resultAction = await dispatch(fetchTherapy(formData));
       console.log("Server Therapy response:", resultAction);
       if (fetchTherapy.fulfilled.match(resultAction)) {
         message.success("New Therapies created successfully");
         dispatch(getAllTherapists());
-
+  
         setName("");
         setGender("");
         setDateOfBirth(null);
         setAddress("");
         setPhoneNumber("");
         setDiploma(null);
-        setlicense(null);
-
+        setLicense(null);
+  
         form.resetFields();
-
+  
         if (onSuccess) {
           onSuccess();
         }
@@ -107,33 +116,29 @@ export default function CreateTherapy({ userId, onSuccess }) {
         console.error("Error resultAction:", resultAction);
         message.error(
           `Therapy creation failed ${
-            resultAction.payload?.message || "Unknown error"
+            (resultAction.payload as { message?: string })?.message || "Unknown error"
           }`
         );
       }
     } catch (error) {
-      console.error("Failed to create therapy:", error);
-      message.error(
-        `An error occurred while creating therapy: ${
-          error.message || "Unknown error"
-        }`
-      );
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to create Therapy: ${errorMessage}`);
     }
   };
 
   // function to upload license information
   const handlelicense = () => {
-    filelicenseInputRef.current.click();
+    filelicenseInputRef.current?.click();
   };
 
   // function to upload diploma information
   const handleDiploma = () => {
-    fileDiplomaInputRef.current.click();
+    fileDiplomaInputRef.current?.click();
   };
   // function to open files for diploma
 
-  const handleDiplomaFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleDiplomaFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       setDiploma(file);
       form.setFieldsValue({ diploma: file.name });
@@ -142,10 +147,10 @@ export default function CreateTherapy({ userId, onSuccess }) {
   };
 
   // function to open files for license
-  const handlelicenseFileChange = (e) => {
-    const file = e.target.files[0];
+  const handlelicenseFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setlicense(file);
+      setLicense(file);
       form.setFieldsValue({ license: file.name });
       message.success(`Selected file: ${file.name}`);
     }
@@ -275,7 +280,7 @@ export default function CreateTherapy({ userId, onSuccess }) {
           name="gender"
           rules={[{ required: true, message: "Please select Gender" }]}
         >
-          <Radio.Group onChange={(e) => setGender(e.target.value)}>
+          <Radio.Group value={gender} onChange={(e) => setGender(e.target.value)}>
             <Radio value="male">Male</Radio>
             <Radio value="female">Female</Radio>
             <Radio value="others">Others</Radio>

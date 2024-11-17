@@ -29,7 +29,7 @@ export const loginUser = createAsyncThunk(
 
       });
       return response.data;
-    } catch (err: unknown) {
+    } catch (err) {
       if(err.response && err.response.data){
         return rejectWithValue(err.response.data.message);
       }
@@ -53,7 +53,7 @@ export const forgotPass = createAsyncThunk('auth/forgotPass',
 // the following is for reset passpassword
 
 export const resetPass = createAsyncThunk('user/resetPass',
-  async (credentials: { token: string; password: string; confirmPassword: string }, { rejectWithValue }) => {
+    async (credentials: { password: string; confirmPassword: string }, { rejectWithValue }) => {
     try {
       const response = await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/reset_password/${credentials.token}`, 
         { password: credentials.password, confirmPassword: credentials.confirmPassword }

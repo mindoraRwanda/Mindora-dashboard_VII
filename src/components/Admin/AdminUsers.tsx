@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
-import { message, Modal,Spin } from "antd";
+import { Button, message, Modal,Spin } from "antd";
 import Create_User from "./Create_User";
 import VideoCall from "../VideoCall";
 import { saveAs } from "file-saver";
@@ -18,21 +18,23 @@ import { deleteUser } from "../../Redux/Adminslice/UserSlice";
 import { useCallback } from "react";
 import CreateTherapy from "./Create_Therapy";
 import CreatePatient from "./Create_Patient";
+import { User } from "../../Redux/Adminslice/UserSlice";
+import { RootState } from "../../Redux/store";
 
 export default function AdminUserList() {
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.users.users);
-  const status = useSelector((state) => state.users.status);
+  const users = useSelector((state: RootState) => state.users.users) as User[];
+  const status = useSelector((state: RootState) => state.users.status);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditable, setIsEditable] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [TherapyRole, setTherapyRole] = useState(false);
-  const [therapyUserId, setTherapyUserId] = useState(null);
-  const [PatientId, setPatientId] = useState(null);
+  const [therapyUserId, setTherapyUserId] = useState<string | null>(null);
+  const [PatientId, setPatientId] = useState<string | null>(null);
   const [PatientRole, setPatientRole] = useState(false);
   const [newRole, setNewRole] = useState("");
   const itemsPerPage = 5;
@@ -47,7 +49,8 @@ useEffect(() => {
     await dispatch(GetAllUsers());
   }
   catch(error){
-    message.error(`Failed to update goal: ${error.message}`);
+    const errorMessage = (error as Error).message;
+    message.error(`Failed to load users: ${errorMessage}`);
   }
 finally{
   setLoading(false);
@@ -64,7 +67,7 @@ finally{
     }
   }, [users, status]);
 
-  const handleTherapyRole = (e, user) => {
+  const handleTherapyRole = (e: React.ChangeEvent<HTMLSelectElement>, user: User) => {
     const selectedRole = e.target.value;
     setNewRole(selectedRole);
     if (selectedRole === "therapy" || selectedRole === "therapist") {
@@ -80,12 +83,12 @@ finally{
   // this will handle the creation of Patient
 
   const handleSearch = useCallback(
-    (event) => {
+    (event:any) => {
       const query = event.target.value.toLowerCase();
       setSearchQuery(query);
 
       const filtered = users.filter(
-        (user) =>
+        (user:any) =>
           user.firstName.toLowerCase().includes(query) ||
           user.lastName.toLowerCase().includes(query) ||
           user.email.toLowerCase().includes(query)
@@ -95,7 +98,7 @@ finally{
     },
     [users]
   );
-  const paginate = (pageNumber) => {
+  const paginate = (pageNumber:any) => {
     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
     if (pageNumber < 1 || pageNumber > totalPages || pageNumber === currentPage) return;
     setCurrentPage(pageNumber);
@@ -114,7 +117,7 @@ finally{
             (user) =>
               new Paragraph({
                 children: [
-                  new TextRun(`Name: ${user.name}`),
+                  new TextRun(`Name: ${user.firstName}`),
                   new TextRun({ text: `\nEmail: ${user.email}`, break: 1 }),
                   new TextRun({ text: `\nGender: ${user.gender}`, break: 1 }),
                   new TextRun({
@@ -133,7 +136,7 @@ finally{
     });
   };
 
-  const handleView = (user) => {
+  const handleView = (user:any) => {
     setSelectedUser({
       ...user,
       date: user.date || "",
@@ -154,13 +157,13 @@ finally{
     setTherapyRole(false);
   };
 
-  const handleEdit = (user) => {
+  const handleEdit = (user:any) => {
     setSelectedUser(user);
     setIsEditable(true);
     setIsModalVisible(true);
   };
 
-  const handleChangeRole = (user) => {
+  const handleChangeRole = (user:any) => {
     setSelectedUser(user);
   };
 
@@ -173,12 +176,13 @@ finally{
         message.success("User deleted successfully");
         dispatch(GetAllUsers()); // Refresh the user list
       } catch (error) {
-        message.error("Error deleting user" + error.message);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to delete user: ${errorMessage}`);
       }
     }
   };
 
-  const handleUpdate = async (user) => {
+  const handleUpdate = async (user:User) => {
     const confirmed = window.confirm("Are you sure you want to update User?");
     if (confirmed) {
       try {
@@ -188,7 +192,7 @@ finally{
             credentials: {
               firstName: user.firstName,
               email: user.email,
-              date: user.date,
+              date: user.lastLogin,
             },
           })
         );
@@ -196,7 +200,8 @@ finally{
         dispatch(GetAllUsers()); // Refresh the user list
         setIsModalVisible(false);
       } catch (error) {
-        message.error("Error updating user: " + error.message);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to load users: ${errorMessage}`);
       }
     }
   };
@@ -208,7 +213,7 @@ finally{
     }
   };
 
-  const addUser = (newUser) => {
+  const addUser = (newUser:any) => {
     newUser.id = users.length + 1;
     dispatch(createUser(newUser)).then(() => {
       setUsers([...users, newUser]);
@@ -246,7 +251,7 @@ finally{
     const text = filteredUsers
       .map(
         (user) =>
-          `Name: ${user.name}, Email: ${user.email}, Last Login: ${user.lastLogin}`
+          `Name: ${user.firstName}, Email: ${user.email}, Last Login: ${user.lastLogin}`
       )
       .join("\n");
     navigator.clipboard.writeText(text).then(() => {
@@ -490,14 +495,14 @@ finally{
             </p>
 
             {isEditable && (
-              <button
+              <Button
                 onClick={() => handleUpdate(selectedUser)}
                 className="text-center border-2 py-2 rounded-md bg-red-600 text-white font-semibold w-full"
                 disabled={status === 'loading'}
                 loading={status === 'loading'}
               >
                {status === 'loading' ? 'Updating...' : 'Update'}
-              </button>
+              </Button>
             )}
             <VideoCall />
           </div>

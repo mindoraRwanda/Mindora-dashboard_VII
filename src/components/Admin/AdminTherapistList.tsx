@@ -12,8 +12,9 @@ import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
-// import VideoCall from "../VideoCall";
+import { RootState } from "../../Redux/store";
 import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../Redux/store";
 import {
   deleteTherapy,
   getAllTherapists,
@@ -22,10 +23,9 @@ import {
 
 
 export default function AdminTherapistList() {
-  const dispatch = useDispatch();
-
-  const therapists = useSelector((state) => state.Therapy.therapists);
-  const status = useSelector((state) => state.Therapy.status);
+  const dispatch = useDispatch<AppDispatch>();
+  const therapists = useSelector((state:RootState) => state.Therapy.therapists);
+  const status = useSelector((state:RootState) => state.Therapy.status);
   // const error = useSelector((state) => state.Therapy.error);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,7 +46,8 @@ export default function AdminTherapistList() {
       await dispatch(getAllTherapists());
     }
     catch(error){
-      message.error(`Failed to update goal: ${error.message}`);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to update goal: ${errorMessage}`);
     }
     finally{
       setLoading(false);
@@ -58,11 +59,11 @@ export default function AdminTherapistList() {
 
   useEffect(() => {
     if (status === "succeeded") {
-      setFilteredtherapists(therapists);
+      setFilteredtherapists([...therapists]);
     }
   }, [therapists, status]);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber:any) => setCurrentPage(pageNumber);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentTherapy = filteredtherapists.slice(
@@ -76,13 +77,12 @@ export default function AdminTherapistList() {
     dispatch(getAllTherapists()); // Fetch the updated list
   };
 
-  const handleSearch = useCallback(
-    (event) => {
+  const handleSearch = useCallback((event:any) => {
       const query = event.target.value.toLowerCase();
       setSearchQuery(query);
 
       const filtered = therapists.filter(
-        (therapist) =>
+        (therapist:any) =>
           therapist.personalInformation.name.toLowerCase().includes(query) ||
           therapist.personalInformation.phoneNumber
             .toLowerCase()
@@ -94,19 +94,19 @@ export default function AdminTherapistList() {
     [therapists]
   );
 
-  const handleEdit = (therapist) => {
+  const handleEdit = (therapist:any) => {
     setSelectedTherapy(therapist);
     setIsEditable(true);
     setShowModal(true);
   };
 
-  const handleView = (therapist) => {
+  const handleView = (therapist:any) => {
     setSelectedTherapy(therapist);
     setIsEditable(false);
     setShowModal(true);
   };
 
-  const handleDelete = async (therapyId) => {
+  const handleDelete = async (therapyId:any) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete Therapy?"
     );
@@ -116,7 +116,8 @@ export default function AdminTherapistList() {
         message.success("delete therapy sucessfully");
         dispatch(getAllTherapists());
       } catch (error) {
-        message.error(`failed to delete therapy ${error}`);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to delete therapy: ${errorMessage}`);
       }
     }
   };
@@ -136,7 +137,7 @@ export default function AdminTherapistList() {
     SetChangePassModal(false);
   };
 
-  const handleUpdate = async (therapist) => {
+  const handleUpdate = async (therapist:any) => {
     const comfirm = window.confirm("Are you sure you want to update");
     if (comfirm) {
       try {
@@ -159,7 +160,8 @@ export default function AdminTherapistList() {
         dispatch(getAllTherapists()); // Fetch the updated list
         setShowModal(false);
       } catch (error) {
-        message.error("failed to update Therapist" + error.message);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to update therapist: ${errorMessage}`);
       }
     }
   };
@@ -232,14 +234,14 @@ export default function AdminTherapistList() {
       message.success("Data copied to clipboard!");
     });
   };
-  const handleDiploma = (diplomaUrl) => {
+  const handleDiploma = (diplomaUrl:any) => {
     const link = document.createElement("a");
     link.href = diplomaUrl;
     link.download = "diploma.pdf";
     link.click();
   };
   
-  const handleLicense = (LicenseUrl) => {
+  const handleLicense = (LicenseUrl:any) => {
     const link = document.createElement("a");
     link.href = LicenseUrl;
     link.download = "license.pdf";
@@ -463,13 +465,13 @@ export default function AdminTherapistList() {
                 <input
                   type="text"
                   className="p-1 mt-2 border-2 rounded-md border-gray-300"
-                  value={selectedTherapy.personalInformation.name}
+                  value={selectedTherapy?.personalInformation?.name}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
                       ...selectedTherapy,
                       personalInformation: {
-                        ...selectedTherapy.personalInformation,
+                        ...selectedTherapy?.personalInformation,
                         name: e.target.value,
                       },
                     })
@@ -482,13 +484,13 @@ export default function AdminTherapistList() {
                 <input
                   type="text"
                   className="p-1 mt-2 border-2 rounded-md border-gray-300"
-                  value={selectedTherapy.personalInformation.address}
+                  value={selectedTherapy?.personalInformation?.address}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
                       ...selectedTherapy,
                       personalInformation: {
-                        ...selectedTherapy.personalInformation,
+                        ...selectedTherapy?.personalInformation,
                         address: e.target.value,
                       },
                     })
@@ -502,13 +504,13 @@ export default function AdminTherapistList() {
                 <input
                   type="number"
                   className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy.personalInformation.phoneNumber}
+                  value={selectedTherapy?.personalInformation?.phoneNumber}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
                       ...selectedTherapy,
                       personalInformation: {
-                        ...selectedTherapy.personalInformation,
+                        ...selectedTherapy?.personalInformation,
                         phoneNumber: e.target.value,
                       },
                     })
@@ -521,13 +523,13 @@ export default function AdminTherapistList() {
                 <input
                   type="text"
                   className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy.personalInformation.gender}
+                  value={selectedTherapy?.personalInformation?.gender}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
                       ...selectedTherapy,
                       personalInformation: {
-                        ...selectedTherapy.personalInformation,
+                        ...selectedTherapy?.personalInformation,
                         gender: e.target.value,
                       },
                     })
@@ -539,7 +541,7 @@ export default function AdminTherapistList() {
                 <input
                   type="text"
                   className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy.diploma}
+                  value={selectedTherapy?.diploma}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
@@ -554,7 +556,7 @@ export default function AdminTherapistList() {
                 <input
                   type="text"
                   className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy.license}
+                  value={selectedTherapy?.license}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
@@ -569,13 +571,13 @@ export default function AdminTherapistList() {
                 <input
                   type="date"
                   className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy.personalInformation.date}
+                  value={selectedTherapy?.personalInformation?.date}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
                       ...selectedTherapy,
                       personalInformation: {
-                        ...selectedTherapy.personalInformation,
+                        ...selectedTherapy?.personalInformation,
                         date: e.target.value,
                       },
                     })

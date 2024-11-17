@@ -8,13 +8,19 @@ const reports = [
   { id: 2, title: "Therapy Session Summary", date: "2024-07-15", type: "summary" },
   { id: 3, title: "Treatment Effectiveness Analysis", date: "2024-07-30", type: "analysis" },
 ];
-
+interface Report {
+  id: number;
+  title: string;
+  date: string;
+  type: string;
+}
 export default function Reports() {
-  const [selectedReport, setSelectedReport] = useState(null);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [filteredReports, setFilteredReports] = useState<Report[]>(reports);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredReports, setFilteredReports] = useState(reports);
 
-  const handleSearch = (event) => {
+
+  const handleSearch = (event:any) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
 
@@ -26,11 +32,11 @@ export default function Reports() {
     setFilteredReports(filtered);
   };
 
-  const renderReportDetails = (report) => {
+  const renderReportDetails = (report:Report) => {
     switch (report.type) {
       case 'progress':
         return (
-          <div className="mt-4 p-4 bg-blue-100 rounded-lg">
+          <div className="mt-4 p-4 bg-blue-500 rounded-lg">
             <h3 className="font-semibold">Monthly Patient Progress</h3>
             <p>This report shows the progress of patients over the last month.</p>
             <div className="mt-2">
@@ -87,7 +93,7 @@ export default function Reports() {
       </div>
       <div className="grid md:grid-cols-2 gap-4">
         <div>
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-gray-800">
             {filteredReports.map((report) => (
               <li key={report.id} className="py-4">
                 <div className="flex items-center space-x-4">
@@ -115,10 +121,10 @@ export default function Reports() {
         </div>
         <div>
           {selectedReport && (
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">{selectedReport.title}</h3>
+            <div className="bg-gray-400 p-4 rounded-lg">
+              <h3 className="text-xl font-semibold mb-2">{selectedReport.title}</h3>
               {renderReportDetails(selectedReport)}
-              <button className="mt-4 flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              <button className="mt-4 flex items-center px-4 py-2 bg-purple-600 text-xl rounded hover:bg-purple-500">
                 <FaDownload className="mr-2" />
                 Download Report
               </button>

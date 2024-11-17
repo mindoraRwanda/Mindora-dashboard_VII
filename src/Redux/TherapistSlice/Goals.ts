@@ -1,22 +1,24 @@
 import { createAsyncThunk,createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface GoalState {
+interface Goal {
+    id?: string;
     treatmentPlanId: string;
     description: string;
     targetDate: string;
     status:string;
 }
 interface GoalState{
-    data: GoalState[],
+    data: Goal[],
     status: 'idle' | 'loading' | 'succeeded' | 'rejected',
     error: string | null,
+    goalId?: string | null,
 }
 
   
 
 export const createGoal=createAsyncThunk('CreateGoal/createGoal',
-    async (goalData: GoalState, { rejectWithValue }) => {
+    async (goalData: Goal, { rejectWithValue }) => {
         try {
             const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals', goalData);
             return response.data;
@@ -78,7 +80,7 @@ export const updateGoals=createAsyncThunk('UpdateGoals/update',
 const GoalPlanSlice = createSlice({
     name: 'goalPlan',
     initialState: {
-      goals: [],
+      goals: [] as Goal[],
       status: 'idle',
       error: null,
     },
@@ -105,7 +107,7 @@ const GoalPlanSlice = createSlice({
         })
         .addCase(createGoal.rejected, (state, action) => {
           state.status = 'rejected';
-          state.error = action.payload;
+          state.error = action.payload as string| null;
         })
         // this is for getting all Goals
         .addCase(getAllGoals.pending, (state) => {
@@ -115,12 +117,12 @@ const GoalPlanSlice = createSlice({
      
         .addCase(getAllGoals.fulfilled, (state, action) => {
             state.status = 'succeeded';
-            state.data = action.payload;
+            state.goals = action.payload;
             state.error = null;
         })
         .addCase(getAllGoals.rejected,(state,action)=>{
             state.status='rejected';
-            state.error=action.payload;
+            state.error=action.payload as string| null;
         })
         .addCase(getGoalById.pending, (state) => {
             state.status = 'loading';
@@ -129,12 +131,12 @@ const GoalPlanSlice = createSlice({
         })
         .addCase(getGoalById.fulfilled, (state, action) => {
             state.status ='succeeded';
-            state.data = action.payload;
+            state.goals = action.payload;
             state.error=null;
         })
         .addCase(getGoalById.rejected, (state,action)=>{
             state.status='rejected';
-            state.error=action.payload;
+            state.error=action.payload as string | null;
 
         })
         .addCase(deleteGoals.pending, (state) => {
@@ -143,12 +145,12 @@ const GoalPlanSlice = createSlice({
         })
         .addCase(deleteGoals.fulfilled, (state,action) => {
             state.status ='succeeded';
-            state.goals=state.goals.filter(goal=>goal.id!==action.payload);
+            state.goals = state.goals.filter(goal => goal.id !== action.meta.arg);
             state.error = null;
         })
         .addCase(deleteGoals.rejected, (state,action) => {
             state.status = 'rejected';
-            state.error = action.payload;
+            state.error = action.payload as string| null;
         })
         .addCase(updateGoals.pending, (state) => {
             state.status = 'loading';
@@ -161,7 +163,7 @@ const GoalPlanSlice = createSlice({
         })
         .addCase(updateGoals.rejected, (state, action) => {
             state.status = 'rejected';
-            state.error = action.payload || "An error occurred while updating";
+            state.error = action.payload as string| null;
         });
         
     },

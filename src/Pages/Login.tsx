@@ -1,4 +1,5 @@
 import  { useState } from 'react';
+import { message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate,Link } from 'react-router-dom';
 import { RootState, AppDispatch } from '../Redux/store';
@@ -53,7 +54,8 @@ const Login = () => {
           alert('Login failed');
         }
       } catch (error) {
-        alert('An unexpected error occurred. Please try again later.'+ error.message);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to Login: ${errorMessage}`);
       }
       
     };

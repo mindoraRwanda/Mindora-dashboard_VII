@@ -1,18 +1,25 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface TreatmentPlan {
+export interface TreatmentPlan {
+    id?: string;
     patientId: string;
     therapistId: string;
     title: string;
-    descriptions: string;
-    startDate: number | string;
-    endDate: number | string;
-    status: string
+    description: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    patient?: {
+        medicalProfile: {
+            conditions: string;
+        };
+    };
 }
 
 interface TreatmentState {
     data: TreatmentPlan[];
+    selectedPlan?: TreatmentPlan;
     loading: boolean;
     status: "idle" | "loading" | "succeeded" | "rejected";
     error: string | null;
@@ -169,7 +176,7 @@ const treatmentPlanSlice = createSlice({
             })
             .addCase(getTreatmentPlanById.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.data = action.payload;
+                state.selectedPlan = action.payload;
             })
             .addCase(getTreatmentPlanById.rejected, (state, action) => {
                 state.status = 'rejected';

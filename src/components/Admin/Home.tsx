@@ -16,7 +16,7 @@ import { MdAddCircle } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import { Form, Image, Input, Modal } from "antd";
 import FormItem from "antd/es/form/FormItem";
-
+interface ChartRefType extends Chart<"doughnut", number[], string> {}
 
 
 Chart.register(DoughnutController, ArcElement, Legend, Tooltip);
@@ -43,18 +43,25 @@ const list = [
   },
   { id: 4, name: "Placide", role: "Boy's Methal", phone:"+25 078432535",amount:"$100",lastmeet:"2024.08.12" },
 ];
+type Meeting = {
+  name: string;
+  phone?: string;  // Made optional since not all meetings have it
+  time: string;
+  link: string;
+};
 
 const Home = ({ userRole }) => {
   // const { t } = useTranslation();
 
   const [visible, setVisible] = useState(false);
-  const chartRef = useRef(null);
-  const chartRefUser = useRef(null);
+  const chartRef = useRef<HTMLCanvasElement | null>(null);
+  const chartRefUser = useRef<ChartRefType | null>(null);
   const chartIns = useRef(null);
   const chartInsTherapy = useRef(null);
-  const chartPat = useRef(null);
-  const chartInsPat = useRef(null);
-  const [upcomingMeetings, setUpcomingMeetings] = useState([
+  const chartPat = useRef<HTMLCanvasElement | null>(null);
+  const chartInsPat = useRef<ChartRefType | null>(null);
+
+  const [upcomingMeetings, setUpcomingMeetings] = useState<Meeting[]>([
     { name: "Muvunyi Patrick:: Boy Mental therapy", time: "Today at:2:00 - 3:00", link: "@ meet.google.mxz" },
     { name: " Uwampeta Alice::Family therapy", time: "Tomorrow at:17:00 - 19:00", link: "@ meet.google.mxz" }
   ]);
@@ -86,6 +93,7 @@ const Home = ({ userRole }) => {
   useEffect(() => {
     if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d");
+      if(ctx){
       if (chartRefUser.current) {
         chartRefUser.current.destroy();
       }
@@ -101,7 +109,7 @@ const Home = ({ userRole }) => {
           ],
         },
       });
-    }
+    }}
   },[]);
 
   useEffect(() => {
@@ -125,7 +133,7 @@ const Home = ({ userRole }) => {
     }
   },[]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e:any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -292,7 +300,7 @@ const hanleCancelModal=()=>{
                   {upcomingMeetings.map((meeting, index) => (
         <div key={index} className="text-black border border-gray-300 m-5 p-2 rounded">
           <h4 className="font-semibold mt-3">{meeting.name}</h4>
-          <p className="leading-3 capitalize my-2">{meeting.phone}</p>
+          <p className="leading-3 capitalize my-2">{meeting.phoneNumber}</p>
           <p className="leading-3 capitalize my-2">{meeting.time}</p>
           <p className="leading-3 capitalize my-2">{meeting.link}</p>
         </div>

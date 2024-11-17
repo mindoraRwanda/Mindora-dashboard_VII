@@ -7,13 +7,17 @@ import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { useTranslation } from 'react-i18next';
 
-export default function TopBar({ userRole, items = [], }) {
+interface TopBarProps {
+  userRole: string;
+  items?: any[];
+}
+export default function TopBar({ userRole, items = [] }:TopBarProps) {
   const { t, i18n } = useTranslation(); 
   const [filteredItems, setFilteredItems] = useState(items);
   const [calendarModal, setCalendarModal] = useState(false);
   const [name, setName] = useState('');
   const [profilePhoto, setProfilePhoto] = useState('');
-  const [value, onChange] = useState(new Date());
+  const [value, setValue] = useState(new Date());
 
   useEffect(() => {
     setFilteredItems(items);
@@ -49,7 +53,7 @@ export default function TopBar({ userRole, items = [], }) {
 
   
  
-  const handleLanguageChange = (e) => {
+  const handleLanguageChange = (e:any) => {
     const selectedLanguage = e.target.value;
     i18n.changeLanguage(selectedLanguage).then(() => {
       if (filteredItems !== items) {
@@ -57,7 +61,9 @@ export default function TopBar({ userRole, items = [], }) {
       }
     });
   };
-
+  const handleCalendarChange = (nextValue: any) => {
+    setValue(nextValue);
+  };
   return (
     <header className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -116,7 +122,10 @@ export default function TopBar({ userRole, items = [], }) {
         className="text-center"
       >
         <div className="flex justify-center">
-          <Calendar onChange={onChange} value={value} />
+        <Calendar 
+  onChange={handleCalendarChange} 
+  value={value} 
+/>
         </div>
       </Modal>
     </header>

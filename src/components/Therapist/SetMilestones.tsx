@@ -1,13 +1,14 @@
 import { Input, Modal, Form, Select, Button, message,Spin } from "antd";
 import { useForm } from "antd/es/form/Form";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { BiEdit, BiPlus } from "react-icons/bi";
-
 import { FaTrash } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
+import { AppDispatch } from "../../Redux/store";
 import TextArea from "antd/es/input/TextArea";
+import { MilestoneData } from "../../Redux/TherapistSlice/Milestones";
 import {
   createMilestone,
   deleteMilestone,
@@ -18,15 +19,15 @@ import {
 export default function SetMilestones() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [goalId, setGoalId] = useState(null);
+  const [goalId, setGoalId] = useState<string | null>(null);
   const [currentMilestone, setCurrentMilestone] = useState(null);
-  const [milestoneData, SetMilestones] = useState([]);
+  const [milestoneData, setMilestoneData] = useState<MilestoneData[]>([]);
 
-  const status = useSelector((state: RootState) => state.milestone.status);
+  const milestones = useSelector((state: RootState) => state.milestone.data);
   const [form] = useForm();
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
 
-  const handleShowModal = (milestone) => {
+  const handleShowModal = (milestone:any) => {
     setShowModal(true);
     setCurrentMilestone(milestone.id);
     form.setFieldsValue({
@@ -57,10 +58,11 @@ export default function SetMilestones() {
         setLoading(true);
         const result = await dispatch(getAllMilestones());
         if (result && result.payload) {
-          SetMilestones(result.payload);
+          setMilestoneData(milestones);
         }
       } catch (error) {
-        message.error(`Failed to fetch milestones: ${error.message}`);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to load users: ${errorMessage}`);
       }
       finally{
         setLoading(false);
@@ -68,10 +70,10 @@ export default function SetMilestones() {
     };
 
     fetchAllMilestones();
-  }, [dispatch]);
+  }, [dispatch, milestones]);
 
   // function to create milestones
-  const handleCreateMilestones = async (values) => {
+  const handleCreateMilestones = async (values:any) => {
     try {
       setLoading(true);
       const Data = {
@@ -85,46 +87,52 @@ export default function SetMilestones() {
       form.resetFields();
       setShowModal(false);
     } catch (error) {
-      message.error(`Failed to create milestone: ${error.message}`);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to create milestones: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
   };
 
   // function to update milestones
-
-  const handleUpdateMilestone = async (values) => {
+  const handleUpdateMilestone = async (values: any) => {
     try {
       setLoading(true);
-      const milestoneData = {
-      
-        targetDate: values.targetDate,
-        description: values.description,
-        status: values.status,
-      };
-      const result = await dispatch(updateMilestone({  id: currentMilestone,milestoneData:milestoneData}));
-      if (updateMilestone.fulfilled.match(result)) {
+  
+      if (currentMilestone !== null) {
+        await dispatch(
+          updateMilestone({
+            id: currentMilestone,
+            milestoneData: {
+              targetDate: values.targetDate,
+              description: values.description,
+              status: values.status,
+            },
+          })
+        );
         message.success("Milestone updated successfully");
         form.resetFields();
         setShowModal(false);
-      } else if (updateMilestone.rejected.match(result)) {
-        message.error("Failed to update treatment plan.");
+      } else {
+        message.error("Failed to update milestone: currentMilestone is null");
       }
     } catch (error) {
-      message.error(`Failed to update goal: ${error.message}`);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to update milestone: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
   };
 
   // function to delete milestones
-  const handleDeleteGoal = async (id) => {
+  const handleDeleteGoal = async (id:any) => {
     try {
       setLoading(true);
       await dispatch(deleteMilestone(id));
       message.success("Milestone deleted successfully");
     } catch (error) {
-      message.error(`Failed to delete milestone: ${error.message}`);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to delete milestone: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -151,14 +159,13 @@ export default function SetMilestones() {
             Add new
           </button>
         </div>
-        <div className="bg-gray-100 rounded shadow-xl border p-6 my-3">
          
           {loading? (
    <div className="flex items-center justify-center text-red-600 min-h-screen">
    <Spin size="large" />
  </div>
           ):(
-            <div className="bg-white rounded-md shadow-xl border p-6 my-3 ">
+            <div className="bg-white shadow-xl  p-6 my-3 ">
             {milestoneData.map((milestone) => (
               <div key={milestone.id} className="flex justify-between">
                 <div>
@@ -205,7 +212,7 @@ export default function SetMilestones() {
           </div>
           )};
         </div>
-      </div>
+    
       <Modal footer={null} visible={showModal} onCancel={handleCancelModal}>
         {/* Add your modal content here */}
         <Form
@@ -219,7 +226,12 @@ export default function SetMilestones() {
           </h1>
           {!currentMilestone && (
             <Form.Item name="goalId" label="Enter GoalId:">
-              <Input className="p-2 text-black" type="text" readOnly value={goalId} />
+             <Input
+  className="p-2 text-black"
+  type="text"
+  readOnly
+  value={goalId || ""} 
+/>
             </Form.Item>
           )}
           <Form.Item name="description" label="Description:">
@@ -236,7 +248,7 @@ export default function SetMilestones() {
             />
           </Form.Item>
           <Form.Item name="status" label="Status:">
-            <Select name="status" defaultValue="">
+            <Select  defaultValue="">
               <Select.Option value="">Select Status</Select.Option>
               <Select.Option value="completed">Completed</Select.Option>
               <Select.Option value="pending">Pending</Select.Option>

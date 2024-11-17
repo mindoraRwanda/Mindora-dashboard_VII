@@ -1,15 +1,14 @@
-import { createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import { PayloadAction,createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface AvailableSlot{
+export interface Appointment {
     id: string;
     startTime: string;
-    endTime: string
-    therapistId:string;
-    availableDay:string;
-    recurring: boolean|string;
-    date:string;
-    timeZone:string;
+    endTime: string;
+    location: string;
+    appointmentType: string;
+    status: string;
+    notes: string;
 }
 
 
@@ -47,7 +46,7 @@ async (therapistId: string,{rejectWithValue})=>{
         const response= await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/therapists/${therapistId}`);
         return response.data;
     }
-    catch (err){
+    catch (err) {
         return rejectWithValue(err.response?.data || 'unexpected error');
     }
 }) ;
@@ -57,8 +56,8 @@ async (therapistId: string,{rejectWithValue})=>{
 export const deleteAvailableSlot=createAsyncThunk('deleteAvailableSlot/delete',
     async(id:string,{rejectWithValue})=>{
         try{
-            const response=await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/${id}`);
-            return response.data;
+            await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/${id}`);
+            return id;
         }
         catch (err){
             return rejectWithValue(err.response?.data || 'unexpected error');
@@ -97,12 +96,12 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                     state.status = 'loading';
                     state.error = null;
                 })
-                .addCase(createAvailableSlot.fulfilled, (state, action) => {
+                .addCase(createAvailableSlot.fulfilled, (state, action: PayloadAction<AvailableSlot>) => {
                     state.status = 'succeeded';
                     state.data.push(action.payload);
                     state.error = null;
                 })
-                .addCase(createAvailableSlot.rejected, (state, action) => {
+                .addCase(createAvailableSlot.rejected, (state, action:PayloadAction<string>) => {
                     state.status = 'rejected';
                     state.error = action.payload as string;
                 })
@@ -112,12 +111,12 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                     state.status='loading';
                     state.error=null;       
                 })
-                .addCase(getAllAvailableSlot.fulfilled, (state, action) => {
+                .addCase(getAllAvailableSlot.fulfilled, (state, action: PayloadAction<AvailableSlot[]>) => {
                     state.status = 'succeeded';
                     state.data = action.payload;
                     state.error = null;
                 })
-             .addCase(getAllAvailableSlot.rejected, (state, action)=>{
+             .addCase(getAllAvailableSlot.rejected, (state,  action: PayloadAction<string>)=>{
                  state.status='rejected';
                  state.error=action.payload as string;
              })
@@ -133,7 +132,7 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                 state.error = null;
             })
             
-             .addCase(deleteAvailableSlot.rejected, (state, action)=>{
+             .addCase(deleteAvailableSlot.rejected, (state, action: PayloadAction<AvailableSlot>)=>{
                  state.status='rejected';
                  state.error=action.payload as string;
              })
@@ -145,18 +144,18 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                  state.error=null;
              })
 
-             .addCase(updateAvailableSlot.fulfilled, (state, action) => {
+             .addCase(updateAvailableSlot.fulfilled, (state, action: PayloadAction<AvailableSlot>) => {
                 state.status = 'succeeded';
-                const index = state.data.findIndex(slot => slot.id === action.payload.id);
+                const index = state.data.findIndex((slot) => slot.id === action.payload.id);
                 if (index !== -1) {
                     state.data[index] = action.payload;
                 }
                 state.error = null;
             })
-             .addCase(updateAvailableSlot.rejected, (state, action)=>{
-                 state.status='rejected';
-                 state.error=action.payload as string;
-             })
+            .addCase(updateAvailableSlot.rejected, (state, action)=>{
+                state.status='rejected';
+                state.error=action.payload as string;
+            })
              // Reset Status
              .addCase(resetStatus, (state) => {
                 state.status = 'idle';

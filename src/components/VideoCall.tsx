@@ -1,12 +1,13 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { message } from 'antd';
 import { FaVideo, FaMicrophone, FaPhoneSlash } from 'react-icons/fa';
 
 export default function VideoCall() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(true);
-  const localVideoRef = useRef(null);
-  const peerConnectionRef = useRef(null);
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
 
   const startCall = async () => {
     try {
@@ -19,18 +20,19 @@ export default function VideoCall() {
       }
 
       const peerConnection = new RTCPeerConnection();
-      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+      stream.getTracks().forEach((track: MediaStreamTrack) => peerConnection.addTrack(track, stream));
 
       peerConnectionRef.current = peerConnection;
       setIsCallActive(true);
     } catch (error) {
-      console.error('Error accessing media devices.', error);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to access media device: ${errorMessage}`);
     }
   };
 
   const endCall = () => {
-    const tracks = localVideoRef.current?.srcObject?.getTracks();
-    tracks?.forEach(track => track.stop());
+    const tracks = (localVideoRef.current?.srcObject as MediaStream)?.getTracks(); // <-- Added type assertion here
+    tracks?.forEach((track: MediaStreamTrack) => track.stop());
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = null;
     }
@@ -44,16 +46,16 @@ export default function VideoCall() {
   };
 
   const toggleMute = () => {
-    const audioTracks = localVideoRef.current?.srcObject?.getAudioTracks();
-    if (audioTracks.length > 0) {
+    const audioTracks = (localVideoRef.current?.srcObject as MediaStream)?.getAudioTracks(); // <-- Added type assertion here
+    if (audioTracks && audioTracks.length > 0) {
       audioTracks[0].enabled = !isMuted;
       setIsMuted(!isMuted);
     }
   };
 
   const toggleVideo = () => {
-    const videoTracks = localVideoRef.current?.srcObject?.getVideoTracks();
-    if (videoTracks.length > 0) {
+    const videoTracks = (localVideoRef.current?.srcObject as MediaStream)?.getVideoTracks(); // <-- Added type assertion here
+    if (videoTracks && videoTracks.length > 0) {
       videoTracks[0].enabled = !isVideoOn;
       setIsVideoOn(!isVideoOn);
     }

@@ -11,25 +11,58 @@ import html2canvas from "html2canvas";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import * as XLSX from "xlsx";
 import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
+import { AppDispatch } from "../../Redux/store";
+import { Patient } from "../../Redux/Adminslice/PatientSlice";
 import {
   allPatients,
   deletePatient,
+  PatientsListProps,
   updatePatient,
 } from "../../Redux/Adminslice/PatientSlice";
 
-export default function PatientsList({ goToPlan }) {
-  const patient = useSelector((state) => state.patients.patients);
-  const status = useSelector((state) => state.patients.status);
+
+// We defined type for Patient to optimize operations
+export type Patient = {
+  id: number;
+  user: {
+    firstName: string;
+    email: string;
+  };
+  personalInformation: {
+    age: string;
+    gender: string;
+  };
+  medicalProfile: {
+    lastVisit: string;
+    condition: string;
+  };
+  emergencyContact: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+  };
+};
+interface PatientsListProps {
+  goToPlan: (patientId: string) => void;
+}
+
+export default function PatientsList({ goToPlan }:PatientsListProps) {
+const patient = useSelector((state: RootState) => state.patients.patients);
+const status = useSelector((state: RootState) => state.patients.status);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [filteredPatient, setFilteredPatient] = useState([]);
+  const [filteredPatient, setFilteredPatient] = useState<Patient[]>([]);
   const [isEditable, setIsEditable] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [patients, setPatient] = useState<Patient[]>([]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const itemsPerPage = 4;
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+
 
   // This used to get all patient in system
   useEffect(() => {
@@ -38,7 +71,8 @@ export default function PatientsList({ goToPlan }) {
         setLoading(true);
        await dispatch(allPatients());
       } catch (error) {
-        message.error(`Failed to load users: ${error.message}`);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to load users: ${errorMessage}`);
       } finally {
         setLoading(false);
       }
@@ -53,26 +87,25 @@ export default function PatientsList({ goToPlan }) {
     }
   }, [status, patient]);
 
-  const handleEditClick = (patient) => {
+  const handleEditClick = (patient:Patient) => {
     setIsEditable(true);
     setSelectedPatient(patient);
     setIsModalVisible(true);
   };
 
-  const handleSearch = (event) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
 
-    const filtered = patient.filter(
-      (patient) =>
-        patient.name.toLowerCase().includes(query) ||
-        patient.email.toLowerCase().includes(query)
-    );
-    setFilteredPatient(filtered);
+    const filtered = patients.filter((patient: Patient) => 
+      patient.user?.email?.toLowerCase().includes(query.toLowerCase())
+  ) as Patient[];
+  setFilteredPatient(filtered);
+  
     setCurrentPage(1);
   };
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber:number) => setCurrentPage(pageNumber);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentPatients = filteredPatient.slice(
@@ -80,7 +113,7 @@ export default function PatientsList({ goToPlan }) {
     indexOfLastItem
   );
 
-  const handleView = (patient) => {
+  const handleView = (patient:Patient) => {
     setSelectedPatient(patient);
     setIsModalVisible(true);
     setIsEditable(false);
@@ -90,42 +123,75 @@ export default function PatientsList({ goToPlan }) {
     setIsModalVisible(false);
   };
 
-  const handleDelete = async (patientId) => {
+  const handleDelete = async (patientId:number|string) => {
     const confirmed = window.confirm("Do you want to delete patient ?");
     if (confirmed) {
       try {
-        dispatch(deletePatient(patientId));
+       await dispatch(deletePatient(patientId));
         message.success("Patient Deleted successfully");
-        dispatch(allPatients()); // Refresh the patient list
+       await dispatch(allPatients()); // Refresh the patient list
       } catch (error) {
-        message.error(`Failed to delete patient ${error}`);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to load users: ${errorMessage}`);
       }
     }
   };
+
+    // Function to Update the Patient
+    const handleUpdate = async (selectedPatient: Patient) => {
+      if(selectedPatient){
+      const confirmed = window.confirm(
+        "Are you sure you want to update this patient?"
+      );
+      if (confirmed) {
+        try {
+          const updatePatientData = {
+            personalInformation: {
+              age: selectedPatient.personalInformation.age,
+              gender: selectedPatient.personalInformation.gender,
+            },
+            medicalProfile: {
+              lastVisit: selectedPatient.medicalProfile.lastVisit,
+              condition: selectedPatient.medicalProfile.condition,
+            },
+            emergencyContact: {
+              name: selectedPatient.emergencyContact.name,
+              email: selectedPatient.emergencyContact.email,
+              phoneNumber: selectedPatient.emergencyContact.phoneNumber,
+            },
+          };
+          await dispatch(
+            updatePatient({ id: selectedPatient.id, updatePatientData })
+          ).unwrap();
+          message.success("Patient updated successfully");
+          setIsModalVisible(false);
+          dispatch(allPatients());
+        } catch (error) {
+          const errorMessage = (error as Error).message;
+          message.error(`Failed to load users: ${errorMessage}`);
+        }
+      }
+    }};
 
   const handleExportWord = () => {
     const doc = new Document({
       sections: [
         {
           children: currentPatients.map(
-            (patient) =>
+            (patient: Patient) =>
               new Paragraph({
                 children: [
-                  new TextRun(`Name: ${patient.name}`),
+                  new TextRun(`Name: ${patient.user.firstName}`),
                   new TextRun({
-                    text: `\nEmail: ${patient.email}`,
+                    text: `\nEmail: ${patient.user.email}`,
                     break: 1,
                   }),
                   new TextRun({
-                    text: `\nGender: ${patient.gender}`,
+                    text: `\nGender: ${patient.personalInformation.gender}`,
                     break: 1,
                   }),
                   new TextRun({
-                    text: `\nLast Visit: ${patient.lastLogin}`,
-                    break: 1,
-                  }),
-                  new TextRun({
-                    text: `\n`,
+                    text: `\nLast Visit: ${patient.medicalProfile.lastVisit}`,
                     break: 1,
                   }),
                 ],
@@ -140,45 +206,47 @@ export default function PatientsList({ goToPlan }) {
     });
   };
 
-  // function to get individual patient information
-
-  // Function to Update the Patient
-  const handleUpdate = async (selectedPatient) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to update this patient?"
-    );
-    if (confirmed) {
-      try {
-        const updatePatientData = {
-          personalInformation: {
-            age: selectedPatient.personalInformation.age,
-            gender: selectedPatient.personalInformation.gender,
-          },
-          medicalProfile: {
-            lastVisit: selectedPatient.medicalProfile.lastVisit,
-            condition: selectedPatient.medicalProfile.condition,
-          },
-          emergencyContact: {
-            name: selectedPatient.emergencyContact.name,
-            email: selectedPatient.emergencyContact.email,
-            phoneNumber: selectedPatient.emergencyContact.phoneNumber,
-          },
-        };
-        await dispatch(
-          updatePatient({ id: selectedPatient.id, updatePatientData })
-        ).unwrap();
-        message.success("Patient updated successfully");
-        setIsModalVisible(false);
-        dispatch(allPatients());
-      } catch (error) {
-        message.error(`Failed to update patient: ${error}`);
-      }
-    }
+  const handleExportPDF = () => {
+    const input = document.getElementById("Patient-table");
+    if (!input) return;
+    html2canvas(input, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, "PNG", 10, 10, canvas.width / 12, canvas.height / 12);
+      pdf.save("Patients_list.pdf");
+    });
   };
 
-  const addPatient = (newPatient) => {
+  
+// function to get data in excell
+const handleExportExcel = () => {
+  const worksheet = XLSX.utils.json_to_sheet(filteredPatient);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Patients");
+  XLSX.writeFile(workbook, "Patients_list.xlsx");
+};
+
+// function to copy data
+
+const handleCopy = () => {
+  const text = filteredPatient
+    .map(
+      (patient) =>
+       `Name: ${patient.user.firstName}, Email: ${patient.user.email}, Gender: ${patient.personalInformation.gender}, Last visit: ${patient.medicalProfile.lastVisit}`
+    )
+    .join("\n");
+  navigator.clipboard.writeText(text).then(() => {
+    message.success("Data copied to clipboard!");
+  });
+};
+
+  // function to get individual patient information
+
+
+
+  const addPatient = (newPatient:Patient) => {
     newPatient.id = patient.length + 1;
-    const updatedPatients = [...patient, newPatient];
+    const updatedPatients: Patient[] = [...patient, newPatient as Patient];
     setPatient(updatedPatients);
     setFilteredPatient(updatedPatients);
     setIsModalVisible(false);
@@ -191,41 +259,8 @@ export default function PatientsList({ goToPlan }) {
     setIsModalVisible(true);
   };
 
-  const handleExportPDF = () => {
-    const input = document.getElementById("Patient-table");
-    html2canvas(input, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF();
-      pdf.addImage(
-        imgData,
-        "PNG",
-        10,
-        10,
-        canvas.width / 12,
-        canvas.height / 12
-      );
-      pdf.save("Patients_list.pdf");
-    });
-  };
 
-  const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredPatient);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Patients");
-    XLSX.writeFile(workbook, "Patients_list.xlsx");
-  };
 
-  const handleCopy = () => {
-    const text = filteredPatient
-      .map(
-        (patient) =>
-          `Name: ${patient.name}, Email: ${patient.email}, Gender: ${patient.gender}, Last visit: ${patient.lastLogin}`
-      )
-      .join("\n");
-    navigator.clipboard.writeText(text).then(() => {
-      message.success("Data copied to clipboard!");
-    });
-  };
 
   return   loading ? (
     <div className="flex justify-center items-center min-h-screen">
@@ -547,7 +582,7 @@ export default function PatientsList({ goToPlan }) {
             </div>
             {isEditable && (
               <button
-                onClick={() => handleUpdate(selectedPatient)}
+              onClick={() => selectedPatient && handleUpdate(selectedPatient)}
                 className="text-center border-2 p-2 ml-3 rounded-md bg-red-500 text-white font-semibold w-full"
               >
                 {status === "loading" ? "Updating ..." : "Update"}

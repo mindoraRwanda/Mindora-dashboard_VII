@@ -1,42 +1,51 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { MdCancel } from "react-icons/md";
 import { FaSync, FaTrash } from "react-icons/fa";
 import { AiOutlineSave } from "react-icons/ai";
-import { Button, Form, Input, message, Modal, Select,Spin } from "antd";
+import { Button, Form, Input, message, Modal, Select, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { createGoal, deleteGoals, getAllGoals, updateGoals } from "../../Redux/TherapistSlice/Goals";
+import {
+  createGoal,
+  deleteGoals,
+  getAllGoals,
+  updateGoals,
+} from "../../Redux/TherapistSlice/Goals";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../Redux/store";
+import { RootState, AppDispatch } from "../../Redux/store";
 
+interface Goal {
+  id: string;
+  description: string;
+  targetDate: string;
+  status: string;
+}
 export default function TreatmentPlan() {
   const status = useSelector((state: RootState) => state.goalPlan.status);
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [creatingGoal, setCreatingGoal] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [treatmentPlanId, setTreatmentPlanId] = useState(null);
-  const [Goaldata, setGoalData] = useState([]);
-  const [currentGoalId, setCurrentGoalId] = useState(null);
+  const [treatmentPlanId, setTreatmentPlanId] = useState<string | null>(null);
+  const [Goaldata, setGoalData] = useState<Goal[]>([]);
+  const [currentGoalId, setCurrentGoalId] = useState<string | null>(null);
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-
-  const showModal=(goal)=>{
+  const showModal = (goal: Goal) => {
     setEditModalVisible(true);
     setCurrentGoalId(goal.id);
     form.setFieldsValue({
       description: goal.description,
       targetDate: goal.targetDate ? goal.targetDate.slice(0, 10) : "",
       status: goal.status,
-    })
+    });
   };
 
-  const handleCancelModal=()=>{
+  const handleCancelModal = () => {
     setEditModalVisible(false);
     form.resetFields();
-    dispatch(resetStatus());
-  
+    // dispatch(resetStatus());
   };
-
 
   // useEffect for Getting Single treatmentPlan
   useEffect(() => {
@@ -60,9 +69,9 @@ export default function TreatmentPlan() {
           setGoalData(result.payload);
         }
       } catch (error) {
-        message.error(`Failed to update goal: ${error.message}`);
-      }
-      finally{
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to update Goal: ${errorMessage}`);
+      } finally {
         setLoading(false);
       }
     };
@@ -70,64 +79,72 @@ export default function TreatmentPlan() {
   }, [dispatch]);
 
   // function for creating Goals
-  const handleCreateGoal = async (values) => {
+  const handleCreateGoal = async (values: any) => {
     try {
-      setLoading(true);
+      setCreatingGoal(true);
       const goalData = {
         treatmentPlanId: values.treatmentPlanId,
         description: values.description,
         status: values.status,
         targetDate: values.targetDate,
       };
-      await dispatch(createGoal(goalData));
-      message.success("Goal created successfully!");
-      form.resetFields();
+      const result = await dispatch(createGoal(goalData));
+      if (createGoal.fulfilled.match(result)) {
+        message.success("Goal created successfully!");
+        form.resetFields();
+        dispatch(getAllGoals());
+      } else {
+        message.error("Failed to create Goal.");
+      }
     } catch (error) {
-      message.error(`Failed to create goal: ${error.message}`);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to create Goal: ${errorMessage}`);
+    } finally {
+      setCreatingGoal(false);
+    }
+  };
+  // Logics for Updating goals
+  const handleUpdateGoal = async (values: any) => {
+    try {
+      setLoading(true);
+      const goalData = {
+        treatmentPlanId: treatmentPlanId as string,
+        description: values.description,
+        status: values.status,
+        targetDate: values.targetDate,
+      };
+
+      const result = await dispatch(
+        updateGoals({
+          id: currentGoalId as string,
+          goalData: goalData,
+        })
+      );
+      if (updateGoals.fulfilled.match(result)) {
+        message.success("Goal updated successfully!");
+        setEditModalVisible(false);
+        form.resetFields();
+        // dispatch(getAllGoals());
+      } else {
+        message.error("Failed to update treatment Goal.");
+      }
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to update Goal: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
   };
-  // Logics for Updating goals
-const handleUpdateGoal=async (values) => {
-  try{
-    setLoading(true);
-    const goalData={
-      description: values.description,
-      status: values.status,
-      targetDate: values.targetDate,
-    };
-     
-    const result = await dispatch(updateGoals({
-      id: currentGoalId,
-      goalData: goalData
-    }));
- if(updateGoals.fulfilled.match(result)){
-  message.success("Goal updated successfully!");
-  setEditModalVisible(false);
-  form.resetFields();
-  dispatch(getAllGoals());
- }
- else if(updateGoals.rejected.match(result)){
-  message.error("Failed to update treatment plan.");
- }
-  }
-  catch(error){
-    message.error(`Failed to update goal: ${error.message}`);
-  }
-  finally{
-    setLoading(false);
-  }
-};
 
   // Function for deleting goals
-  const handleDeleteGoal=async (id) => {
+  const handleDeleteGoal = async (id: string) => {
     try {
       setLoading(true);
       await dispatch(deleteGoals(id));
       message.success("Goal deleted successfully!");
     } catch (error) {
-      message.error(`Failed to delete goal: ${error.message}`);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to delete goal: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -157,7 +174,7 @@ const handleUpdateGoal=async (values) => {
             <Input type="text" readOnly />
           </Form.Item>
           <Form.Item name="description" label="Description:">
-            <TextArea type="text" placeholder="Enter Goal Description" />
+            <TextArea placeholder="Enter Goal Description" />
           </Form.Item>
           {/* logic for date */}
           <div className="flex flex-row gap-2">
@@ -167,12 +184,7 @@ const handleUpdateGoal=async (values) => {
             {/* logic for status */}
 
             <Form.Item className="w-1/2 rounded " name="status" label="status:">
-              <Select
-                name="status"
-                id="status"
-                className="w-full"
-                defaultValue=""
-              >
+              <Select id="status" className="w-full" defaultValue="">
                 <Select.Option value="">Select Status</Select.Option>
                 <Select.Option value="completed">completed</Select.Option>
                 <Select.Option value="pending">pending</Select.Option>
@@ -187,8 +199,8 @@ const handleUpdateGoal=async (values) => {
               <Button
                 className="w-2/3 bg-purple-600 text-white font-semibold"
                 htmlType="submit"
-                loading={loading}
-                disabled={loading}
+                disabled={creatingGoal}
+                loading={creatingGoal}
               >
                 <AiOutlineSave size={20} />
                 {status === "loading" ? " Loading..." : "Create Goal"}
@@ -208,74 +220,82 @@ const handleUpdateGoal=async (values) => {
           {" "}
           List Of All Goals
         </h1>
-        {loading? (
-   <div className="flex items-center justify-center text-red-600 min-h-screen">
-   <Spin size="large" />
- </div>
-          ):(
-        <div className="bg-white rounded-lg shadow-xl p-6">
-          {Goaldata.map((Goal) => (
-            <div key={Goal.id} className="bg-white rounded-lg border p-2 mt-2">
-              <div className="flex justify-between">
-                <div>
-                  <p className="text-black text-md my-3">
-                    <strong>Description:</strong> {Goal.description}
-                  </p>
-                  <p className="text-black text-md my-3">
-                    <strong>targetDate:</strong>
-                    {Goal.targetDate}
-                  </p>
-                </div>
+        {loading ? (
+          <div className="flex items-center justify-center text-red-600 min-h-screen">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-xl p-6">
+            {Goaldata.map((Goal) => (
+              <div
+                key={Goal.id}
+                className="bg-white rounded-lg border p-2 mt-2"
+              >
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-black text-md my-3">
+                      <strong>Description:</strong> {Goal.description}
+                    </p>
+                    <p className="text-black text-md my-3">
+                      <strong>targetDate:</strong>
+                      {Goal.targetDate}
+                    </p>
+                  </div>
 
-                <p
-                  className={`italic m-5 p-2 text-sm  ${
-                    Goal.status === "completed"
-                      ? "text-purple-600"
-                      : Goal.status === "in-progress"
-                      ? "text-green-500"
-                      : Goal.status === "pending"
-                      ? "text-orange-400"
-                      : Goal.status === "cancelled"
-                      ? "text-red-700"
-                      : ""
-                  }`}
-                >
-                  {Goal.status}
-                </p>
-                <div className="flex gap-2 my-3">
-                  <Button
-                    className="p-1 text-white bg-purple-600 font-semibold rounded flex gap-1 text-md"
-                     onClick={() => showModal(Goal)}
+                  <p
+                    className={`italic m-5 p-2 text-sm  ${
+                      Goal.status === "completed"
+                        ? "text-purple-600"
+                        : Goal.status === "in-progress"
+                        ? "text-green-500"
+                        : Goal.status === "pending"
+                        ? "text-orange-400"
+                        : Goal.status === "cancelled"
+                        ? "text-red-700"
+                        : ""
+                    }`}
                   >
-                    <FaSync />
-                    Update
-                  </Button>
-                  <Button
-                    className="p-1 text-white bg-red-500 font-semibold rounded flex gap-1 text-md"
-                     onClick={() => handleDeleteGoal(Goal.id)}
-                  >
-                    <FaTrash className="mt-1" />
-                    Delete
-                  </Button>
+                    {Goal.status}
+                  </p>
+                  <div className="flex gap-2 my-3">
+                    <Button
+                      className="p-1 text-white bg-purple-600 font-semibold rounded flex gap-1 text-md"
+                      onClick={() => showModal(Goal)}
+                    >
+                      <FaSync />
+                      Update
+                    </Button>
+                    <Button
+                      className="p-1 text-white bg-red-500 font-semibold rounded flex gap-1 text-md"
+                      onClick={() => handleDeleteGoal(Goal.id)}
+                    >
+                      <FaTrash className="mt-1" />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-          )}
+            ))}
+          </div>
+        )}
       </div>
-      <Modal open={editModalVisible} footer={null} onCancel={handleCancelModal} title="Update Goal">
+      <Modal
+        open={editModalVisible}
+        footer={null}
+        onCancel={handleCancelModal}
+        title="Update Goal"
+      >
         <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleUpdateGoal}
+          form={form}
+          layout="vertical"
+          onFinish={handleUpdateGoal}
           className="bg-white rounded p-6"
         >
           <Form.Item name="description" label="Description:">
             <Input type="text" placeholder="Enter Goal Description" />
           </Form.Item>
           <Form.Item name="targetDate" label="Target Date:">
-            <Input type="date" placeholder="Enter Goal Target"/>
+            <Input type="date" placeholder="Enter Goal Target" />
           </Form.Item>
           <Form.Item name="status" label="Goal Status">
             <Select>
@@ -290,8 +310,8 @@ const handleUpdateGoal=async (values) => {
               <Button
                 className="w-2/3 bg-purple-600 text-white font-semibold"
                 htmlType="submit"
-                loading={loading} 
-                disabled={loading}
+                disabled={status === "loading"}
+                loading={status === "loading"}
               >
                 <AiOutlineSave size={20} />{" "}
                 {status === "loading" ? "Loading..." : "Update Treatment Goals"}

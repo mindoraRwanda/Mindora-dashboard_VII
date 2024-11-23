@@ -9,6 +9,8 @@ export interface Appointment {
   appointmentType: string;
   status: string;
   notes: string;
+  patientId: string;
+  component?: React.ReactNode;
 }
 interface AppointmentState {
   appointments: Appointment[];
@@ -45,7 +47,6 @@ export const updateAppointments = createAsyncThunk(
         `https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${appointmentData.id}`,
         appointmentData
       );
-      console.log("Data to be updated", response.data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -56,7 +57,7 @@ export const updateAppointments = createAsyncThunk(
 
 export const deleteAppointment = createAsyncThunk(
   "deleteAppointment/delete",
-  async (id: string, { rejectWithValue }) => {
+  async (id: string | number, { rejectWithValue }) => {
     try {
       const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${id}`);
       return response.data;
@@ -93,31 +94,34 @@ const appointmentSlice = createSlice({
         state.status = "rejected";
         state.error = action.payload;
       })
-      .addCase(updateAppointments.pending,(state)=>{
+      .addCase(updateAppointments.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateAppointments.fulfilled, (state, action) => {
         state.loading = false;
         state.status = "succeeded";
-        state.appointments = state.appointments.map(app =>
-          app.id === action.payload.id ? action.payload : app);
+        if (action.payload) {
+          state.appointments = state.appointments.map(app =>
+            app.id === action.payload.id ? { ...app, ...action.payload } : app
+          );
+        }
       })
-      .addCase(updateAppointments.rejected,(state,action)=>{
+      .addCase(updateAppointments.rejected, (state, action) => {
         state.loading = false;
         state.status = "rejected";
         state.error = action.payload;
       })
-      .addCase(deleteAppointment.pending,(state)=>{
+      .addCase(deleteAppointment.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deleteAppointment.fulfilled, (state, action)=>{
+      .addCase(deleteAppointment.fulfilled, (state, action) => {
         state.loading = false;
         state.status = "succeeded";
-        state.appointments = state.appointments.filter(app => app.id!== action.payload);
+        state.appointments = state.appointments.filter(app => app.id !== action.payload);
       })
-      .addCase(deleteAppointment.rejected, (state, action)=>{
+      .addCase(deleteAppointment.rejected, (state, action) => {
         state.loading = false;
         state.status = "rejected";
         state.error = action.payload;

@@ -177,7 +177,7 @@ const TherapySlice = createSlice({
         state.status = "failed";
         state.error = action.payload as string;
       })
-// the following is for updating the therapists
+    // the following is for updating the therapists
     .addCase(updateTherapy.pending,(state)=>{
       state.status='loading';
     })

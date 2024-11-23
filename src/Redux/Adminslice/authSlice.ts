@@ -92,6 +92,8 @@ const authSlice = createSlice({
        localStorage.setItem('profileImage', action.payload.user?.profileImage || '');
        console.log("Profile Image stored:", action.payload.user?.profileImage);
 
+       localStorage.setItem('UserId', action.payload.user?.id || '');
+       console.log("Logged UserId:", action.payload.user?.id);
 
       })
       .addCase(loginUser.rejected, (state, action) => {

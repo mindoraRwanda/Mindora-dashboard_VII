@@ -59,8 +59,7 @@ export default function ManageAppointMents() {
   useEffect(() => {
     if (status === "succeeded") {
       message.success("Operation Successfully");
-      // form.resetFields();
-      // dispatch(resetStatus());
+
       dispatch(getAllAvailableSlot(therapistId));
     } else if (status === "rejected" && error) {
       message.error(error || "Failed to create appointment");

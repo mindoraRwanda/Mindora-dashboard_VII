@@ -22,6 +22,9 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Modal } from "antd";
 import { BsFillCalendar2EventFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
+import { getAppointmentById, summation_Appointment } from "../../Redux/TherapistSlice/Appointment";
 
 
 
@@ -57,6 +60,14 @@ const Home = () => {
   const barChartIns = useRef<Chart | null>(null);
   const lineChartIns = useRef<Chart | null>(null);
 
+  const dispatch=useDispatch();
+  const therapistId = localStorage.getItem('TherapistId');
+    useEffect(()=>{
+      dispatch(getAppointmentById(therapistId));
+    },[dispatch,therapistId]);
+  
+
+
   const [notifications] = useState<Notification[]>([
     { id: 1, title: "Emergency: John Doe", message: "Patient experiencing severe anxiety.", time: "2 mins ago" },
     { id: 2, title: "Emergency: Jane Smith", message: "Patient having panic attack.", time: "5 mins ago" },
@@ -76,33 +87,49 @@ const Home = () => {
     setSelectedNotification(null);
   };
 
+  
+const AppointStatus=useSelector((state:any)=>state.appointment.status);
+const appointment=useSelector((state:RootState)=>state.appointment.appointments);
+const Appoint_Sum=useSelector(summation_Appointment);
+  
+// Function to Display Gender for person who required appointment
+const handleGender= (appointment: Appointment[]) => {
+  console.log('Appointment Data: ', appointment);
+  const female=appointment?.filter(appoint=>appoint.patient?.personalInformation?.gender?.toLowerCase()==='mamamale').length;
+  const male=appointment?.filter(appoint=>appoint.patient?.personalInformation?.gender?.toLowerCase()==='others').length;
+  return {female, male};
+}
+
+
   useEffect(() => {
     if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d");
       if (ctx && chartIns.current) {
         chartIns.current.destroy();
       }
-  
+
+  const {female, male} = handleGender(appointment);
+
       const config: ChartConfiguration = {
         type: "doughnut",
         data: {
-          labels: ["Female[70]", "Male[10]"],
+          labels: [`female[${female}]`, `male[${male}]`],
           datasets: [
             {
-              data: [70, 10],
+              data: [female, male],
               backgroundColor: ["#FBA834", "#387ADF"],
             },
           ],
         },
         options: {
           responsive: true,
-          animation: false // Disable animation to fix type issues
+          animation: false
         }
       };
   
       chartIns.current = new Chart(ctx!, config);
     }
-  }, []);
+  }, [appointment]);
 
   useEffect(() => {
     if (chartRefTherapy.current) {
@@ -206,8 +233,10 @@ const Home = () => {
               <FaCalendarAlt size={24} />
             </div>
             <div className="ml-5">
-              <h4 className="text-2xl font-semibold text-gray-700">8</h4>
-              <div className="text-gray-500">New Appointments</div>
+              <h4 className="text-2xl font-semibold text-gray-700">
+              {AppointStatus === "loading" ? "..." : Appoint_Sum}
+              </h4>
+              <div className="text-gray-500">Total Appointments</div>
             </div>
           </div>
         </div>

@@ -32,6 +32,8 @@ export interface PatientsListProps {
     goToPlan: (patientId: number | string) => void;
   }
 
+  export const SelectedTotalPatints=(state:{patients:Patient})=>state.patients.patients.length;
+
 
 // the following ia about creating new patient
 export const createPatient = createAsyncThunk('Patient/createPatient',
@@ -57,6 +59,7 @@ export const allPatients = createAsyncThunk('getPatients',
     async (_, { rejectWithValue }) => {
         try {
             const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients');
+            console.log("API Response:", response.data);
             return response.data;
         }
         catch (err) {

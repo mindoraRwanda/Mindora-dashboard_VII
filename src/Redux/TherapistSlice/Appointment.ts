@@ -26,6 +26,8 @@ const initialState: AppointmentState = {
   error: null,
 };
 
+export const summation_Appointment=(state:{appointments:AppointmentState})=>state.appointment.appointments.length;
+
 export const getAppointmentById = createAsyncThunk(
   "getAppointmentById/getAll",
   async (therapistId: string | number, { rejectWithValue }) => {

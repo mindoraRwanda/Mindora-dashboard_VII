@@ -50,6 +50,7 @@ const initialState: TherapyState = {
   error: null,
 };
 
+export const SelectedTotalTherapist=(state:{Therapy:TherapyState})=>state.Therapy.therapists.length;
 // This is for creating new therapist
 export const fetchTherapy = createAsyncThunk(
   "Therapy/fetchTherapy",
@@ -86,6 +87,7 @@ export const getAllTherapists = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`https://mindora-backend-beta-version.onrender.com/api/therapists`);
+      // console.log("API response", response);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "An Unexpected error occurred");

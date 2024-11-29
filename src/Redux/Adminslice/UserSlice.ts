@@ -24,7 +24,7 @@ const initialState: UserState = {
     status: 'idle',
     error: null,
 };
-
+export const selectedTotalUser=(state:{users:UserState})=>state.users.users.length;
 export const NewUser = createAsyncThunk(
     'users/NewUser',
     async (formData: FormData, { rejectWithValue }) => {

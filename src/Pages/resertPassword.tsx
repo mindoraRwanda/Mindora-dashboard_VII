@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Image,Input,Button,Typography, message } from "antd";
 import Mindora from "../assets/Logo/logo.png";
 import { useDispatch,useSelector } from "react-redux";
-// import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { resetPass } from "../Redux/Adminslice/authSlice";
 import { RootState,AppDispatch } from "../Redux/store";
@@ -13,7 +13,7 @@ export const ResetPassword = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  // const { token } = useParams();
+  const { token } = useParams<{token:string}>();
   const { status } = useSelector((state: RootState) => state.auth);
  
 
@@ -32,7 +32,7 @@ export const ResetPassword = () => {
     if (password !== confirmPassword) {
       return message.warning("Passwords do not match!");
     }
-    const resultAction = await dispatch(resetPass({ password,confirmPassword }));
+    const resultAction = await dispatch(resetPass({ password,confirmPassword,token }));
     if (resetPass.fulfilled.match(resultAction)) {
       message.success("Password reset successful");
       setPassword("");

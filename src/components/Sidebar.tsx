@@ -197,9 +197,7 @@ export default function Sidebar(props: SidebarProps) {
            >
              <FaEdit className="mr-3" /> Recording Patient
            </a>
-           <a onClick={() => setActiveComponent('settings')} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
-             <MdOutlineSettings className="mr-3" /> Setting
-           </a>
+          
            <a
              onClick={() => setActiveComponent('education')}
              className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
@@ -211,6 +209,9 @@ export default function Sidebar(props: SidebarProps) {
              className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
            >
              <FaRegFaceSurprise className="mr-3" /> Chat
+           </a>
+           <a onClick={() => setActiveComponent('settings')} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+             <MdOutlineSettings className="mr-3" /> Setting
            </a>
          </>
           

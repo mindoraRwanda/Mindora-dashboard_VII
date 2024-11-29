@@ -9,6 +9,7 @@
   import GoalPlanReducer from './TherapistSlice/Goals';
   import MilestoneReducer from './TherapistSlice/Milestones';
   import rescheduleReducer from './TherapistSlice/AppointmentChange';
+  import AllAppointmentReducer from './Adminslice/AllAppointment';
 
   const store = configureStore({
     reducer: {
@@ -22,6 +23,7 @@
       goalPlan: GoalPlanReducer,
       milestone: MilestoneReducer,
       reschedule: rescheduleReducer, 
+      AllAppointment: AllAppointmentReducer,
     },
   });
 

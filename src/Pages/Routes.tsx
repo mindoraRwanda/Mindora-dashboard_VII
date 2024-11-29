@@ -3,7 +3,7 @@ import AdminPatientsList from '../components/Admin/AdminPatientList';
 import AdminTherapistList from '../components/Admin/AdminTherapistList';
 import AdminUserList from '../components/Admin/AdminUsers';
 import Home from '../components/Admin/Home';
-import Patient_Appointment from '../components/Admin/Patient_Appointment';
+import Patient_Appointment from '../components/Admin/Appointment';
 import UserEngagement from '../components/Admin/UserEngagement';
 import Messages from '../components/Admin/Patient_Messages';
 import Sidebar from '../components/Sidebar';

@@ -5,7 +5,7 @@ import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { useCallback, useEffect, useState } from "react";
 import { FiDownload } from 'react-icons/fi';
 
-import { message, Modal,Spin} from "antd";
+import { message, Modal,Spin,Input} from "antd";
 import Create_Therapy from "./Create_Therapy";
 import jsPDF from "jspdf";
 import { saveAs } from "file-saver";
@@ -20,6 +20,7 @@ import {
   getAllTherapists,
   updateTherapy,
 } from "../../Redux/Adminslice/ThearpySlice";
+import { changePass } from "../../Redux/Adminslice/authSlice";
 
 
 export default function AdminTherapistList() {
@@ -31,10 +32,10 @@ export default function AdminTherapistList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredtherapists, setFilteredtherapists] = useState([]);
   const [isShowModal, setShowModal] = useState(false);
-  const [ChangePassModal, SetChangePassModal] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedTherapy, setSelectedTherapy] = useState(null);
   const [loading, setLoading] = useState(false);
+
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
@@ -128,14 +129,7 @@ export default function AdminTherapistList() {
     setShowModal(true);
   };
 
-  const ShowPassModal = () => {
-    SetChangePassModal(true);
-  };
 
-  const handleCancel = () => {
-    setShowModal(false);
-    SetChangePassModal(false);
-  };
 
   const handleUpdate = async (therapist:any) => {
     const comfirm = window.confirm("Are you sure you want to update");
@@ -252,9 +246,14 @@ export default function AdminTherapistList() {
     setShowModal(false);
   };
 
-  const CancelPassModal = () => {
+  const handleCancel = () => {
+    setShowModal(false);
     SetChangePassModal(false);
   };
+
+  const formatDateForInput=(dateString: string) =>{
+    return dateString ? dateString.split('T')[0]:''; 
+   };
 
   return       loading ? (
     <div className="flex justify-center items-center min-h-screen">
@@ -451,6 +450,9 @@ export default function AdminTherapistList() {
           </button>
         ))}
       </div>
+
+
+
       <Modal footer={null} open={isShowModal} onCancel={handleCancel}>
         {selectedTherapy ? (
           <div className="mb-10">
@@ -568,29 +570,27 @@ export default function AdminTherapistList() {
               </p>
               <p className="text-black m-3">
                 <span>DateOfBirth:</span> <br />
-                <input
-                  type="date"
-                  className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy?.personalInformation?.date}
-                  readOnly={!isEditable}
-                  onChange={(e) =>
-                    setSelectedTherapy({
-                      ...selectedTherapy,
-                      personalInformation: {
-                        ...selectedTherapy?.personalInformation,
-                        date: e.target.value,
-                      },
-                    })
-                  }
-                />
+                <Input
+    type="date"
+    value={formatDateForInput(selectedTherapy?.personalInformation?.dateOfBirth)} 
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        personalInformation: {
+          ...prev.personalInformation,
+          dateOfBirth:e.target.value,
+        },
+      }))
+    }
+  />
               </p>
 
-              <button
+              {/* <button
                 onClick={ShowPassModal}
                 className="font-semibold text-start ml-3 text-md text-purple-700"
               >
               Click to Change Password ?{" "}
-              </button>
+              </button> */}
             </div>
             {isEditable && (
               <button
@@ -610,29 +610,7 @@ export default function AdminTherapistList() {
           />
         )}
       </Modal>
-      <Modal open={ChangePassModal} onCancel={CancelPassModal} footer={null} className="float-end mr-4">
-        <div className="grid grid-cols-1">
-          <h3 className="font-bold text-xl py-3"> Enter New PassWord</h3>
-          <p>Your New Password must be different to the current password.</p>
-          <input
-            type="password"
-            className="border-2 p-2 mt-6 rounded-md w-3/4"
-            placeholder="Enter New Password"
-          />{" "}
-          <br />
-          <input
-            type="password"
-            placeholder="Confirm password"
-            className="border-2 w-3/4 p-2  rounded-md"
-          />
-          <button
-            onClick={() => alert('password changed sucessfully')}
-            className="bg-purple-600 p-2 mt-3 w-3/4 rounded-md text-white"
-          >
-            Reset Password
-          </button>
-        </div>
-      </Modal>
+     
     </div>
   );
 }

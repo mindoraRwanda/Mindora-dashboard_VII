@@ -4,12 +4,12 @@ import Mindora from "../assets/Logo/logo.png";
 import { useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { forgotPass } from "../Redux/Adminslice/authSlice";
-import { RootState } from "@reduxjs/toolkit/query";
+import { RootState,AppDispatch } from "../Redux/store";
 
 const Text = Typography;
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const {status}=useSelector((state:RootState)=>state.auth);
 
 
@@ -24,10 +24,11 @@ const ForgotPassword = () => {
         message.success("Password reset link has been sent to your email");
         setEmail("");
       } else {
-        message.error("Failed to reset password: " + (result.payload?.message || "Unknown error"));
+        message.error("Failed to reset password: " + result);
       }
     } catch (error) {
-      message.error("Failed to send password reset link: " + error.message);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to resert password: ${errorMessage}`);
     }
   };
 

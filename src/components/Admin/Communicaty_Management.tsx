@@ -2,6 +2,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import { IoMdArchive } from "react-icons/io";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useState, useEffect, useRef } from "react";
+import TextArea from "antd/es/input/TextArea";
 
 export default function Communication() {
   const Users = [
@@ -32,7 +33,8 @@ export default function Communication() {
   ];
 
   const [message, setMessage] = useState("");
-  const textareaRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -41,7 +43,7 @@ export default function Communication() {
     }
   }, [message]);
 
-  const handleInput = (event) => {
+  const handleInput = (event:any) => {
     setMessage(event.target.value);
   };
 
@@ -99,11 +101,10 @@ export default function Communication() {
             </tbody>
           </table>
           <div className="mt-6">
-            <textarea
+            <TextArea
               name="messages"
               id="messages"
-              cols="53"
-              rows="2"
+             
               placeholder="Text Announcement here"
               className="border border-slate-400 mx-2 mt-4 p-2 text-black bg-gray-200 rounded-lg"
               style={{ resize: "none", overflow: "hidden" }}

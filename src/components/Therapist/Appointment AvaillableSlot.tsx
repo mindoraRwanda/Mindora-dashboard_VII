@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Modal, Form, Input, Button, Select, message, Switch } from "antd";
+import { Modal, Form, Input, Button, Select, message, Switch,Spin } from "antd";
 import { BiEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { RootState } from "../../Redux/store";
+import { AppDispatch } from "../../Redux/store";
 import { FaCalendar } from "react-icons/fa";
 import PatientsList from "../Admin/AdminPatientList";
+
 import {
   deleteAvailableSlot,
   getAllAvailableSlot,
@@ -14,14 +17,26 @@ import {
 } from "../../Redux/TherapistSlice/Appointment_Slot";
 import { createAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
 
+interface SlotData {
+  id: string;
+  availableDay: string;
+  startTime: string;
+  endTime: string;
+  date: string;
+  timeZone: string;
+  recurring: boolean;
+}
 export default function ManageAppointMents() {
   const [activeButton, setActiveButton] = useState("AllPatients");
   const [modalVisible, setModalVisible] = useState(false);
   const [editMOdal, setEditMOdal] = useState(false);
-  const [SlotData, setSlotData] = useState([]);
-  const [currentSlot, setCurrentSlot] = useState(null);
+  const [SlotData, setSlotData] = useState<SlotData[]>([]);
+  const [currentSlot, setCurrentSlot] = useState<SlotData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); 
   const [form] = Form.useForm();
 
   const [availableDay, setavailableDay] = useState("");
@@ -38,21 +53,19 @@ export default function ManageAppointMents() {
     status: state.availableSlot?.status,
     error: state.availableSlot?.error,
   }));
+  
 
   // Add useEffect to handle status changes
   useEffect(() => {
     if (status === "succeeded") {
       message.success("Operation Successfully");
-      setModalVisible(false);
-      setEditMOdal(false);
-      form.resetFields();
-      dispatch(resetStatus());
-      dispatch(getAllAvailableSlot());
+
+      dispatch(getAllAvailableSlot(therapistId));
     } else if (status === "rejected" && error) {
       message.error(error || "Failed to create appointment");
       dispatch(resetStatus());
     }
-  }, [status, error, form, dispatch]);
+  }, [status, error, form, dispatch, therapistId]);
 
   //  useEffect to get TherapistId from localStorage when component mounts
     useEffect(() => {
@@ -69,11 +82,23 @@ export default function ManageAppointMents() {
   // This useEffect will help us to get all availableslot of Therapist
   useEffect(() => {
     const fetchAllSlots = async () => {
+      try{
+        setLoading(true);
       const result = await dispatch(getAllAvailableSlot(therapistId));
       if (getAllAvailableSlot.fulfilled.match(result)) {
         setSlotData(result.payload);
       }
+    }
+    catch (error) {
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to load users: ${errorMessage}`);
+    }
+    finally {
+      setLoading(false);
+    }
     };
+
+    
     fetchAllSlots();
   }, [dispatch, therapistId]);
 
@@ -84,12 +109,12 @@ export default function ManageAppointMents() {
   };
   const handleCancelModal = () => {
     setModalVisible(false);
-    form.resetFields();
-    dispatch(resetStatus());
+    // form.resetFields();
+    // dispatch(resetStatus());
   };
 
   // The Modal For Update Available Slot
-  const ShowEditModal = (SlotData) => {
+  const ShowEditModal = (SlotData:SlotData) => {
     setEditMOdal(true);
     setCurrentSlot(SlotData);
 
@@ -113,24 +138,30 @@ export default function ManageAppointMents() {
     form.resetFields();
   };
   // delete Slot
-  const handleDeleteSlot = async (id) => {
+  const handleDeleteSlot = async (id:string) => {
     const confirmed = window.confirm("Do you want to delete Slot?");
     if (confirmed) {
       try {
-        await dispatch(deleteAvailableSlot(id));
-        if (status === "succeeded") {
-          dispatch(getAllAvailableSlot(therapistId));
-        }
+      const result= await dispatch(deleteAvailableSlot(id));
+       if(deleteAvailableSlot.fulfilled.match(result)){
+        message.success("Slot deleted successfully");
+        dispatch(getAllAvailableSlot(therapistId));
+       }
+       else{
+        message.error("Failed to delete Slot");
+       }
       } catch (error) {
-        message.error("Failed to delete Slot: " + error.message);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to load users: ${errorMessage}`);
       }
     }
   };
 
 
   // function to handle form submission
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values:any) => {
     try {
+      setIsCreating(true);
       const FormData = {
         therapistId,
         startTime: new Date(`${values.date}T${values.startTime}`).toISOString(),
@@ -141,24 +172,30 @@ export default function ManageAppointMents() {
         timeZone: values.timeZone,
       };
 
-      await dispatch(createAvailableSlot(FormData));
-      if (status === "succeeded") {
-        dispatch(getAllAvailableSlot(therapistId));
-        
-      }
+  const result= await dispatch(createAvailableSlot(FormData));
+ if(createAvailableSlot.fulfilled.match(result)) {
+  message.success("Appointment Slot created successfully!");
+  form.resetFields();
+  setModalVisible(false);
+ }
     } catch (error) {
-      message.error("Failed to create appointment: " + error.message);
+      const errorMessage = (error as Error).message;
+        message.error(`Failed to load users: ${errorMessage}`);
+    }
+    finally{
+      setIsCreating(false);
     }
   };
 
 // function to handle form submission for update
-const handleUpdate = async (values) => {
+const handleUpdate = async (values:any) => {
   const confirmed = window.confirm('Are you sure you want to update this appointment slot?');
   if (confirmed && currentSlot?.id) {
     try {
+      setIsUpdating (true);
       const updateFormData = {
         id: currentSlot.id, 
-        therapistId,
+        // therapistId,
         startTime: new Date(`${values.date}T${values.startTime}`).toISOString(),
         endTime: new Date(`${values.date}T${values.endTime}`).toISOString(),
         recurring: values.recurring || formData.recurring,
@@ -166,24 +203,41 @@ const handleUpdate = async (values) => {
         availableDay: values.availableDay,
         timeZone: values.timeZone,
       };
-      await dispatch(updateAvailableSlot(updateFormData ));
-      if (status === "succeeded") {
-        dispatch(getAllAvailableSlot(therapistId));
-        setEditMOdal(false); 
-      }
+    const result= await dispatch(updateAvailableSlot(updateFormData ));
+    if(updateAvailableSlot.fulfilled.match(result)){
+      message.success("Appointment Slot updated successfully!");
+      form.resetFields();
+      setEditMOdal(false);
+      // dispatch(resetStatus());
+      // setActiveButton("View Plans");
+    }
+    else{
+      message.error("Failed to update appointment slot.");
+      dispatch(resetStatus());
+    }
+   
     } catch (error) {
-      message.error("Failed to update appointment: " + error.message);
+      const errorMessage = (error as Error).message;
+        message.error(`Failed to load users: ${errorMessage}`);
+    }
+    finally{
+      setIsUpdating(false);
     }
   }
 };
 
-const handleActive = (buttonName) => {
+const handleActive = (buttonName:string) => {
   setActiveButton(buttonName);
 };
 
 
 
   const renderScheduleContent = () => (
+    loading? (
+      <div className="flex items-center justify-center text-red-600 min-h-screen">
+      <Spin size="large" />
+    </div>
+             ):(
     <div className="bg-white rounded-lg shadow-xl border p-6 mt-3">
       <div className="flex flex-row justify-between">
         <h1 className="text-2xl capitalize text-black font-semibold">
@@ -205,6 +259,7 @@ const handleActive = (buttonName) => {
             key={index}
             className="bg-white rounded-md shadow-xl border p-6 my-2"
           >
+   
             <div className="flex justify-between">
               <div>
                 <h1 className="text-purple-600 text-3xl font-semibold mb-5">
@@ -244,16 +299,20 @@ const handleActive = (buttonName) => {
                 </div>
               </div>
             </div>
+          
           </div>
-        );
+      );
       })}
     </div>
-  );
+  ));
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
       {/* Button selection */}
-      <div className="flex flex-row gap-9">
+      <h1 className="text-white bg-purple-600  w-full p-2 text-3xl font-semibold">
+          Treatment Plan Management - Availlable Slot
+        </h1>
+      <div className="flex flex-row gap-9  mt-9">
         {["AllPatients", "Availlable Slots", "Notifications"].map(
           (buttonName) => (
             <button
@@ -378,8 +437,8 @@ const handleActive = (buttonName) => {
             <Button
               className="w-full bg-purple-600 text-white font-semibold"
               htmlType="submit"
-              loading={status === "loading"}
-              disabled={status === "loading"}
+              loading={isCreating}
+              disabled={isCreating}
             >
               {status === "loading" ? "Creating..." : "Create Slot"}
             </Button>
@@ -427,7 +486,7 @@ const handleActive = (buttonName) => {
           <Form.Item label="Time Zone:" name="timeZone">
             <Select>
               <Select.Option value="Africa/Khartoum">
-                Africa/Khartoum
+                Africa/Khartoum 
               </Select.Option>
               <Select.Option value="America/New_York">
                 America/New_York
@@ -449,8 +508,8 @@ const handleActive = (buttonName) => {
           <Button
   className="w-3/4 bg-purple-600 text-white font-semibold"
   htmlType="submit"
-  loading={status === "loading"}
-  disabled={status === "loading"}
+  loading={isUpdating}
+  disabled={isUpdating}
 >
   {status === "loading" ? "Update..." : "Update Slot"}
 </Button>

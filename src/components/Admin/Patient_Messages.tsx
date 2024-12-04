@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
-
+import { useState } from 'react';
+type Message = {
+  id: number;
+  title: string;
+  date: string;
+  type: string;
+};
 export default function Messages() {
-  const [selectedReport, setSelectedReport] = useState(null);
+
+const [selectedReport, setSelectedReport] = useState<Message | null>(null);
+
 
   const messages = [
     { id: 1, title: "John Doe", date: "2024-07-01", type: "progress" },
@@ -9,7 +16,7 @@ export default function Messages() {
     { id: 3, title: "Jane Smith", date: "2024-07-30", type: "analysis" },
   ];
 
-  const renderReportDetails = (message) => {
+  const renderReportDetails = (message:any) => {
     switch (message.type) {
       case 'progress':
         return (

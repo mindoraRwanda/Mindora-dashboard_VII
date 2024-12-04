@@ -2,27 +2,29 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 interface UserState {
-    user: null | string;
+    users: any[];
     selectedUser: null | object;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
 }
 
-// interface usersCredentials {
-//     id: string;
-//     firstName: string;
-//     lastName: string;
-//     email: string;
-//     password: string;
-// };
+export interface User{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    gender: string;
+    role?: string;
+    lastLogin?: string;
+}
 
 const initialState: UserState = {
-    users: [],
+    users:[],
     selectedUser: null,
     status: 'idle',
     error: null,
 };
-
+export const selectedTotalUser=(state:{users:UserState})=>state.users.users.length;
 export const NewUser = createAsyncThunk(
     'users/NewUser',
     async (formData: FormData, { rejectWithValue }) => {

@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Button, Form, Input, message, Modal, Select } from "antd";
+import  { useEffect, useState } from "react";
+import { Button, Form, Input, message, Modal, Select,Spin } from "antd";
 import { AiOutlineSave } from "react-icons/ai";
 import { MdCancel } from "react-icons/md";
-// import { BiTime } from "react-icons/bi";
 import { FaSync, FaTrash } from "react-icons/fa";
 import PatientsList from "./PatientsList";
 import { useDispatch, useSelector } from "react-redux";
-import { getPatientById } from "../../Redux/Adminslice/PatientSlice";
+
 import {
   createPlan,
   deleteTreatmentPlan,
@@ -14,24 +13,28 @@ import {
   resetStatus,
   updateTreatmentPlan,
 } from "../../Redux/TherapistSlice/TreatmentPlan";
-import { RootState } from "../../Redux/store";
+import { RootState,AppDispatch } from "../../Redux/store";
+import TextArea from "antd/es/input/TextArea";
+import { TreatmentPlan } from "../../Redux/TherapistSlice/TreatmentPlan";
+import { getPatientById } from "../../Redux/Adminslice/PatientSlice";
 
-export default function TreatmentPlan() {
+export default function TreatmentPlanContent() {
   const [activeButton, setActiveButton] = useState("All Patients");
-  const [TreatmentData, setTreatmentData] = useState([]);
-  const [therapistId, setTherapistId] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [TreatmentData, setTreatmentData] = useState<TreatmentPlan[]>([]);
+  const [therapistId, setTherapistId] = useState<string | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState<TreatmentPlan|null>(null);
+  const [loading, setLoading] = useState(false);
+
 
   const { status, error } = useSelector((state: RootState) => ({
     status: state.treatmentPlan?.status,
     error: state.treatmentPlan?.error,
   }));
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const handleActive = (buttonName) => {
+  const handleActive = (buttonName:any) => {
     setActiveButton(buttonName);
   };
   // This is used for getting Therapist It Logged In
@@ -49,7 +52,6 @@ export default function TreatmentPlan() {
   // This used for status
   useEffect(() => {
     try {
-      setLoading(true);
       if (status === "succeeded") {
         form.resetFields();
         dispatch(resetStatus());
@@ -59,24 +61,31 @@ export default function TreatmentPlan() {
         dispatch(resetStatus());
       }
     } catch (error) {
-      console.log("Failed to create treatment plan:", error);
-      message.error("Failed to create treatment plan");
-    } finally {
-      setLoading(false);
-    }
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to create treatment plan: ${errorMessage}`);
+    } 
   }, [status, dispatch, form, error]);
 
   // Logic for getting all TreatmentPlan
   useEffect(() => {
     const getTreatmentData = async () => {
+      try{
+        setLoading(true);
       const result = await dispatch(getAllTreatmentPlan());
       if (getAllTreatmentPlan.fulfilled.match(result)) {
         const treatData = result.payload;
         setTreatmentData(treatData);
+      }}
+      catch (error) {
+        const errorMessage = (error as Error).message;
+      message.error(`Failed to fetch treatment Plan: ${errorMessage}`);
+      }
+      finally{
+        setLoading(false);
       }
     };
     getTreatmentData();
-  }, [dispatch]);
+  }, [dispatch, setLoading]);
 
   useEffect(() => {
     if (status === "succeeded") {
@@ -85,7 +94,7 @@ export default function TreatmentPlan() {
     }
   }, [status, form]);
   
-  const showModal=(plan)=>{
+  const showModal=(plan:TreatmentPlan)=>{
     setSelectedPlan(plan);
     form.setFieldsValue({
       id: plan.id,
@@ -104,7 +113,7 @@ export default function TreatmentPlan() {
   };
 
   // Function to get selected Patient Information form database
-  const handlePatientSelected = (patientId) => {
+  const handlePatientSelected = (patientId:string) => {
     if (patientId) {
       const getPatientData = async () => {
         try {
@@ -120,7 +129,8 @@ export default function TreatmentPlan() {
             });
           }
         } catch (error) {
-          console.log("Failed to get patient data:", error.message);
+          const errorMessage = (error as Error).message;
+          message.error(`Failed to get patient data: ${errorMessage}`);
         } finally {
           setLoading(false);
         }
@@ -131,10 +141,10 @@ export default function TreatmentPlan() {
   };
 
   // Logics for Treatment Plan
-  const handleCreatePlan = async (values) => {
+  const handleCreatePlan = async (values:any) => {
     try {
       setLoading(true);
-      const formData = {
+      const formData : Omit<TreatmentPlan, 'id'> = {
         therapistId: values.TherapistId,
         patientId: values.patientId,
         startDate: new Date(values.startDate).toISOString(),
@@ -154,7 +164,8 @@ export default function TreatmentPlan() {
         dispatch(resetStatus());
       }
     } catch (error) {
-      message.error(`Failed to create treatment plan: ${error.message}`);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to create Treatment Plan: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -162,7 +173,11 @@ export default function TreatmentPlan() {
 
   // Function To update TreatmentPlan
 
-  const handleUpdatePlan = async (values) => {
+  const handleUpdatePlan = async (values:any) => {
+    if (!selectedPlan || !selectedPlan.id) {
+      message.error("No valid plan selected for update");
+      return;
+  }
     try {
       setLoading(true);
       const formData = {
@@ -170,6 +185,9 @@ export default function TreatmentPlan() {
         updateTreatmentData:{
         startDate: new Date(values.startDate).toISOString(),
         endDate: new Date(values.endDate).toISOString(),
+        id: selectedPlan.id,           
+        patientId: selectedPlan.patientId, 
+        therapistId: selectedPlan.therapistId,
         title: values.title,
         description: values.description,
         status: values.status,
@@ -188,14 +206,19 @@ export default function TreatmentPlan() {
         dispatch(resetStatus());
       }
     } catch (error) {
-      message.error(`Failed to update treatment plan: ${error.message}`);
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to Update Treatment Plan: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
   };
 
   // Fucntion to delete Plan
-  const handleDeletePlan = async (id) => {
+  const handleDeletePlan = async (id:string) => {
+    if (!id) {
+      message.error("Invalid plan ID");
+      return;
+    }
     const confirmed = window.confirm("Are you sure you want to delete");
     if (confirmed) {
       try {
@@ -208,10 +231,11 @@ export default function TreatmentPlan() {
           dispatch(resetStatus());
         
         } else if (deleteTreatmentPlan.rejected.match(result)) {
-          message.error("Failed to delete treatment plan.");
+         message.error("Failed to delete treatment Plan");
         }
       } catch (error) {
-        message.error(`Failed to delete treatment plan: ${error.message}`);
+        const errorMessage = (error as Error).message;
+          message.error(`Failed to delete treatment Plan: ${errorMessage}`);
       } finally {
         setLoading(false);
       }
@@ -233,7 +257,7 @@ export default function TreatmentPlan() {
               <h1 className="text-black text-2xl font-semibold mb-5 ">
                 Create Patient Plan
               </h1>
-              <Form.Item label="PatientId:" name="patientId">
+              <Form.Item label="PatientId:" name="patientId" hidden>
                 <Input type="text" placeholder="Enter patientId ..." readOnly />
               </Form.Item>
 
@@ -241,6 +265,7 @@ export default function TreatmentPlan() {
                 label="TherapistId:"
                 name="TherapistId"
                 initialValue={therapistId}
+                hidden
               >
                 <Input
                   type="text"
@@ -252,7 +277,7 @@ export default function TreatmentPlan() {
                 <Input type="text" placeholder="Enter treatmentTitle..." />
               </Form.Item>
               <Form.Item label="Description:" name="description">
-                <Input type="textarea" placeholder="Enter description..." />
+                <TextArea  placeholder="Enter description..." />
               </Form.Item>
               <div className="flex gap-2">
                 <Form.Item
@@ -281,7 +306,7 @@ export default function TreatmentPlan() {
                   <Button
                     className="w-2/3 bg-purple-600 text-white font-semibold"
                     htmlType="submit"
-                    isLoading={status === "loading"}
+                    loading={status === "loading"}
                     disabled={status === "loading"}
                   >
                     <AiOutlineSave size={20} />{" "}
@@ -301,20 +326,19 @@ export default function TreatmentPlan() {
           </div>
         );
       case "View Plans":
-        return (
+        return loading? (
+            <div className="flex items-center justify-center text-red-600 min-h-screen">
+            <Spin size="large" />
+          </div>
+                   ):(
           <div className="bg-white rounded-lg shadow-xl p-6">
-            {loading ? (
-              <div className="text-center text-xl text-black py-8">
-                Loading...
-              </div>
-            ) : TreatmentData.length === 0 ? (
-              <div className="text-center py-8">No treatment plans found</div>
-            ) : (
-              TreatmentData.map((item) => (
+         
+              {TreatmentData.map((item) => (
                 <div
                   key={item.id}
                   className="bg-white rounded-lg border p-2 mt-2"
                 >
+ 
                   <div className="flex justify-between">
                     <div>
                       <p className="text-purple-600 text-2xl font-semibold">
@@ -334,7 +358,7 @@ export default function TreatmentPlan() {
                       </div>
                       <p className="text-black text-md my-3">
                         <strong>Condition:</strong>
-                        {item.patient.medicalProfile.conditions}
+                        {item.patient?.medicalProfile?.conditions|| 'no condition specified'}
                       </p>
                       <div className="flex gap-2 my-3">
                         <button
@@ -346,7 +370,7 @@ export default function TreatmentPlan() {
                         </button>
                         <button
                           className="p-1 text-white bg-red-500 font-semibold rounded flex gap-1 text-md"
-                          onClick={() => handleDeletePlan(item.id)}
+                          onClick={() => item.id && handleDeletePlan(item.id)}
                         >
                           <FaTrash className="mt-1" />
                           Delete
@@ -371,11 +395,12 @@ export default function TreatmentPlan() {
                       </p>
                     </div>
                   </div>
+          
                 </div>
-              ))
+              )
             )}
           </div>
-        );
+                   )
       default:
         return null;
     }
@@ -383,12 +408,12 @@ export default function TreatmentPlan() {
 
   return (
     <div className="bg-white rounded shadow-xl border p-6">
-      <div className="text-black flex flex-row">
+     
         <h1 className="text-white bg-purple-600  w-full p-2 text-3xl font-semibold">
-          Treatment Plan Management - Create Treatment Plan
+          Treatment Plan Management - Treatment Plan
         </h1>
-      </div>
-      <div className="flex flex-row gap-9 mt-10">
+    
+      <div className="flex flex-row gap-9 mt-9">
         {["All Patients", "Create Plan", "View Plans"].map((buttonName) => (
           <button
             key={buttonName}
@@ -423,7 +448,7 @@ export default function TreatmentPlan() {
           </Form.Item>
 
           <Form.Item name="description" label="Description">
-            <Input type="textarea" placeholder="Enter description..." />
+            <TextArea  placeholder="Enter description..." />
           </Form.Item>
 
           <Form.Item name="startDate" label="Start Date">
@@ -434,7 +459,7 @@ export default function TreatmentPlan() {
           </Form.Item>
 
           <Form.Item name="status" label="Status">
-            <Select name="status" id="status" className="w-full">
+            <Select  id="status" className="w-full">
               <Select.Option value="Active">Pending</Select.Option>
               <Select.Option value="Ongoing">Ongoing</Select.Option>
               <Select.Option value="Completed">Completed</Select.Option>
@@ -447,7 +472,7 @@ export default function TreatmentPlan() {
               <Button
                 className="w-2/3 bg-purple-600 text-white font-semibold"
                 htmlType="submit"
-                isLoading={status === "loading"}
+                loading={status === "loading"}
                 disabled={status === "loading"}
               >
                 <AiOutlineSave size={20} />{" "}

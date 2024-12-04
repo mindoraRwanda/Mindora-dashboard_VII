@@ -4,9 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { TiUploadOutline } from "react-icons/ti";
 import { NewUser, GetAllUsers } from "../../Redux/Adminslice/UserSlice";
+import { RootState } from "../../Redux/store";
+import { AppDispatch } from "../../Redux/store";
 
-export default function CreateUser({ onSuccess }) {
-  const dispatch = useDispatch();
+export default function CreateUser() {
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
@@ -16,12 +18,13 @@ export default function CreateUser({ onSuccess }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [gender, setGender] = useState("");
-  const [picture, setPicture] = useState(null);
+  const [picture, setPicture] = useState<File | null>(null);
   const [form] = Form.useForm();
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   const { status } = useSelector((state: RootState) => state.users);
-  const handleFileChange = (e) => {
+  const handleFileChange =(e: React.ChangeEvent<HTMLInputElement>)  => {
     const file = e.target.files[0];
     if (file) {
       setPicture(file);
@@ -30,7 +33,7 @@ export default function CreateUser({ onSuccess }) {
   };
 
   const handleIconClick = () => {
-    fileInputRef.current.click();
+    fileInputRef.current?.click();
   };
 
   const handleFetch = async () => {
@@ -61,9 +64,9 @@ export default function CreateUser({ onSuccess }) {
         console.log('result: ', result);
         message.success("User created successfully");
         dispatch(GetAllUsers());
-        if (onSuccess) {
-          onSuccess();
-        }
+        // if (onSuccess) {
+        //   onSuccess();
+        // }
 
         // Reset form values
         setFirstName("");
@@ -76,12 +79,13 @@ export default function CreateUser({ onSuccess }) {
         setPicture(null);
         navigate("/dashboard");
       } else {
-        console.error("Error: ", result.error.message);
-        message.error(`Failed to create user: ${result.error.message}`);
+        const errorMessage = result.payload && typeof result.payload === 'object' && 'message' in result.payload
+        ? String(result.payload.message)
+        : "Failed to create user";
+      message.error(errorMessage);
       }
     } catch (error) {
-      console.log("Failed", error);
-      message.error("Failed to create user");
+      message.error(`Failed to create user: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 

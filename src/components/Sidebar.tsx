@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useState,SetStateAction,Dispatch } from "react";
 // import { BiClinic } from "react-icons/bi";
 
 import {
-  FaCalendarAlt,
   FaVideo,
   FaChartBar,
   FaUserMd,
@@ -25,11 +24,18 @@ import { MdOutlineDocumentScanner, MdOutlineMessage, MdOutlineSettings } from "r
 import { PiCallBellBold } from "react-icons/pi";
 import { SiArkecosystem, SiFiles, SiDatabricks } from "react-icons/si";
 
-export default function Sidebar({ userRole, setActiveComponent }) {
+interface SidebarProps {
+  userRole: string;
+  setActiveComponent: Dispatch<SetStateAction<string>>;
+  setUserRole: Dispatch<SetStateAction<string>>;
+}
+export default function Sidebar(props: SidebarProps) {
+  const { userRole, setActiveComponent } = props;
+
   const [openDropdown, setOpenDropdown] = useState(null);
   const [SidebarOpen, setSidebarOpen] = useState(false);
 
-  const toggleDropdown = (dropdown) => {
+  const toggleDropdown = (dropdown:any) => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
   };
 
@@ -122,7 +128,7 @@ export default function Sidebar({ userRole, setActiveComponent }) {
              <FaVideo className="mr-3" /> Make Video Call
            </a>
            <a
-             onClick={() => setActiveComponent('Patients')}
+             onClick={() => setActiveComponent('PatientsList')}
              className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
            >
              <FaList className="mr-3" /> Patients List
@@ -191,9 +197,7 @@ export default function Sidebar({ userRole, setActiveComponent }) {
            >
              <FaEdit className="mr-3" /> Recording Patient
            </a>
-           <a onClick={() => setActiveComponent('settings')} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
-             <MdOutlineSettings className="mr-3" /> Setting
-           </a>
+          
            <a
              onClick={() => setActiveComponent('education')}
              className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
@@ -205,6 +209,9 @@ export default function Sidebar({ userRole, setActiveComponent }) {
              className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
            >
              <FaRegFaceSurprise className="mr-3" /> Chat
+           </a>
+           <a onClick={() => setActiveComponent('settings')} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+             <MdOutlineSettings className="mr-3" /> Setting
            </a>
          </>
           

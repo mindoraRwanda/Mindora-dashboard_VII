@@ -50,6 +50,7 @@ const initialState: TherapyState = {
   error: null,
 };
 
+export const SelectedTotalTherapist=(state:{Therapy:TherapyState})=>state.Therapy.therapists.length;
 // This is for creating new therapist
 export const fetchTherapy = createAsyncThunk(
   "Therapy/fetchTherapy",
@@ -61,8 +62,8 @@ export const fetchTherapy = createAsyncThunk(
       );
       return response.data;
       console.log("Response from API:", response);
-    } catch (err) {
-      console.error("Error response:", err.response || err); 
+    } catch (error:any) {
+      console.error("Error response:", error.response || error); 
       return rejectWithValue(err?.response?.data || "An Unexpected error occurred");
     }
   }
@@ -74,7 +75,7 @@ export const getTherapy=createAsyncThunk('getTherapy',
     try {
       const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${id}`);
       return response.data;
-    } catch (error) {
+    } catch (error:any) {
       return rejectWithValue(error.response?.data || "An Unexpected error occurred");
     }
   }
@@ -86,6 +87,7 @@ export const getAllTherapists = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`https://mindora-backend-beta-version.onrender.com/api/therapists`);
+      // console.log("API response", response);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "An Unexpected error occurred");
@@ -97,40 +99,38 @@ export const getAllTherapists = createAsyncThunk(
 export const deleteTherapy = createAsyncThunk('delete/Therapy',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.delete(`https://mindora-backend-beta-version.onrender.com/api/therapists/${id}`);
-      return response.data;
+       await axios.delete(`https://mindora-backend-beta-version.onrender.com/api/therapists/${id}`);
+      return {id};
     }
-    catch (error) {
+    catch (error:unknown) {
       return rejectWithValue(error.response?.data || "An Unexpected error occurred");
     }
   }
 );
-export const updateTherapy=createAsyncThunk('update/updateTherapy',
-  async({id,credentials},{rejectWithValue})=>{
-    try{
-      const response=await axios.put(`https://mindora-backend-beta-version.onrender.com/api/therapists/${id}`,
-         {
-          personalInformation: {
-            name: credentials.name,
-            gender: credentials.gender,
-            dateOfBirth: credentials.dateOfBirth,
-            address: credentials.address,
-            phoneNumber: credentials.phoneNumber,
-          },
-          diploma: credentials.diploma,
-          licence: credentials.licence,
-          userId: credentials.userId,
-  
-   
+export const updateTherapy = createAsyncThunk(
+  'update/updateTherapy',
+  async ({ id, credentials }: { id: string; credentials: any }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put<Therapist>(`https://mindora-backend-beta-version.onrender.com/api/therapists/${id}`, {
+        personalInformation: {
+          name: credentials.name,
+          gender: credentials.gender,
+          dateOfBirth: credentials.dateOfBirth,
+          address: credentials.address,
+          phoneNumber: credentials.phoneNumber,
+        },
+        diploma: credentials.diploma,
+        licence: credentials.licence,
+        userId: credentials.userId,
       });
       return response.data;
-    }
-    catch(error){
-      console.error("API error:", err.response || error);
-      return rejectWithValue(error.response?.data?.message || "An Unexpected error occurred");
+    } catch (error: any) {
+      console.error("API error:", error.response || error);
+      return rejectWithValue(error.response?.data || "An Unexpected error occurred");
     }
   }
-)
+);
+
 
 const TherapySlice = createSlice({
   name: 'Therapy',
@@ -179,7 +179,7 @@ const TherapySlice = createSlice({
         state.status = "failed";
         state.error = action.payload as string;
       })
-// the following is for updating the therapists
+    // the following is for updating the therapists
     .addCase(updateTherapy.pending,(state)=>{
       state.status='loading';
     })

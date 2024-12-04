@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
-import { message, Modal } from "antd";
+import { Button, message, Modal,Spin } from "antd";
 import Create_User from "./Create_User";
 import VideoCall from "../VideoCall";
 import { saveAs } from "file-saver";
@@ -18,31 +18,48 @@ import { deleteUser } from "../../Redux/Adminslice/UserSlice";
 import { useCallback } from "react";
 import CreateTherapy from "./Create_Therapy";
 import CreatePatient from "./Create_Patient";
+import { User } from "../../Redux/Adminslice/UserSlice";
+import { RootState } from "../../Redux/store";
 
 export default function AdminUserList() {
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.users.users);
-  const status = useSelector((state) => state.users.status);
+  const users = useSelector((state: RootState) => state.users.users) as User[];
+  const status = useSelector((state: RootState) => state.users.status);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditable, setIsEditable] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [TherapyRole, setTherapyRole] = useState(false);
-  const [therapyUserId, setTherapyUserId] = useState(null);
-  const [PatientId, setPatientId] = useState(null);
+  const [therapyUserId, setTherapyUserId] = useState<string | null>(null);
+  const [PatientId, setPatientId] = useState<string | null>(null);
   const [PatientRole, setPatientRole] = useState(false);
   const [newRole, setNewRole] = useState("");
-
   const itemsPerPage = 5;
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(GetAllUsers());
-    }
-  }, [status, dispatch]);
+
+// Effect to get all users
+useEffect(() => {
+ const fetchAllusers=async()=>{
+    try{
+    setLoading(true);
+    await dispatch(GetAllUsers());
+  }
+  catch(error){
+    const errorMessage = (error as Error).message;
+    message.error(`Failed to load users: ${errorMessage}`);
+  }
+finally{
+  setLoading(false);
+}
+  };
+  fetchAllusers();
+}, [dispatch]);
+
+
 
   useEffect(() => {
     if (status === "succeeded") {
@@ -50,7 +67,7 @@ export default function AdminUserList() {
     }
   }, [users, status]);
 
-  const handleTherapyRole = (e, user) => {
+  const handleTherapyRole = (e: React.ChangeEvent<HTMLSelectElement>, user: User) => {
     const selectedRole = e.target.value;
     setNewRole(selectedRole);
     if (selectedRole === "therapy" || selectedRole === "therapist") {
@@ -66,12 +83,12 @@ export default function AdminUserList() {
   // this will handle the creation of Patient
 
   const handleSearch = useCallback(
-    (event) => {
+    (event:any) => {
       const query = event.target.value.toLowerCase();
       setSearchQuery(query);
 
       const filtered = users.filter(
-        (user) =>
+        (user:any) =>
           user.firstName.toLowerCase().includes(query) ||
           user.lastName.toLowerCase().includes(query) ||
           user.email.toLowerCase().includes(query)
@@ -81,12 +98,12 @@ export default function AdminUserList() {
     },
     [users]
   );
-
-  const paginate = (pageNumber) => {
-    if (pageNumber < 1) return;
-    if (pageNumber > Math.ceil(filteredUsers.length / itemsPerPage)) return;
+  const paginate = (pageNumber:any) => {
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    if (pageNumber < 1 || pageNumber > totalPages || pageNumber === currentPage) return;
     setCurrentPage(pageNumber);
   };
+  
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -100,7 +117,7 @@ export default function AdminUserList() {
             (user) =>
               new Paragraph({
                 children: [
-                  new TextRun(`Name: ${user.name}`),
+                  new TextRun(`Name: ${user.firstName}`),
                   new TextRun({ text: `\nEmail: ${user.email}`, break: 1 }),
                   new TextRun({ text: `\nGender: ${user.gender}`, break: 1 }),
                   new TextRun({
@@ -119,7 +136,7 @@ export default function AdminUserList() {
     });
   };
 
-  const handleView = (user) => {
+  const handleView = (user:any) => {
     setSelectedUser({
       ...user,
       date: user.date || "",
@@ -140,13 +157,13 @@ export default function AdminUserList() {
     setTherapyRole(false);
   };
 
-  const handleEdit = (user) => {
+  const handleEdit = (user:any) => {
     setSelectedUser(user);
     setIsEditable(true);
     setIsModalVisible(true);
   };
 
-  const handleChangeRole = (user) => {
+  const handleChangeRole = (user:any) => {
     setSelectedUser(user);
   };
 
@@ -159,12 +176,13 @@ export default function AdminUserList() {
         message.success("User deleted successfully");
         dispatch(GetAllUsers()); // Refresh the user list
       } catch (error) {
-        message.error("Error deleting user" + error.message);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to delete user: ${errorMessage}`);
       }
     }
   };
 
-  const handleUpdate = async (user) => {
+  const handleUpdate = async (user:User) => {
     const confirmed = window.confirm("Are you sure you want to update User?");
     if (confirmed) {
       try {
@@ -174,7 +192,7 @@ export default function AdminUserList() {
             credentials: {
               firstName: user.firstName,
               email: user.email,
-              date: user.date,
+              date: user.lastLogin,
             },
           })
         );
@@ -182,7 +200,8 @@ export default function AdminUserList() {
         dispatch(GetAllUsers()); // Refresh the user list
         setIsModalVisible(false);
       } catch (error) {
-        message.error("Error updating user: " + error.message);
+        const errorMessage = (error as Error).message;
+        message.error(`Failed to load users: ${errorMessage}`);
       }
     }
   };
@@ -194,7 +213,7 @@ export default function AdminUserList() {
     }
   };
 
-  const addUser = (newUser) => {
+  const addUser = (newUser:any) => {
     newUser.id = users.length + 1;
     dispatch(createUser(newUser)).then(() => {
       setUsers([...users, newUser]);
@@ -232,7 +251,7 @@ export default function AdminUserList() {
     const text = filteredUsers
       .map(
         (user) =>
-          `Name: ${user.name}, Email: ${user.email}, Last Login: ${user.lastLogin}`
+          `Name: ${user.firstName}, Email: ${user.email}, Last Login: ${user.lastLogin}`
       )
       .join("\n");
     navigator.clipboard.writeText(text).then(() => {
@@ -244,22 +263,11 @@ export default function AdminUserList() {
     setIsModalVisible(false);
   };
 
-  // const ChangeRole = () => {
-  //   const confirm = window.confirm("Are sure you want to change Role ?");
-
-  //   if (confirm) {
-  //     try {
-  //       dispatch(
-  //         changeRole({ id: selectedUser.id, credentials: { role: newRole } })
-  //       );
-  //       message.success("Role updated successfully");
-  //       setRolemodal(false);
-  //     } catch (error) {
-  //       message.error("Error updating role: " + error.message);
-  //     }
-  //   }
-  // };
-  return (
+  return loading ? (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spin size="large" />
+      </div>
+    ) : (
     <div className="bg-white rounded-lg shadow-xl p-3">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-semibold mb-4 text-purple-600">Users</h2>
@@ -322,7 +330,9 @@ export default function AdminUserList() {
         </div>
       </div>
 
-      {/* User table */}
+   
+
+  
       <table id="User-table" className="min-w-full">
         <thead>
           <tr>
@@ -424,7 +434,9 @@ export default function AdminUserList() {
             </tr>
           ))}
         </tbody>
+        
       </table>
+  
 
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">
@@ -483,13 +495,14 @@ export default function AdminUserList() {
             </p>
 
             {isEditable && (
-              <button
+              <Button
                 onClick={() => handleUpdate(selectedUser)}
                 className="text-center border-2 py-2 rounded-md bg-red-600 text-white font-semibold w-full"
                 disabled={status === 'loading'}
+                loading={status === 'loading'}
               >
                {status === 'loading' ? 'Updating...' : 'Update'}
-              </button>
+              </Button>
             )}
             <VideoCall />
           </div>

@@ -3,7 +3,7 @@ import AdminPatientsList from '../components/Admin/AdminPatientList';
 import AdminTherapistList from '../components/Admin/AdminTherapistList';
 import AdminUserList from '../components/Admin/AdminUsers';
 import Home from '../components/Admin/Home';
-import Patient_Appointment from '../components/Admin/Patient_Appointment';
+import Patient_Appointment from '../components/Admin/Appointment';
 import UserEngagement from '../components/Admin/UserEngagement';
 import Messages from '../components/Admin/Patient_Messages';
 import Sidebar from '../components/Sidebar';
@@ -27,7 +27,7 @@ const AdminDashboard = () => {
   const renderComponent = () => {
     switch (activeComponent) {
       case 'home':
-        return <Home/>;
+        return <Home userRole={admin} />;
       case 'therapiest':
         return <AdminTherapistList />;
         case 'Admin Users':
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
     <div className="flex h-screen">
       <Sidebar userRole={admin} setActiveComponent={setActiveComponent} />
       <div className="flex flex-col flex-grow">
-        <TopBar userRole={admin} className="h-16 shadow-md" />
+        <TopBar userRole={admin}/>
         <div className="flex-grow p-4  bg-gray-200">
         {renderComponent()}
         </div>

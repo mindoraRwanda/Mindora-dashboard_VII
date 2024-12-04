@@ -17,15 +17,16 @@ import {
   ArcElement,
   Legend,
   Tooltip,
+  ChartConfiguration,
 } from "chart.js";
 import { useEffect, useRef, useState } from "react";
-import Modal from "react-modal";
+import { Modal } from "antd";
 import { BsFillCalendar2EventFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
+import { getAppointmentById, summation_Appointment } from "../../Redux/TherapistSlice/Appointment";
 
-// Ensure Modal is set up for client-side rendering
-if (typeof window !== "undefined") {
-  Modal.setAppElement("body"); // You can set 'body' or omit this if not necessary
-}
+
 
 Chart.register(
   DoughnutController,
@@ -41,27 +42,42 @@ Chart.register(
   Tooltip
 );
 
+type Notification = {
+  id: number;
+  title: string;
+  message: string;
+  time: string;
+};
+
 const Home = () => {
-  const chartRef = useRef(null);
-  const chartRefTherapy = useRef(null);
-  const barChartRef = useRef(null);
-  const lineChartRef = useRef(null);
+  const chartRef = useRef<HTMLCanvasElement | null>(null);
+  const chartRefTherapy = useRef<HTMLCanvasElement | null>(null);
+  const barChartRef = useRef<HTMLCanvasElement | null>(null);
+  const lineChartRef = useRef<HTMLCanvasElement | null>(null);
 
-  const chartIns = useRef(null);
-  const chartInsTherapy = useRef(null);
-  const barChartIns = useRef(null);
-  const lineChartIns = useRef(null);
+  const chartIns = useRef<Chart | null>(null);
+  const chartInsTherapy = useRef<Chart | null>(null);
+  const barChartIns = useRef<Chart | null>(null);
+  const lineChartIns = useRef<Chart | null>(null);
 
-  const [notifications, setNotifications] = useState([
+  const dispatch=useDispatch();
+  const therapistId = localStorage.getItem('TherapistId');
+    useEffect(()=>{
+      dispatch(getAppointmentById(therapistId));
+    },[dispatch,therapistId]);
+  
+
+
+  const [notifications] = useState<Notification[]>([
     { id: 1, title: "Emergency: John Doe", message: "Patient experiencing severe anxiety.", time: "2 mins ago" },
     { id: 2, title: "Emergency: Jane Smith", message: "Patient having panic attack.", time: "5 mins ago" },
     { id: 3, title: "Emergency: Alice Johnson", message: "Patient feeling suicidal.", time: "10 mins ago" },
   ]);
 
-  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = (notification) => {
+  const openModal = (notification: Notification) => {
     setSelectedNotification(notification);
     setIsModalOpen(true);
   };
@@ -71,110 +87,136 @@ const Home = () => {
     setSelectedNotification(null);
   };
 
+  
+const AppointStatus=useSelector((state:any)=>state.appointment.status);
+const appointment=useSelector((state:RootState)=>state.appointment.appointments);
+const Appoint_Sum=useSelector(summation_Appointment);
+  
+// Function to Display Gender for person who required appointment
+const handleGender= (appointment: Appointment[]) => {
+  console.log('Appointment Data: ', appointment);
+  const female=appointment?.filter(appoint=>appoint.patient?.personalInformation?.gender?.toLowerCase()==='mamamale').length;
+  const male=appointment?.filter(appoint=>appoint.patient?.personalInformation?.gender?.toLowerCase()==='others').length;
+  return {female, male};
+}
+
+
   useEffect(() => {
     if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d");
-      if (ctx) {
-        if (chartIns.current) {
-          chartIns.current.destroy();
-        }
-
-        chartIns.current = new Chart(ctx, {
-          type: "doughnut",
-          data: {
-            labels: ["Female[70]", "Male[10]"],
-            datasets: [
-              {
-                data: [70, 10],
-                backgroundColor: ["#FBA834", "#387ADF"],
-              },
-            ],
-          },
-        });
+      if (ctx && chartIns.current) {
+        chartIns.current.destroy();
       }
+
+  const {female, male} = handleGender(appointment);
+
+      const config: ChartConfiguration = {
+        type: "doughnut",
+        data: {
+          labels: [`female[${female}]`, `male[${male}]`],
+          datasets: [
+            {
+              data: [female, male],
+              backgroundColor: ["#FBA834", "#387ADF"],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          animation: false
+        }
+      };
+  
+      chartIns.current = new Chart(ctx!, config);
     }
-  }, []);
+  }, [appointment]);
 
   useEffect(() => {
     if (chartRefTherapy.current) {
       const ctx = chartRefTherapy.current.getContext("2d");
-      if (ctx) {
-        if (chartInsTherapy.current) {
-          chartInsTherapy.current.destroy();
-        }
-
-        chartInsTherapy.current = new Chart(ctx, {
-          type: "doughnut",
-          data: {
-            labels: ["Female[50]", "Male[30]"],
-            datasets: [
-              {
-                data: [50, 30],
-                backgroundColor: ["#41B06E", "#F7C04A"],
-              },
-            ],
-          },
-        });
+      if (ctx && chartInsTherapy.current) {
+        chartInsTherapy.current.destroy();
       }
+  
+      const config: ChartConfiguration = {
+        type: "doughnut",
+        data: {
+          labels: ["Female[50]", "Male[30]"],
+          datasets: [
+            {
+              data: [50, 30],
+              backgroundColor: ["#41B06E", "#F7C04A"],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          animation: false
+        }
+      };
+  
+      chartInsTherapy.current = new Chart(ctx!, config);
     }
   }, []);
 
   useEffect(() => {
     if (barChartRef.current) {
       const ctx = barChartRef.current.getContext("2d");
-      if (ctx) {
-        if (barChartIns.current) {
-          barChartIns.current.destroy();
-        }
-
-        barChartIns.current = new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: ["January", "February", "March", "April", "May", "June"],
-            datasets: [
-              {
-                label: "User Growth",
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: "#4A90E2",
-              },
-            ],
-          },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true,
-              },
-            },
-          },
-        });
+      if (ctx && barChartIns.current) {
+        barChartIns.current.destroy();
       }
+  
+      const config: ChartConfiguration = {
+        type: "bar",
+        data: {
+          labels: ["January", "February", "March", "April", "May", "June"],
+          datasets: [
+            {
+              label: "User Growth",
+              data: [12, 19, 3, 5, 2, 3],
+              backgroundColor: "#4A90E2",
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          },
+          animation: false
+        }
+      };
+  
+      barChartIns.current = new Chart(ctx!, config);
     }
   }, []);
 
   useEffect(() => {
     if (lineChartRef.current) {
       const ctx = lineChartRef.current.getContext("2d");
-      if (ctx) {
-        if (lineChartIns.current) {
-          lineChartIns.current.destroy();
-        }
-
-        lineChartIns.current = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: ["January", "February", "March", "April", "May", "June"],
-            datasets: [
-              {
-                label: "Therapy Sessions",
-                data: [65, 59, 80, 81, 56, 55],
-                fill: false,
-                borderColor: "#36A2EB",
-                tension: 0.1,
-              },
-            ],
-          },
-        });
+      if (ctx && lineChartIns.current) {
+        lineChartIns.current.destroy();
       }
+  
+      const config: ChartConfiguration = {
+        type: "line",
+        data: {
+          labels: ["January", "February", "March", "April", "May", "June"],
+          datasets: [
+            {
+              label: "Therapy Sessions",
+              data: [65, 59, 80, 81, 56, 55],
+              fill: false,
+              borderColor: "#36A2EB",
+              tension: 0.1,
+            },
+          ],
+        },
+        options: {
+          animation: false
+        }
+      };
+  
+      lineChartIns.current = new Chart(ctx!, config);
     }
   }, []);
 
@@ -191,8 +233,10 @@ const Home = () => {
               <FaCalendarAlt size={24} />
             </div>
             <div className="ml-5">
-              <h4 className="text-2xl font-semibold text-gray-700">8</h4>
-              <div className="text-gray-500">New Appointments</div>
+              <h4 className="text-2xl font-semibold text-gray-700">
+              {AppointStatus === "loading" ? "..." : Appoint_Sum}
+              </h4>
+              <div className="text-gray-500">Total Appointments</div>
             </div>
           </div>
         </div>
@@ -275,7 +319,7 @@ const Home = () => {
       </div>
 
       {selectedNotification && (
-        <Modal isOpen={isModalOpen} onRequestClose={closeModal} className="modal-content" overlayClassName="modal-overlay">
+        <Modal open={isModalOpen} onCancel={closeModal} className="modal-content">
           <div className="p-6 bg-white rounded-lg">
             <h4 className="text-xl font-semibold text-gray-700">{selectedNotification.title}</h4>
             <p className="text-gray-500 mt-2">{selectedNotification.message}</p>

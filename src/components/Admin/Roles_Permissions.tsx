@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { BiShow } from 'react-icons/bi';
 import { MdDelete, MdRemoveCircle, MdTipsAndUpdates, MdAddBox } from 'react-icons/md';
@@ -13,7 +13,7 @@ export default function Roles() {
     'christella': ['create', 'change appointment']
   });
 
-  const handleModal = (user) => {
+  const handleModal = (user:any) => {
     setSelectedUser(user);
     setIsModalVisible(true);
   };
@@ -23,7 +23,7 @@ export default function Roles() {
     setSelectedUser(null);
   };
 
-  const messageHandle = (permission, isChecked) => {
+  const messageHandle = (permission:string, isChecked:boolean) => {
     if (selectedUser) {
       setPermissions((prev) => {
         const userPermissions = new Set(prev[selectedUser]);
@@ -206,43 +206,54 @@ export default function Roles() {
             <div className='flex text-lg mt-5'>
               <MdAddBox size={24} color='green'/> 
               <p className='ml-2 text-black'>create new patient</p>
-              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="create" onClick={(e) => messageHandle('create', e.target.checked)}/>
+              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="create" 
+              onClick={(e) => messageHandle('create', (e.target as HTMLInputElement).checked)}/>
             </div>
 
             <div className='flex text-lg mt-5'>
               <BiShow size={24} color='blue'/> 
               <p className='ml-2 text-black'>View the patient details</p>
-              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="view" onClick={(e) => messageHandle('view', e.target.checked)}/>
+              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="view" 
+             onClick={(e) => messageHandle('view', (e.target as HTMLInputElement).checked)}/>
             </div>
 
             <div className='flex text-lg mt-5'>
               <CiEdit size={24} color='black'/> 
               <p className='ml-2 text-black'>Edit the patient details</p>
-              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="edit" onClick={(e) => messageHandle('edit', e.target.checked)}/>
+              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="edit"
+             onClick={(e) => messageHandle('edit', (e.target as HTMLInputElement).checked)}/>
             </div>
 
             <div className='flex text-lg mt-5'>
               <MdDelete size={24} color='red'/> 
               <p className='ml-2 text-black'>Delete patient details</p>
-              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="delete" onClick={(e) => messageHandle('delete', e.target.checked)}/>
+              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="delete" 
+onClick={(e) => messageHandle('delete', (e.target as HTMLInputElement).checked)}
+              />
             </div>
 
             <div className='flex text-lg mt-5'>
               <BsPersonFillExclamation size={24} color='purple'/> 
               <p className='ml-2 text-black'>Make appointment</p>
-              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="make appointment" onClick={(e) => messageHandle('make appointment', e.target.checked)}/>
+              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="make appointment"
+onClick={(e) => messageHandle('make appointment', (e.target as HTMLInputElement).checked)}
+               />
             </div>
 
             <div className='flex text-lg mt-5'>
               <MdTipsAndUpdates size={24} color='green'/> 
               <p className='ml-2 text-black'>Update appointment</p>
-              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="update appointment" onClick={(e) => messageHandle('update appointment', e.target.checked)}/>
+              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="update appointment" 
+               onClick={(e) => messageHandle('update appointment', (e.target as HTMLInputElement).checked)}
+              />
             </div>
 
             <div className='flex text-lg mt-5'>
               <MdRemoveCircle size={24} color='red'/> 
               <p className='ml-2 text-black'>Remove appointment</p>
-              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="remove appointment" onClick={(e) => messageHandle('remove appointment', e.target.checked)}/>
+              <input className='form-check-box size-6 p-3 ml-auto' type='checkbox' name='permit' value="remove appointment" 
+              onClick={(e) => messageHandle('remove appointment', (e.target as HTMLInputElement).checked)}
+              />
             </div>
 
             <button className='mt-4 bg-blue-500 text-white py-2 px-4 rounded' onClick={handleCancel}>Close</button>

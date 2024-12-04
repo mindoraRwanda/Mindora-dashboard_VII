@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 
 export default function ContentManage() {
-  const [image, setImage] = useState(null);
-  const [video, setVideo] = useState(null);
+  const [image, setImage] = useState<string | null>(null); 
+  const [video, setVideo] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [messageText, setMessageText] = useState('');
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event:any) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result);
+        setImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleVideoUpload = (event) => {
+  const handleVideoUpload = (event:any) => {
     const file = event.target.files[0];
     if (file) {
       const videoURL = URL.createObjectURL(file);

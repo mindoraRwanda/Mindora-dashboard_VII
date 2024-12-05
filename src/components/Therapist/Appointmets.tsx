@@ -1,7 +1,7 @@
 import {  useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BiTime } from "react-icons/bi";
-import { FaRegCalendarAlt, FaUser } from "react-icons/fa";
+import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import {
   deleteAppointment,
@@ -19,11 +19,14 @@ import AppointmentChange from "./Appointment Change";
 function Appointments() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [activeView, setActiveView] = useState("all");
+  const [activeButton, setActiveButton] = useState("Personal Information");
   const { appointments } = useSelector((state: RootState) => state.appointment);
+  const [selectedPatient,setSelectedPatient]=useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [RescheduleLoading, setRescheduleLoading] = useState(false);
   const [modal, setModal] = useState(false);
   const [rescheduleModal, setRescheduleModal] = useState(false);
+  const [ProfileModal,setProfileModal] = useState(false);
   const [changedAppointments, setChangedAppointments] = useState<Reschedule[]>([]);
   const [selectedAppointment, setSelectedAppointment] =useState<Appointment | null>(null);
   const dispatch = useDispatch<AppDispatch>();
@@ -78,14 +81,9 @@ function Appointments() {
             return filteredAppointments; 
     }
 };
-
   const handleStatsCardClick = (view: string) => {
     setActiveView(view);
   };
-
-
-
-
   const filteredAppointments =
     filterStatus === "all"
       ? appointments
@@ -108,10 +106,57 @@ function Appointments() {
     setModal(true);
   };
 
+  const handleProfileModal= (appointment: any) => {
+    console.log("Selected appointment:", appointment);
+    setSelectedPatient(appointment);
+    setProfileModal(true);
+  };
+
   const handleCancelModal = () => {
     setModal(false);
     form.resetFields();
   };
+const handleCanceProfileModal=()=>{
+  setProfileModal(false);
+};
+const handleActiveButton= (buttonName:any) => {
+setActiveButton(buttonName);
+};
+
+const renderContent=()=>{
+  if (!selectedPatient) return <p>No data available</p>;
+  switch(activeButton){
+    case "Personal Information":
+    return(
+    <div className="my-2 p-2 rounded-sm border">
+         <h2 className="flex text-black gap-1 my-2"><FaUser size={20}/> Emergency Name</h2>
+         <strong>{selectedPatient.patient?.emergencyContact?.name|| "no emergency name"}</strong>
+      <h2 className="flex text-black gap-1 my-2"><FaPhone size={20}/>  Emergency Contact </h2>
+       <strong> {selectedPatient.patient?.emergencyContact?.contact|| "no emergency contact"}</strong>
+      <h2 className="flex text-black gap-1 my-2"><FaEnvelope size={20}/> Emergency Email</h2>
+      <strong> {selectedPatient.patient?.emergencyContact?.email|| "no emergency Email"}</strong>
+      <h2 className="flex text-black gap-1 my-2"><FaMapMarkerAlt size={20}/> Address:</h2>
+      <strong> {selectedPatient.location|| "no address"}</strong>
+    </div>);
+    case "Medical Informaton":
+    return (
+      <div className=" my-2 p-2 rounded-sm border">
+          <h2 className="flex text-black gap-1 my-2"><FaFirstAid size={20}/> Condition</h2>
+          <strong>{selectedPatient.patient?.medicalProfile?.condition || "no medical condition"}</strong>
+      </div>
+    );
+    case "Appointment History":
+      return(
+        <div className="my-2 p-2 rounded-sm border">
+             <h2 className="flex text-black gap-1 my-2"><FaFirstAid size={20}/> Last Visit</h2>
+             <strong>{selectedPatient.patient?.medicalProfile?.lastVist || "no Last visit Appear"}</strong>
+
+        </div>
+      )
+    default:
+    return <p>Default View</p>;
+  }
+};
 
   const handleUpdateApp = async (values: any) => {
     try {
@@ -182,7 +227,6 @@ const handleChangeModal=(appointment:Appointment)=>{
     reason: '',
   });
 };
-
 const handleCancleReschedule=()=>{
   setRescheduleModal(false);
   form.resetFields();
@@ -228,9 +272,6 @@ const handleReschedule=async(values:any)=>{
     setRescheduleLoading(false);
   }
 };
-
-
-
   return (
     <div className="bg-white rounded-lg shadow-xl p-6 mt-3">
       <div className="w-full bg-purple-600 text-white text-2xl p-3 rounded flex justify-between">
@@ -373,11 +414,17 @@ const handleReschedule=async(values:any)=>{
                   >
                     {loading ? "Reschedule..." : "Reschedule"}
                   </Button>
+                
                   <Button
-                    className="p-3 bg-red-600 text-white hover:bg-red-800 text-lg "
+                    className="p-3 bg-red-600 text-white hover:bg-red-800 text-lg mr-1  "
                     onClick={()=>handleDelete(appointment.id)}
                   >
                     Delete
+                  </Button>
+                  <Button type="primary"
+                  onClick={()=>handleProfileModal(appointment)}
+                  disabled={loading}>
+                  {loading?"Loading...":"View Profile"}
                   </Button>
                 </div>
               </div>
@@ -504,6 +551,41 @@ const handleReschedule=async(values:any)=>{
         </Button>
       </Form>
     </Modal>
+
+  {/* Modal to display medical profile of patient */}
+  <Modal
+  open={ProfileModal}
+  footer={null}
+  onCancel={handleCanceProfileModal}
+  >
+ {selectedPatient && selectedPatient.patient && (
+    <div>
+      <div  className=" flex justify-center  ">
+        <div  className=" p-6 flex justify-center border rounded-full">
+      <FaUser size={30}/>
+      </div>
+      </div>
+      <strong className="text-black text-xl flex justify-center">
+        {`${selectedPatient.patient.user.firstName} ${selectedPatient.patient.user.lastName}`}
+      </strong>
+      <div className="flex flex-row gap-9 bg-gray-200 rounded-sm p-1 mt-2">
+        {['Personal Information','Medical Informaton','Appointment History'].map((buttonName)=>(
+          <button
+            key={buttonName}
+            className={`flex  text-md text-white m-1 bg-purple-500 rounded ${activeButton === buttonName? 'text-black' : ''}`}
+            onClick={()=>handleActiveButton(buttonName)}
+          >
+            {buttonName}
+          </button>
+        ))}
+
+      </div>
+      {renderContent()}
+    </div>
+   
+  )}
+
+  </Modal>
     </div>
   );
 }

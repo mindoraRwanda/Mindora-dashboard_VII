@@ -141,10 +141,10 @@ export default function SetMilestones() {
 
 
   return (
-    <div className="bg-white rounded shadow-xl border p-6">
-      <h1 className="text-white font-semibold rounded-sm text-3xl bg-purple-600 p-2 w-full">
+    <div className="bg-white rounded  border p-6">
+      {/* <h1 className="text-white font-semibold rounded-sm text-3xl bg-purple-600 p-2 w-full">
         Treatment Plan Management - Milestones
-      </h1>
+      </h1> */}
       <div className="bg-white rounded  p-6 my-3">
         <div className="bg-slate-100 p-2 flex justify-between">
           <h2 className="text-purple-600 text-3xl font-semibold">
@@ -165,7 +165,7 @@ export default function SetMilestones() {
    <Spin size="large" />
  </div>
           ):(
-            <div className="bg-white shadow-xl  p-6 my-3 ">
+            <div className="bg-white   p-6 my-3 ">
             {milestoneData.map((milestone) => (
               <div key={milestone.id} className="flex justify-between">
                 <div>

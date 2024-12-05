@@ -94,7 +94,10 @@ export default function Sidebar(props: SidebarProps) {
                </div>
              )}
            </div>
-           <div className="relative">
+           <a onClick={() => setActiveComponent("TreatmentPlan")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
+             <FaCalendarCheck className="mr-3" /> Treatment Plan Management 
+           </a>
+           {/* <div className="relative">
              <a
                onClick={() => toggleDropdown("TreatmentPlan")}
                className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
@@ -123,7 +126,7 @@ export default function Sidebar(props: SidebarProps) {
                  </a>
                </div>
              )}
-           </div>
+           </div> */}
            <a onClick={() => setActiveComponent("videoCall")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
              <FaVideo className="mr-3" /> Make Video Call
            </a>

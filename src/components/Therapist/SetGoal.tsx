@@ -20,7 +20,7 @@ interface Goal {
   targetDate: string;
   status: string;
 }
-export default function TreatmentPlan() {
+export default function TreatmentPlan_Goal() {
   const status = useSelector((state: RootState) => state.goalPlan.status);
   const [loading, setLoading] = useState(false);
   const [creatingGoal, setCreatingGoal] = useState(false);
@@ -151,13 +151,13 @@ export default function TreatmentPlan() {
   };
 
   return (
-    <div className="bg-white rounded shadow-xl border p-6">
-      <div className="text-black flex flex-row">
+    <div className="bg-white rounded border p-6">
+      {/* <div className="text-black flex flex-row">
         <h1 className="text-white text-3xl w-full p-2 font-semibold bg-purple-600 ">
           Treatment Plan Management - Goals Management
         </h1>
-      </div>
-      <div className="bg-white rounded-lg shadow-xl border p-6 mt-5">
+      </div> */}
+      {/* <div className="bg-white rounded-lg shadow-xl border p-6 mt-5"> */}
         <h1 className="text-black text-2xl font-semibold ml-6">Create Goals</h1>
         <Form
           form={form}
@@ -214,8 +214,8 @@ export default function TreatmentPlan() {
             </Form.Item>
           </div>
         </Form>
-      </div>
-      <div className="bg-white rounded-lg shadow-xl border p-6 mt-4">
+      {/* </div> */}
+      <div className="bg-white rounded-lg  border p-6 mt-4">
         <h1 className="text-black text-2xl font-semibold ">
           {" "}
           List Of All Goals
@@ -225,7 +225,7 @@ export default function TreatmentPlan() {
             <Spin size="large" />
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-xl p-6">
+          <div className="bg-white rounded-lg  p-6">
             {Goaldata.map((Goal) => (
               <div
                 key={Goal.id}

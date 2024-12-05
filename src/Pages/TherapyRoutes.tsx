@@ -35,8 +35,6 @@ export default function DashboardPage() {
           return <VideoCall />
       case 'TreatmentPlan':
       return <TreatmentPlanupdate />;
-      case 'SetGoal':
-      return <SetGoal />;
       case 'TrackPatient':
       return <TrackPatient />;
       case 'AvaillableSlots':
@@ -45,13 +43,10 @@ export default function DashboardPage() {
        return <PatientsList goToPlan={goToPlan} />;
        case "PatientsList":
         return <AdminPatientsList />
- 
       case 'Messages':
         return <PatientMessages />;
       case 'reports':
         return <Reports />;
-        case 'SetMilestones':
-          return <SetMilestone/>
           case 'Appointmets':
             return <Appointmets/>
             case 'Appointment Changes':

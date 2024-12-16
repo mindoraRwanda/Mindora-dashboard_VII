@@ -231,6 +231,7 @@ export default function SetMilestones() {
   type="text"
   readOnly
   value={goalId || ""} 
+  hidden
 />
             </Form.Item>
           )}

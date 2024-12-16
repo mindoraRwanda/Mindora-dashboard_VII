@@ -21,7 +21,7 @@ import { TreatmentPlan } from "../../Redux/TherapistSlice/TreatmentPlan";
 import { getPatientById } from "../../Redux/Adminslice/PatientSlice";
 import TreatmentPlan_Goal from "./SetGoal";
 import SetMilestones from "./SetMilestones";
-import { FaFaceAngry } from "react-icons/fa6";
+// import { FaFaceAngry } from "react-icons/fa6";
 
 
 
@@ -130,10 +130,10 @@ export default function TreatmentPlanContent() {
       title:"Create Goal",
       content:(
         <div>
-          <TreatmentPlan_Goal/>
+          <TreatmentPlan_Goal callMilestone={()=>setCurrentStep(currentStep+1)}/>
           <div className="flex justify-between">
           <Button type="primary" onClick={()=>setCurrentStep(currentStep-1)}>Previous</Button>
-          <Button type="primary" onClick={()=>setCurrentStep(currentStep+1)} className="mr-5">Next</Button>
+          {/* <Button type="primary" onClick={()=>setCurrentStep(currentStep+1)} className="mr-5">Next</Button> */}
           </div>
         </div>
       )
@@ -145,7 +145,7 @@ export default function TreatmentPlanContent() {
            <SetMilestones/>
            <div className="flex justify-between">
           <Button type="primary" onClick={()=>setCurrentStep(currentStep-1)} >Previous</Button>
-          <Button type="primary"onClick={()=>setCurrentStep(0)}className="mr-5">Submit</Button>
+          <Button type="primary"onClick={()=>setCurrentStep(0)}className="mr-5">Done</Button>
           </div>
         </div>
       ),

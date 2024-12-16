@@ -33,6 +33,7 @@ export default function AdminPatientsList() {
   const [loading, setLoading] = useState(false);
   const [userId] = useState<string>("");
   const itemsPerPage = 4;
+  
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
     const getAllPatients=async()=>{

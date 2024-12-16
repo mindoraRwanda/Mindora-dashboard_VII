@@ -51,7 +51,7 @@ export default function Roles() {
           {/* user1 */}
           <div className='border-y-2 mt-5 items-center border-slate-200'>
             <div className='flex'>
-              <img src="/public/Images/beauty1.jpg" alt="example" width={100} height={30} className='rounded-md p-1'/>
+              <img src="/Images/beauty1.jpg" alt="example" width={100} height={30} className='rounded-md p-1'/>
               <p className='ml-2 font-semibold text-lg text-black mt-8'>Jean Deo</p>
               <button className='ml-auto text-purple-600 py-2 px-1 flex mt-14' onClick={() => handleModal('Jean Deo')}>
                 <MdAddBox size={40} />
@@ -78,7 +78,7 @@ export default function Roles() {
           {/* user2 */}
           <div className='border-y-2 mt-5 items-center border-slate-200'>
             <div className='flex'>
-              <img src="/public/Images/imag1.jpeg" alt="example" width={100} height={50} className='rounded-md p-1'/>
+              <img src="Images/imag1.jpeg" alt="example" width={100} height={50} className='rounded-md p-1'/>
               <p className='ml-2 font-semibold text-lg text-black mt-8'>Bob Dallot</p>
               <button className='ml-auto text-purple-600 py-2 px-1 flex mt-14' onClick={() => handleModal('Bob Dallot')}>
                 <MdAddBox size={40} />
@@ -105,7 +105,7 @@ export default function Roles() {
           {/* user3 */}
           <div className='border-y-2 mt-5 items-center border-slate-200'>
             <div className='flex'>
-              <img src="/public/Images/beauty9.jpg" alt="example" width={100} height={50} className='rounded-md p-1'/>
+              <img src="Images/beauty9.jpg" alt="example" width={100} height={50} className='rounded-md p-1'/>
               <p className='ml-2 font-semibold text-lg text-black mt-8'>Christella</p>
               <button className='ml-auto text-purple-600 py-2 px-1 flex mt-14' onClick={() => handleModal('christella')}>
                 <MdAddBox size={40} />

@@ -102,10 +102,11 @@ const Home = ({ userRole }) => {
         if (chartRefUser.current) {
           chartRefUser.current.destroy();
         }
+        // const {female,male}=counterUserGender(users);
         chartRefUser.current = new Chart(ctx, {
           type: "doughnut",
           data: {
-            labels: ["Female[50]", "Male[30]"],
+            labels: ["Female[16]", "Male[13]"],
             datasets: [
               {
                 data: [50, 30],
@@ -250,7 +251,7 @@ const CountPatientGender=(patients: Patient[])=>{
           </>
         ) : (
           <>
-            <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+            <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1 ">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-orange-600 bg-opacity-75 text-white">
                   <FaUserMd size={24} />

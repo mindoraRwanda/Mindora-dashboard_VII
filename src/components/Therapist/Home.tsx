@@ -141,10 +141,10 @@ const handleGender= (appointment: Appointment[]) => {
       const config: ChartConfiguration = {
         type: "doughnut",
         data: {
-          labels: ["Female[50]", "Male[30]"],
+          labels: ["Female[6]", "Male[4]"],
           datasets: [
             {
-              data: [50, 30],
+              data: [6, 4],
               backgroundColor: ["#41B06E", "#F7C04A"],
             },
           ],
@@ -240,17 +240,7 @@ const handleGender= (appointment: Appointment[]) => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-green-600 bg-opacity-75 text-white">
-              <FaVideo size={24} />
-            </div>
-            <div className="ml-5">
-              <h4 className="text-2xl font-semibold text-gray-700">3</h4>
-              <div className="text-gray-500">Upcoming Video Calls</div>
-            </div>
-          </div>
-        </div>
+      
         <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-pink-600 bg-opacity-75 text-white">
@@ -292,7 +282,7 @@ const handleGender= (appointment: Appointment[]) => {
           <canvas ref={chartRef} />
         </div>
         <div className="bg-white rounded-lg shadow-xl p-6">
-          <h3 className="text-xl text-gray-500 font-semibold mb-4">Therapy</h3>
+          <h3 className="text-xl text-gray-500 font-semibold mb-4">Patients</h3>
           <canvas ref={chartRefTherapy} />
         </div>
         <div className="bg-white rounded-lg shadow-xl p-6">

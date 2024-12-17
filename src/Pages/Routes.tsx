@@ -66,10 +66,12 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex h-screen">
+       <div className="w-1/5 px-3 -ml-3">
       <Sidebar userRole={admin} setActiveComponent={setActiveComponent} />
-      <div className="flex flex-col flex-grow">
+      </div>
+      <div className="flex flex-col flex-grow w-4/5">
         <TopBar userRole={admin}/>
-        <div className="flex-grow p-4  bg-gray-200">
+        <div className="flex-grow   bg-gray-200">
         {renderComponent()}
         </div>
       </div>

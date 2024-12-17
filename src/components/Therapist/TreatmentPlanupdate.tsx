@@ -1,10 +1,12 @@
 import  { useEffect, useState } from "react";
-import { Button, Form, Input, message, Modal, Select,Spin } from "antd";
+import { Button, Form, Input, message, Modal, Select,Spin, Steps } from "antd";
 import { AiOutlineSave } from "react-icons/ai";
 import { MdCancel } from "react-icons/md";
-import { FaSync, FaTrash } from "react-icons/fa";
+import { FaSync, FaTrash, FaUser,FaPhone, FaMapMarkerAlt, FaFirstAid, FaExclamationTriangle, FaPills } from "react-icons/fa";
 import PatientsList from "./PatientsList";
 import { useDispatch, useSelector } from "react-redux";
+
+
 
 import {
   createPlan,
@@ -17,26 +19,139 @@ import { RootState,AppDispatch } from "../../Redux/store";
 import TextArea from "antd/es/input/TextArea";
 import { TreatmentPlan } from "../../Redux/TherapistSlice/TreatmentPlan";
 import { getPatientById } from "../../Redux/Adminslice/PatientSlice";
+import TreatmentPlan_Goal from "./SetGoal";
+import SetMilestones from "./SetMilestones";
+// import { FaFaceAngry } from "react-icons/fa6";
+
+
+
+const{Step}=Steps;
 
 export default function TreatmentPlanContent() {
   const [activeButton, setActiveButton] = useState("All Patients");
   const [TreatmentData, setTreatmentData] = useState<TreatmentPlan[]>([]);
   const [therapistId, setTherapistId] = useState<string | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [profileModal, setProfileModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<TreatmentPlan|null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [currentStep,setCurrentStep]=useState(0);
 
-
+  const [form] = Form.useForm();
+  const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => ({
     status: state.treatmentPlan?.status,
     error: state.treatmentPlan?.error,
   }));
-  const [form] = Form.useForm();
-  const dispatch = useDispatch<AppDispatch>();
+  const steps=[
+    {
+      title:"Create Plan",
+      content:(
+         <Form
+              form={form}
+              className="bg-white rounded p-6"
+              layout="vertical"
+              onFinish={(values)=>{handleCreatePlan(values);
+                setCurrentStep(currentStep+1);}}
+            >
+              <h1 className="text-black text-2xl font-semibold mb-5 ">
+                Create Patient Plan
+              </h1>
+              <Form.Item label="PatientId:" name="patientId" hidden>
+                <Input type="text" placeholder="Enter patientId ..." readOnly />
+              </Form.Item>
 
-  const handleActive = (buttonName:any) => {
-    setActiveButton(buttonName);
-  };
+              <Form.Item
+                label="TherapistId:"
+                name="TherapistId"
+                initialValue={therapistId}
+                hidden
+              >
+                <Input
+                  type="text"
+                  placeholder="Enter therapistId... "
+                  readOnly
+                />
+              </Form.Item>
+              <Form.Item label="Treatment Title:" name="treatmentTitle">
+                <Input type="text" placeholder="Enter treatmentTitle..." />
+              </Form.Item>
+              <Form.Item label="Description:" name="description">
+                <TextArea  placeholder="Enter description..." />
+              </Form.Item>
+              <div className="flex gap-2">
+                <Form.Item
+                  label="Start Date:"
+                  name="startDate"
+                  className="w-1/2"
+                >
+                  <Input type="date" placeholder="Enter startDate..." />
+                </Form.Item>
+                <Form.Item label="End Date:" name="endDate" className="w-1/2">
+                  <Input type="date" placeholder="Enter endDate..." />
+                </Form.Item>
+              </div>
+              <Form.Item label="Status:"name="status">
+                <Select id="status" className="w-full">
+                  <Select.Option value="">Select Status</Select.Option>
+                  <Select.Option value="Active">Pending</Select.Option>
+                  <Select.Option value="Ongoing">Ongoing</Select.Option>
+                  <Select.Option value="Completed">Completed</Select.Option>
+                  <Select.Option value="Cancelled">Cancelled</Select.Option>
+                </Select>
+              </Form.Item>
+
+              <div className="flex gap-2">
+                <Form.Item className="w-full">
+                  <Button
+                    className="w-2/3 bg-purple-600 text-white font-semibold"
+                    htmlType="submit"
+                    loading={status === "loading"}
+                    disabled={status === "loading"}
+                  >
+                    <AiOutlineSave size={20} />{" "}
+                    {status === "loading"
+                      ? "Creating..."
+                      : "Create Treatment Plan"}
+                  </Button>
+                  <Button
+                    className="bg-red-500 text-white w-1/3 "
+                    onClick={() => form.resetFields()}
+                  >
+                    <MdCancel size={20} /> Cancel
+                  </Button>
+                </Form.Item>
+              </div>
+            </Form>
+      ),
+    },
+    {
+      title:"Create Goal",
+      content:(
+        <div>
+          <TreatmentPlan_Goal callMilestone={()=>setCurrentStep(currentStep+1)}/>
+          <div className="flex justify-between">
+          <Button type="primary" onClick={()=>setCurrentStep(currentStep-1)}>Previous</Button>
+          {/* <Button type="primary" onClick={()=>setCurrentStep(currentStep+1)} className="mr-5">Next</Button> */}
+          </div>
+        </div>
+      )
+    },
+    {
+      title:"Create Milestone",
+      content:(
+        <div>
+           <SetMilestones/>
+           <div className="flex justify-between">
+          <Button type="primary" onClick={()=>setCurrentStep(currentStep-1)} >Previous</Button>
+          <Button type="primary"onClick={()=>setCurrentStep(0)}className="mr-5">Done</Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   // This is used for getting Therapist It Logged In
   useEffect(() => {
     const storedTherapistId = localStorage.getItem("TherapistId");
@@ -111,6 +226,14 @@ export default function TreatmentPlanContent() {
     form.resetFields();
     setEditModalVisible(false);
   };
+  const handleProfile =(patient:any) => {
+    console.log("selected Plan to patient:",patient);
+    setSelectedPatient(patient);
+    setProfileModal(true);
+  };
+const handleCancelProfile=()=>{
+  setProfileModal(false);
+  };
 
   // Function to get selected Patient Information form database
   const handlePatientSelected = (patientId:string) => {
@@ -158,7 +281,7 @@ export default function TreatmentPlanContent() {
         message.success("Treatment plan created successfully!");
         form.resetFields();
         dispatch(resetStatus());
-        setActiveButton("View Plans");
+        setActiveButton("Create Plan");
       } else if (createPlan.rejected.match(result)) {
         message.error("Failed to create treatment plan.");
         dispatch(resetStatus());
@@ -241,88 +364,22 @@ export default function TreatmentPlanContent() {
       }
     }
   };
+  const handleActive = (buttonName:any) => {
+    setActiveButton(buttonName);
+  };
   const renderContent = () => {
     switch (activeButton) {
       case "All Patients":
         return <PatientsList goToPlan={handlePatientSelected} />;
       case "Create Plan":
         return (
-          <div className="bg-white rounded-lg shadow-xl border p-6 mt-3">
-            <Form
-              form={form}
-              className="bg-white rounded p-6"
-              layout="vertical"
-              onFinish={handleCreatePlan}
-            >
-              <h1 className="text-black text-2xl font-semibold mb-5 ">
-                Create Patient Plan
-              </h1>
-              <Form.Item label="PatientId:" name="patientId" hidden>
-                <Input type="text" placeholder="Enter patientId ..." readOnly />
-              </Form.Item>
-
-              <Form.Item
-                label="TherapistId:"
-                name="TherapistId"
-                initialValue={therapistId}
-                hidden
-              >
-                <Input
-                  type="text"
-                  placeholder="Enter therapistId... "
-                  readOnly
-                />
-              </Form.Item>
-              <Form.Item label="Treatment Title:" name="treatmentTitle">
-                <Input type="text" placeholder="Enter treatmentTitle..." />
-              </Form.Item>
-              <Form.Item label="Description:" name="description">
-                <TextArea  placeholder="Enter description..." />
-              </Form.Item>
-              <div className="flex gap-2">
-                <Form.Item
-                  label="Start Date:"
-                  name="startDate"
-                  className="w-1/2"
-                >
-                  <Input type="date" placeholder="Enter startDate..." />
-                </Form.Item>
-                <Form.Item label="End Date:" name="endDate" className="w-1/2">
-                  <Input type="date" placeholder="Enter endDate..." />
-                </Form.Item>
-              </div>
-              <Form.Item label="Status:"name="status">
-                <Select id="status" className="w-full">
-                  <Select.Option value="">Select Status</Select.Option>
-                  <Select.Option value="Active">Pending</Select.Option>
-                  <Select.Option value="Ongoing">Ongoing</Select.Option>
-                  <Select.Option value="Completed">Completed</Select.Option>
-                  <Select.Option value="Cancelled">Cancelled</Select.Option>
-                </Select>
-              </Form.Item>
-
-              <div className="flex gap-2">
-                <Form.Item className="w-full">
-                  <Button
-                    className="w-2/3 bg-purple-600 text-white font-semibold"
-                    htmlType="submit"
-                    loading={status === "loading"}
-                    disabled={status === "loading"}
-                  >
-                    <AiOutlineSave size={20} />{" "}
-                    {status === "loading"
-                      ? "Creating..."
-                      : "Create Treatment Plan"}
-                  </Button>
-                  <Button
-                    className="bg-red-500 text-white w-1/3 "
-                    onClick={() => form.resetFields()}
-                  >
-                    <MdCancel size={20} /> Cancel
-                  </Button>
-                </Form.Item>
-              </div>
-            </Form>
+          <div className="bg-white rounded-lg  border p-6 mt-3">
+            <Steps current={currentStep}>
+              {steps.map((step,index)=>(
+                <Step key={index} title={step.title}/>
+              ))}
+            </Steps>
+            <div className="mt-6">{steps[currentStep].content}</div>
           </div>
         );
       case "View Plans":
@@ -331,7 +388,7 @@ export default function TreatmentPlanContent() {
             <Spin size="large" />
           </div>
                    ):(
-          <div className="bg-white rounded-lg shadow-xl p-6">
+          <div className="bg-white rounded-lg  p-6">
          
               {TreatmentData.map((item) => (
                 <div
@@ -342,23 +399,24 @@ export default function TreatmentPlanContent() {
                   <div className="flex justify-between">
                     <div>
                       <p className="text-purple-600 text-2xl font-semibold">
-                        {item.title}
+                        {item.patient.user.firstName} {item.patient.user.lastName}
+                      </p>
+                      <p className="text-black text-md my-3 flex ">
+                        <strong>Problem:</strong><h2 className="text-lg"> {item.title}</h2> 
                       </p>
                       <p className="text-black text-md my-3">
                         <strong>Description:</strong> {item.description}
                       </p>
                       <div className="flex gap-4">
                         <p className="text-black text-md my-3">
-                          <strong>Start Time:</strong>
-                          {item.startDate}
+                          <strong>Start Time:</strong> {item.startDate}
                         </p>
                         <p className="text-black text-md my-3">
                           <strong>End Time:</strong> {item.endDate}
                         </p>
                       </div>
                       <p className="text-black text-md my-3">
-                        <strong>Condition:</strong>
-                        {item.patient?.medicalProfile?.conditions|| 'no condition specified'}
+                        <strong>Condition:</strong> {item.patient?.medicalProfile?.conditions|| 'no condition specified'}
                       </p>
                       <div className="flex gap-2 my-3">
                         <button
@@ -375,6 +433,9 @@ export default function TreatmentPlanContent() {
                           <FaTrash className="mt-1" />
                           Delete
                         </button>
+                        <Button type="primary" onClick={()=>handleProfile(item.patient)}>
+                          View Profile
+                        </Button>
                       </div>
                     </div>
                     <div>
@@ -407,7 +468,7 @@ export default function TreatmentPlanContent() {
   };
 
   return (
-    <div className="bg-white rounded shadow-xl border p-6">
+    <div className="bg-white rounded border p-6">
      
         <h1 className="text-white bg-purple-600  w-full p-2 text-3xl font-semibold">
           Treatment Plan Management - Treatment Plan
@@ -487,6 +548,37 @@ export default function TreatmentPlanContent() {
             </Form.Item>
           </div>
         </Form>
+      </Modal>
+      {/* The following is Modal for Profile */}
+      <Modal
+      footer={null}
+      open={profileModal} onCancel={handleCancelProfile}>
+      <div className="flex justify-center p-1">
+          <div className="flex rounded-full p-3 border-2">
+          <FaUser size={35}/>
+          </div>  
+      </div>
+        {selectedPatient && (
+          <>
+          <div className="flex justify-center">
+            <h2 className="text-xl text-black font-semibold">
+              {selectedPatient.user?.firstName} {selectedPatient.user?.lastName}
+            </h2>
+          </div>
+        <div className="border p-1">
+        <h2 className="flex font-semibold text-lg">EmergencyContact: </h2>
+        <h2 className="flex gap-1 my-2"><FaUser size={17}/> Name:   {selectedPatient.emergencyContact.name}</h2>
+        <h2 className="flex gap-1 my-2"><FaPhone size={17}/> Phone number:   {selectedPatient.emergencyContact.phone}</h2>
+        <h2 className="flex gap-1 my-2"><FaMapMarkerAlt size={17}/> Address:   {selectedPatient.emergencyContact.address}</h2>
+        <h2 className="flex font-semibold text-lg">Medical Profile: </h2>
+        <h2 className="flex gap-1 my-2"><FaExclamationTriangle size={17}/> allergies:   {selectedPatient.medicalProfile.allergies}</h2>
+        <h2 className="flex gap-1 my-2"><FaFirstAid size={17}/> Condition:   {selectedPatient.medicalProfile.conditions}</h2>
+        <h2 className="flex gap-1 my-2"><FaPills size={17}/> Medication:   {selectedPatient.medicalProfile.medications}</h2>
+          </div>
+          </>
+        )}
+     
+
       </Modal>
     </div>
   );

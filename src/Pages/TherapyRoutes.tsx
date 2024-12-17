@@ -9,9 +9,9 @@ import PatientsList from '../components/Therapist/PatientsList';
 import AdminPatientsList from '../components/Admin/AdminPatientList';
 import PatientMessages from '../components/Therapist/PatientMessages';
 import TreatmentPlanupdate from '../components/Therapist/TreatmentPlanupdate';
- import SetGoal from '../components/Therapist/SetGoal';
+//  import SetGoal from '../components/Therapist/SetGoal';
 import TrackPatient from '../components/Therapist/TrackPatient';
- import SetMilestone from '../components/Therapist/SetMilestones';
+//  import SetMilestone from '../components/Therapist/SetMilestones';
 import Appointmets from '../components/Therapist/Appointmets';
 import AppointmentChange from '../components/Therapist/Appointment Change';
 import { useNavigate } from 'react-router-dom';
@@ -35,8 +35,6 @@ export default function DashboardPage() {
           return <VideoCall />
       case 'TreatmentPlan':
       return <TreatmentPlanupdate />;
-      case 'SetGoal':
-      return <SetGoal />;
       case 'TrackPatient':
       return <TrackPatient />;
       case 'AvaillableSlots':
@@ -45,13 +43,10 @@ export default function DashboardPage() {
        return <PatientsList goToPlan={goToPlan} />;
        case "PatientsList":
         return <AdminPatientsList />
- 
       case 'Messages':
         return <PatientMessages />;
       case 'reports':
         return <Reports />;
-        case 'SetMilestones':
-          return <SetMilestone/>
           case 'Appointmets':
             return <Appointmets/>
             case 'Appointment Changes':
@@ -65,11 +60,13 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+      <div className='w-72'>
       <Sidebar 
         userRole={userRole} 
         setActiveComponent={setActiveComponent} 
         setUserRole={setUserRole}
       />
+      </div>
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar userRole={userRole} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-purple-100 to-pink-100 p-6 dark:bg-gray-900 dark:text-white">

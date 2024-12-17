@@ -27,7 +27,7 @@ interface SlotData {
   recurring: boolean;
 }
 export default function ManageAppointMents() {
-  const [activeButton, setActiveButton] = useState("AllPatients");
+  const [activeButton, setActiveButton] = useState("Availlable Slots");
   const [modalVisible, setModalVisible] = useState(false);
   const [editMOdal, setEditMOdal] = useState(false);
   const [SlotData, setSlotData] = useState<SlotData[]>([]);
@@ -313,7 +313,7 @@ const handleActive = (buttonName:string) => {
           Treatment Plan Management - Availlable Slot
         </h1>
       <div className="flex flex-row gap-9  mt-9">
-        {["AllPatients", "Availlable Slots", "Notifications"].map(
+        {["Availlable Slots", "Notifications"].map(
           (buttonName) => (
             <button
               key={buttonName}
@@ -329,7 +329,6 @@ const handleActive = (buttonName:string) => {
           )
         )}
       </div>
-      {activeButton === "AllPatients" && <PatientsList />}
       {activeButton === "Availlable Slots" && renderScheduleContent()}
 
       <Modal

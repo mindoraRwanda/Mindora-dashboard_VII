@@ -160,7 +160,7 @@ export default function TopBar({ userRole, items = [] }:TopBarProps) {
           {/* Profile Section */}
           <div className="flex items-center gap-2  relative">
             <img
-            onClick={()=>setOpen(!open)}
+             onClick={()=>setOpen(!open)}
              src={profilePhoto || "https://via.placeholder.com/40"}
               alt="User Profile"
               className="w-10 h-10 rounded-full cursor-pointer"

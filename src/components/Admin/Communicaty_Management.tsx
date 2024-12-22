@@ -16,6 +16,7 @@ import {
 } from "../../Redux/Adminslice/CommunitySlice";
 import { RootState } from "../../Redux/store";
 import CommunityDetails from "./CommunityDetails";
+import { deletePots, getAllCommunityPost, UpdatePost } from "../../Redux/Adminslice/CommunityPost";
 
 export default function Communication() {
   const communities = useSelector(
@@ -23,17 +24,22 @@ export default function Communication() {
   );
   const status = useSelector((state: RootState) => state.Community.status);
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
-  const [communityMembers,setCommunityMembers]=useState([]);
+  const [Posts, setPosts] = useState([]);
+  const [AllPost, setAllPost] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showUpdatePostModal, setShowUpdatePostModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
   const [showCommDetails, setShowCommDetails] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
   const [isloading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [UserId, setUserId] = useState("");
-  const [selectedCommunityId,setSelectedCommunityId]=useState([]);
+  const [selectedCommunityId, setSelectedCommunityId] = useState([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const dispatch = useDispatch();
 
-// This is for getting User id stored on Local storage
+  // This is for getting User id stored on Local storage
   useEffect(() => {
     const storedUserId = localStorage.getItem("UserId");
     if (storedUserId) {
@@ -46,21 +52,61 @@ export default function Communication() {
     dispatch(getAllcommunity());
   }, [dispatch]);
 
-  // function to create a new community Groupe
-  const handleSubmit = async (values: any) => {
-    const CommunityData: Community = {
-      moderatorId: UserId,
-      name: values.name,
-      description: values.description,
-      isPrivate: values.isPrivate || false,
+// To get all Post which are in system
+const getAppPost=async()=>{
+  try {
+    setLoading(true);
+    const result = await dispatch(getAllCommunityPost());
+    if (result && result.payload) {
+      setAllPost(result.payload);
+    }
+  } catch (error) {
+    const errorMessage = (error as Error).message;
+    message.error(`Failed to load users: ${errorMessage}`);
+  } finally {
+    setLoading(false);
+  }
+};
+useEffect(() =>{
+  getAppPost();
+},[dispatch]);
+
+// To delete Post
+const handleDeletePost=async(id) =>{
+  if (!window.confirm('Are you sure you want to delete this post?')) {
+    return;
+  };
+  try{
+    setLoading(true);
+    const result=await dispatch(deletePots(id));
+    if(deletePots.fulfilled.match(result)){
+      message.success("Post deleted successfully!");
+      getAppPost();
     };
+  }
+  catch(error){
+    message.error(`Error deleting post: ${error.message}`);
+  }
+}
+
+// function to create a new community Groupe
+  const handleSubmit = async (values: any) => {
+    const formData = new FormData();
+    formData.append("moderatorId", UserId);
+    formData.append("name", values.name);
+    formData.append("description", values.description);
+    formData.append("isPrivate", values.isPrivate || false);
+    if (selectedFile) {
+      formData.append("profile", selectedFile);
+    }
     setLoading(true);
     try {
-      const result = await dispatch(createCommunity(CommunityData));
+      const result = await dispatch(createCommunity(formData));
       if (createCommunity.fulfilled.match(result)) {
         message.success("Community created successfully!");
         setShowModal(false);
         form.resetFields();
+        setSelectedFile(null);
         dispatch(getAllcommunity());
       }
     } catch (error) {
@@ -93,19 +139,18 @@ export default function Communication() {
     }
   };
   // Modal show Community Details
-  const VisibleDetailsModal=(id)=>{
+  const VisibleDetailsModal = (id) => {
     setShowCommDetails(true);
     setSelectedCommunityId(id);
     setSelectedCommunity(communities.find((c) => c.id === id));
   };
-  const hideDetailsModal=()=>{
+  const hideDetailsModal = () => {
     setShowCommDetails(false);
     setSelectedCommunityId(null);
   };
   // for creating new community
   const handleModal = () => {
     setShowModal(true);
-
   };
   const cancelModal = () => {
     setShowModal(false);
@@ -153,12 +198,48 @@ export default function Communication() {
   const handleCancelUpdateModal = () => {
     setUpdateModal(false);
   };
-// This Will help us to display the community members list
 
-const handleCommunityMembers=(community)=>{
-  setSelectedCommunity(community);
-  setCommunityMembers(community.members||[]);
+  // This Will help us to display the community members list
+  const handleCommunityMembers = (community) => {
+    setSelectedCommunity(community);
+    setPosts(community.posts || []);
+  };
 
+  // FUnction that will handle the Topic clicked
+
+  const handleTopicClick = (post) => {
+    setSelectedTopic(post);
+  };
+// Codes for showing Data in Form Modal 
+const handleEdit= (post) => {
+  setSelectedPost(post);
+  setShowUpdatePostModal(true);
+  form.setFieldsValue({
+    title: post?.title,
+    content: post?.content,
+  });
+};
+//Here is the for update Post
+const handleUpdatePost=async(values)=>{
+  try{
+    setLoading(true);
+    const result=await dispatch(UpdatePost({
+      id:selectedPost.id,
+      postData:values
+    }));
+    if(UpdatePost.fulfilled.match(result)){
+      setShowUpdatePostModal(false);
+      message.success("Post updated successfully!");
+      getAppPost();
+    };
+  }
+  catch(error){
+    message.error(`Error updating post: ${error.message}`);
+  }
+}
+
+const cancelUpdateModal = () => {
+  setShowUpdatePostModal(false);
 }
 
   return (
@@ -174,26 +255,30 @@ const handleCommunityMembers=(community)=>{
           </Button>
         </div>
       </div>
+      {isloading ? (
+        <div className="text-center">
+          <Spin size="large" />
+        </div>
+      ):(
       <div className="flex gap-3 items-center ">
-        {/* {status === "loading" && (
-          <span className="flex justify-center">
-            <Spin size="large" />{" "}
-          </span>
-        )} */}
         {communities.map((community) => {
           return (
             <>
-              <div className="p-3 border border-gray-400 rounded-md cursor-pointer" 
-              onClick={()=>handleCommunityMembers(community)}>
+              <div
+                className="p-3 border border-gray-400 rounded-md cursor-pointer"
+                onClick={() => handleCommunityMembers(community)}
+              >
                 <div className="flex justify-between">
-                <img
-                  src="/Images/beauty1.jpg"
-                  alt="com"
-                  width={100}
-                  height={100}
-                  className="rounded-full ml-5"
-                />
-                <Button  onClick={()=>VisibleDetailsModal(community.id)}><FaEllipsisV size={14} color="black"/></Button>
+                  <img
+                    src={community.profile || "https://via.placeholder.com/40"}
+                    alt={`${community.name} profile`}
+                    height={100}
+                    width={100}
+                    className="rounded-full"
+                  />
+                  <Button onClick={() => VisibleDetailsModal(community.id)}>
+                    <FaEllipsisV size={14} color="black" />
+                  </Button>
                 </div>
                 <br />
                 <p className="text-black text-lg font-semibold">
@@ -212,13 +297,23 @@ const handleCommunityMembers=(community)=>{
           );
         })}
       </div>
-      <CommunityDetails visible={showCommDetails} onClose={hideDetailsModal} communityId={selectedCommunityId}/>
+      )}
+      <CommunityDetails
+        visible={showCommDetails}
+        onClose={hideDetailsModal}
+        communityId={selectedCommunityId}
+      />
       <div className="flex gap-5 mt-3">
         <div className="w-1/3 border-2 border-gray-300 rounded-lg bg-white">
           <h3 className="text-purple-600 font-semibold mx-4 my-2 text-xl">
-            Therapist Community Content
+            Therapist Community Topics
           </h3>
           <hr className="text-black border border-gray-400" />
+         {isloading ? (
+           <div className="flex justify-center">
+             <Spin size="large"/>
+           </div>
+         ):(
           <table className="min-w-full">
             <thead>
               <tr className="gap-4">
@@ -231,18 +326,20 @@ const handleCommunityMembers=(community)=>{
               </tr>
             </thead>
             <tbody>
-              {communityMembers?.map((member) => (
-                <tr key={member.id}>
+              {Posts?.map((post) => (
+                <tr key={post.id}>
                   <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
                     <div className="text-sm leading-5 font-medium text-gray-900">
-                    {member.username || 'No username'}
+                      {post?.user.firstName||"No UserName"}  {post?.user.lastName||"  no user name"}
                     </div>
                   </td>
-
                   <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                    <div className="text-sm leading-5 font-medium text-gray-900">
-                      <h4 className="text-black text-xl font-serif my-3 mx-1">
-                      {selectedCommunity?.posts?.[0]?.title || 'No posts'} 
+                    <div className="text-sm leading-5 font-medium text-gray-900 cursor-pointer" onClick={()=>handleTopicClick(post)}>
+                      <h4 className="text-black text-lg  my-3 mx-1 ">
+                        {post?.title || "No Title"}
+                      </h4>
+                      <h4 className="text-gray-700 text-lg  my-3 mx-1">
+                        {post?.content || "No Content"}
                       </h4>
                     </div>
                     <div className="p-1 text-lg flex gap-2">
@@ -250,6 +347,7 @@ const handleCommunityMembers=(community)=>{
                         <IoCheckmarkDoneSharp size={20} />
                         Admit
                       </Button>
+
                       <Button type="dashed">Ignore</Button>
                     </div>
                   </td>
@@ -257,6 +355,7 @@ const handleCommunityMembers=(community)=>{
               ))}
             </tbody>
           </table>
+          )}
         </div>
         <div className="w-2/3 border-2 border-gray-300 rounded-lg bg-white">
           <h3 className="text-purple-600 text-xl mx-4 my-2 font-semibold">
@@ -271,7 +370,7 @@ const handleCommunityMembers=(community)=>{
                     Name
                   </th>
                   <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
-                    Topics
+                    Topic Selected To Discuss
                   </th>
                   <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
                     Actions
@@ -279,36 +378,41 @@ const handleCommunityMembers=(community)=>{
                 </tr>
               </thead>
               <tbody>
-                {communities.map((user) => (
-                  <tr key={user.id}>
+                {selectedTopic? (
+                  <tr>
                     <td className="px-6 py-4 whitespace-no-wrap">
                       <div className="text-sm leading-5 font-medium text-gray-900">
-                        {user.name}
+                        {selectedTopic.user.firstName||"No Name"} {selectedTopic.user.lastName}
                       </div>
                     </td>
 
                     <td className="px-6 py-4 whitespace-no-wrap">
                       <div className="text-sm leading-5 font-medium text-gray-900">
-                        <h4 className="text-black text-xl font-serif my-3 mx-1">
-                          Tomorrow at 12:00 PM we have a meeting, and it's very
-                          important for everyone to be there. Don't plan to
-                          miss.
+                      <h4 className="text-black text-lg my-3 mx-1">
+                          {selectedTopic.title}
                         </h4>
+                        <p className="text-gray-700 my-2 text-xl">
+                          {selectedTopic.content}
+                        </p>
                       </div>
                     </td>
                     <td className="flex gap-2 mt-12">
-                      <button>
+                      <Button>
                         <MdEdit size={24} color="blue" />
-                      </button>
-                      <button>
+                      </Button>
+                      <Button>
                         <MdDelete size={24} color="red" />
-                      </button>
+                      </Button>
                     </td>
+                    </tr>
+                ):(
+                  <tr>
+                    <td colSpan="3" className="text-center">No Topic Selected</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-            <div className="my-2">
+            <div className="m-2">
               <h3 className="text-purple-600 text-xl mx-4 my-2 font-semibold">
                 Topic Comments
               </h3>
@@ -323,25 +427,87 @@ const handleCommunityMembers=(community)=>{
 
                   <td className="px-6 py-4 whitespace-no-wrap">
                     <div className="text-sm leading-5 font-medium text-gray-900">
-                      <h4 className="text-black text-xl font-serif my-3 mx-1">
+                      <h4 className="text-black text-xl my-3 mx-1">
                         Tomorrow at 12:00 PM we have a meeting, and it's very
                         important for everyone to be there. Don't plan to miss.
                       </h4>
                     </div>
                   </td>
                   <td className="flex gap-2 mt-12">
-                    <button>
+                    <Button>
                       <MdEdit size={24} color="blue" />
-                    </button>
-                    <button>
+                    </Button>
+                    <Button>
                       <MdDelete size={24} color="red" />
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
             </div>
           </div>
         </div>
+      </div>
+      <div className="bg-white rounded border p-10 my-3">
+        <h2 className="text-xl text-purple-600"> ALL POST WITHIN SYSTEM</h2>
+        <hr className="text-black border border-gray-400" />
+        {isloading? (
+          <div className="flex justify-center">
+            <Spin size="large" />
+          </div>
+        ):(
+        <table className="min-w-full border-2">
+          <thead className="border-2">
+            <tr className="gap-4">
+              <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
+                Community Name
+              </th>
+              <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
+                Posts
+              </th>
+              <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {AllPost?.map((post) => (
+              <tr>
+                <td className="px-6 py-4 whitespace-no-wrap">
+                  <div className="text-lg leading-5 font-medium text-gray-900">
+                   {post.community.name}
+                  </div>
+                  <div className="text-sm text-gray-500 my-1">
+                   {post.user.firstName}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-no-wrap">
+                  <div className="text-sm leading-5 font-medium text-gray-900">
+                    <h4 className="text-black text-xl my-3 mx-1">
+                      {post?.title || "No Title"}
+                     
+                    </h4>
+                    <p className="text-gray-700 my-2 text-xl">
+                      {post?.content || "No Content"}
+                   
+                    </p>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex gap-2">
+                  <Button onClick={()=>handleEdit(post)} type="text">
+                    <MdEdit size={24} color="blue" />
+                  </Button>
+                  <Button disabled={isloading} onClick={()=>handleDeletePost(post.id)}>
+                    <MdDelete size={24} color="red" />
+                  </Button>
+                  </div>
+                </td>
+                </tr>
+))}
+          </tbody>
+
+        </table>
+)}
       </div>
       <Modal
         open={showModal}
@@ -363,6 +529,18 @@ const handleCommunityMembers=(community)=>{
           </FormItem>
           <FormItem name="description" label="Description">
             <TextArea placeholder="Type description" />
+          </FormItem>
+          <FormItem label="Community Profile">
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setSelectedFile(file);
+                }
+              }}
+            />
           </FormItem>
           <FormItem>
             IsPrivate <Checkbox />
@@ -406,6 +584,28 @@ const handleCommunityMembers=(community)=>{
               className="w-full"
             >
               Update Community
+            </Button>
+          </FormItem>
+        </Form>
+      </Modal>
+      {/* Modal for updating Post */}
+      <Modal footer={null} onCancel={cancelUpdateModal} open={showUpdatePostModal} title="Update Post">
+        <Form form={form} layout="vertical" onFinish={handleUpdatePost}>
+          <FormItem name="title" label="Title:">
+            <Input />
+          </FormItem>
+          <FormItem name="content" label="Content:">
+            <TextArea placeholder="Type content" />
+          </FormItem>
+          <FormItem>
+            <Button
+              type="primary"
+              loading={isloading}
+              disabled={isloading}
+              htmlType="submit"
+              className="w-full"
+            >
+              Update Post
             </Button>
           </FormItem>
         </Form>

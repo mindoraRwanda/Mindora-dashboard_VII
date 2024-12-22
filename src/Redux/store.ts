@@ -11,6 +11,7 @@
   import rescheduleReducer from './TherapistSlice/AppointmentChange';
   import AllAppointmentReducer from './Adminslice/AllAppointment';
   import CommunityReducer from './Adminslice/CommunitySlice';
+  import CommunityPostReducer from './Adminslice/CommunityPost';
 
   const store = configureStore({
     reducer: {
@@ -25,7 +26,8 @@
       milestone: MilestoneReducer,
       reschedule: rescheduleReducer, 
       AllAppointment: AllAppointmentReducer,
-      Community: CommunityReducer
+      Community: CommunityReducer,
+      CommunityPost: CommunityPostReducer,
     },
   });
 

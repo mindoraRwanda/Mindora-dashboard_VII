@@ -12,7 +12,9 @@
   import AllAppointmentReducer from './Adminslice/AllAppointment';
   import CommunityReducer from './Adminslice/CommunitySlice';
   import CommunityPostReducer from './Adminslice/CommunityPost';
-
+  import ArticlesReducer from './Adminslice/Article_Slice';
+import BillingReportsReducer from './Adminslice/BillingReportSlice';
+  
   const store = configureStore({
     reducer: {
       auth: authReducer,
@@ -28,6 +30,9 @@
       AllAppointment: AllAppointmentReducer,
       Community: CommunityReducer,
       CommunityPost: CommunityPostReducer,
+      articles: ArticlesReducer,
+      BillingReports: BillingReportsReducer
+     
     },
   });
 

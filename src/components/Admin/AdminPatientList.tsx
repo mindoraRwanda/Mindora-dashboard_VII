@@ -18,10 +18,13 @@ import {
   updatePatient,
 } from "../../Redux/Adminslice/PatientSlice";
 import { Patient } from "../../Redux/Adminslice/PatientSlice";
+import { getAllAppintmentforPatient } from "../../Redux/TherapistSlice/Appointment";
 
 export default function AdminPatientsList() {
   const patient = useSelector((state: RootState) => state.patients.patients);
   const status = useSelector((state:RootState) => state.patients.status);
+  const slots= useSelector((state:RootState) => state.appointment.appointments);
+  const slotStatus = useSelector((state:RootState) => state.appointment.status);
 
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,8 +36,8 @@ export default function AdminPatientsList() {
   const [loading, setLoading] = useState(false);
   const [userId] = useState<string>("");
   const itemsPerPage = 4;
-  
   const dispatch: AppDispatch = useDispatch();
+
   useEffect(() => {
     const getAllPatients=async()=>{
       try {
@@ -61,7 +64,22 @@ export default function AdminPatientsList() {
     setSelectedPatient(patient);
     setIsModalVisible(true);
   };
+ useEffect(()=>{
+  if(selectedPatient?.id){
+    console.log( "That is the id of selected patient",selectedPatient.id);
+    dispatch(getAllAppintmentforPatient(selectedPatient.id));
+  }
+ },[dispatch, selectedPatient]);
 
+ const formatTime = (isoString) => {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true 
+  });
+};
+ 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
@@ -540,6 +558,39 @@ export default function AdminPatientsList() {
                 />
               </p>
             </div>
+
+            <div className="mt-3 border-2 w-full rounded-md">
+          <span className="text-lg font-semibold ml-2 my-10">Patient Appointments</span>
+          {slotStatus === 'loading' ? (
+            <p>Loading...</p>
+          ) : slotStatus === 'succeeded' && slots.length > 0 ? (
+            <div>
+              {slots.map((slot) => (
+                <div key={slot.id}>
+                  <div className="flex mt-2 justify-between mx-5 ">
+                    <label>Available Day</label>
+                    <p className="text-md">Monday</p>
+                  </div>
+                  
+                  <div className="flex grid-cols-2 justify-between mx-5 mt-2">
+                    <h2 className="flex gap-2">Start_Time: <p>{formatTime(slot.startTime)}</p></h2>
+                    <h2 className="flex gap-2">End_Time: <p>{formatTime(slot.endTime)}</p></h2>
+                  </div>
+                  <div className="flex grid-cols-2 justify-between mx-5 mt-2">
+                    <h2 className="flex gap-2">Appointment_location: <p>{slot.appointmentType}</p></h2>
+                    <h2 className="flex gap-2">Patient_name: <p>{slot.patient.user.firstName}.{slot.patient.user.lastName}</p></h2>
+                  </div>
+                  <div className="flex grid-cols-2 justify-between mx-5 mt-2">
+                    <h2 className="flex gap-2">Patient_Gender: <p>{slot.patient.personalInformation.gender}</p></h2>
+                    <h2 className="flex gap-2">Patient_Phone: <p>{slot.patient.personalInformation.phone}</p></h2>
+                  </div>
+                 </div>
+              ))} 
+            </div>
+           ) : (
+            <p>No available slots found.</p>
+          )} 
+        </div>
             {isEditable && (
               <button
                 onClick={() => handleUpdate(selectedPatient)}

@@ -40,6 +40,17 @@ export const getAppointmentById = createAsyncThunk(
     }
   }
 );
+// Logic for getting all appintment of specific patient 
+export const getAllAppintmentforPatient=createAsyncThunk("getallappointofpatient",
+  async (patientId: string | number, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${patientId}/appointments`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 export const updateAppointments = createAsyncThunk(
   'updateAppointments/update',
@@ -92,6 +103,20 @@ const appointmentSlice = createSlice({
         state.appointments = Array.isArray(action.payload) ? action.payload : [action.payload];
       })
       .addCase(getAppointmentById.rejected, (state, action) => {
+        state.loading = false;
+        state.status = "rejected";
+        state.error = action.payload;
+      })
+      .addCase(getAllAppintmentforPatient.pending, (state) => {
+        state.loading = true;
+        state.status = "loading";
+      })
+      .addCase(getAllAppintmentforPatient.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = "succeeded";
+        state.appointments = Array.isArray(action.payload) ? action.payload : [action.payload];
+      })
+      .addCase(getAllAppintmentforPatient.rejected, (state, action) => {
         state.loading = false;
         state.status = "rejected";
         state.error = action.payload;

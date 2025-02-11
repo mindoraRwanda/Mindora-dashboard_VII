@@ -318,7 +318,7 @@ const cancelUpdateModal = () => {
             <thead>
               <tr className="gap-4">
                 <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
-                  Name
+                 Community Name
                 </th>
                 <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
                   Topics
@@ -330,7 +330,7 @@ const cancelUpdateModal = () => {
                 <tr key={post.id}>
                   <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
                     <div className="text-sm leading-5 font-medium text-gray-900">
-                      {post?.user.firstName||"No UserName"}  {post?.user.lastName||"  no user name"}
+                      {selectedCommunity?.name||"No Community Name"}  
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
@@ -367,7 +367,7 @@ const cancelUpdateModal = () => {
               <thead>
                 <tr className="gap-4">
                   <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
-                    Name
+                    User Name
                   </th>
                   <th className="text-black capitalize text-md leading-5 text-left px-3 py-3">
                     Topic Selected To Discuss
@@ -494,7 +494,7 @@ const cancelUpdateModal = () => {
                 </td>
                 <td>
                   <div className="flex gap-2">
-                  <Button onClick={()=>handleEdit(post)} type="text">
+                  <Button onClick={()=>handleEdit(post)}>
                     <MdEdit size={24} color="blue" />
                   </Button>
                   <Button disabled={isloading} onClick={()=>handleDeletePost(post.id)}>

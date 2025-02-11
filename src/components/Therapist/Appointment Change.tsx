@@ -38,15 +38,13 @@ function AppointmentChange() {
 
   // function for updating appointment change.
   const showEditModal = (changedAppointment:Reschedule) => {
-    const formatTime = (time: string) =>
-      new Date(time).toISOString().substr(11, 5);
     setSelectedChangedAppointment(changedAppointment);
     setEditModal(true);
     form.setFieldsValue({
       ...changedAppointment,
-        newStartTime: formatTime(changedAppointment.newStartTime),
-        newEndTime: formatTime(changedAppointment.newEndTime),
-        reason: changedAppointment.reason,
+      newStartTime: changedAppointment.newStartTime,
+      newEndTime: changedAppointment.newEndTime,
+      reason: changedAppointment.reason,
     });
   };
   // function to cancel modal
@@ -64,6 +62,7 @@ const handleAppointmentChange = async (value:any) => {
     reason: value.reason,
   }
   await dispatch(updateAppointmentChange(data)).unwrap();
+  await dispatch(getAllAppointmentChanges()).unwrap();
   message.success("Appointment change updated successfully!");
   setEditModal(false);
   form.resetFields();
@@ -109,7 +108,10 @@ const handleDelete=async(id:string|number) => {
             >
               <div>
               <strong className="text-black mb-2">
-                  {`${changedAppointment.otherParticipant.firstName} ${changedAppointment.otherParticipant.lastName}`}
+                  { changedAppointment.otherParticipants ?
+                  
+                  `${changedAppointment.otherParticipant.firstName} ${changedAppointment.otherParticipant.lastName}`:
+                  "Partient name not exist"}
                 </strong>
                 <h3 className="text-black mb-2 italic flex justify-end">
                   {changedAppointment.action}

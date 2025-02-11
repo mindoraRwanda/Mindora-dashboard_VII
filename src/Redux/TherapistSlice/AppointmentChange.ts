@@ -9,7 +9,7 @@ import axios from "axios";
     reason:string;
     actionBy:string|number;
     actionTime:string;
- id?:string|number;
+     id?:string|number;
   
 };
 interface rescheduleState{

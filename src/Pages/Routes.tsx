@@ -12,8 +12,8 @@ import { useState } from 'react';
 import Roles from '../components/Admin/Roles_Permissions';
 import ContentManage from '../components/Admin/Content_Management';
 import Communication from '../components/Admin/Communicaty_Management';
-import Electronic_Records from '../components/Admin/Electronic_Records';
-import Reports from '../components/Admin/Data_Report';
+import Article_Management from '../components/Admin/Article_Management';
+import BillingReports from '../components/Admin/Billing_Report';
 import Data_Security from '../components/Admin/Data_Security';
 import Data_BackUp from '../components/Admin/Data_BackUp';
 import Financial_Management from '../components/Admin/Financial_Management';
@@ -46,15 +46,15 @@ const AdminDashboard = () => {
           return <ContentManage/>;
           case 'Community Management':
             return <Communication/>;
-          case 'Electronic Records':
-            return <Electronic_Records/>;
-          case 'Data Reports':
-            return <Reports/>;
+          case 'Artcicle_management':
+            return <Article_Management/>;
+          case 'BillingReports':
+            return <BillingReports/>;
         case 'Data Security':
           return <Data_Security/>;
-  case 'Data backup':
-    return <Data_BackUp/>;
-    case 'Financial Management':
+      case 'Data backup':
+       return <Data_BackUp/>;
+      case 'Financial Management':
       return <Financial_Management/>
       case 'Legal and Complaints':
         return< Legal_Complaints/>;

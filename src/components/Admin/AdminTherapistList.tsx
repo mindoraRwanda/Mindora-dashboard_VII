@@ -21,13 +21,16 @@ import {
   updateTherapy,
 } from "../../Redux/Adminslice/ThearpySlice";
 import { changePass } from "../../Redux/Adminslice/authSlice";
+import { getAllAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
 
 
 export default function AdminTherapistList() {
   const dispatch = useDispatch<AppDispatch>();
   const therapists = useSelector((state:RootState) => state.Therapy.therapists);
   const status = useSelector((state:RootState) => state.Therapy.status);
-  // const error = useSelector((state) => state.Therapy.error);
+  const slots = useSelector((state: RootState) => state.availableSlot.data);
+  const slotStatus = useSelector((state: RootState) => state.availableSlot.status);
+ 
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredtherapists, setFilteredtherapists] = useState([]);
@@ -64,6 +67,21 @@ export default function AdminTherapistList() {
     }
   }, [therapists, status]);
 
+  useEffect(() => {
+    if(selectedTherapy?.id){
+      console.log("Fetching slots for therapist:", selectedTherapy.id);
+      dispatch(getAllAvailableSlot(selectedTherapy.id));
+    }
+  },[selectedTherapy,dispatch]);
+
+  const formatTime = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
   const paginate = (pageNumber:any) => setCurrentPage(pageNumber);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -581,17 +599,44 @@ export default function AdminTherapistList() {
           dateOfBirth:e.target.value,
         },
       }))
+      
     }
+    
   />
-              </p>
-
-              {/* <button
-                onClick={ShowPassModal}
-                className="font-semibold text-start ml-3 text-md text-purple-700"
-              >
-              Click to Change Password ?{" "}
-              </button> */}
+ </p>
+ </div>
+ <div className="mt-3 border-2 w-full rounded-md">
+          <span className="text-lg font-semibold ml-2 my-10">Therapist Available Slot</span>
+          {slotStatus === 'loading' ? (
+            <p>Loading...</p>
+          ) : slotStatus === 'succeeded' && slots.length > 0 ? (
+            <div>
+              {slots.map((slot) => (
+                <div key={slot.id}>
+                  <div className="flex mt-2 justify-between mx-5 ">
+                    <label>Available Day</label>
+                    <p className="text-md">{slot.availableDay}</p>
+                  </div>
+                  
+                  <div className="flex grid-cols-2 justify-between mx-5 mt-2">
+                    <h2 className="flex gap-2">Start_Time: <p>{formatTime(slot.startTime)}</p></h2>
+                    <h2 className="flex gap-2">End_Time: <p>{formatTime(slot.endTime)}</p></h2>
+                  </div>
+                  <div className="flex grid-cols-2 justify-between mx-5 mt-2">
+                    <h2 className="flex gap-2">Date Available: <p>{slot.date}</p></h2>
+                    <h2 className="flex gap-2">Time Zone: <p>{slot.timeZone}</p></h2>
+                  </div>
+                  <div className="flex grid-cols-2 justify-between mx-5 mt-2">
+                    <h2 className="flex gap-2">Therapist Gender: <p>{slot.therapist.personalInformation.gender}</p></h2>
+                    <h2 className="flex gap-2">Therapist Location: <p>{slot.therapist.personalInformation.address}</p></h2>
+                  </div>
+                </div>
+              ))}
             </div>
+          ) : (
+            <p>No available slots found.</p>
+          )}
+        </div>
             {isEditable && (
               <button
                 onClick={() => handleUpdate(selectedTherapy)}

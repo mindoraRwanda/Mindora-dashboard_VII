@@ -2,8 +2,14 @@ import axios from "axios";
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 
 interface Article {
-  id: string;
-  name: string;
+  id?: string;
+  title: string;
+  category: string;
+  content: string;
+  author: string;
+  dateUploaded: string;
+  coverImage?: string;
+  courseId: string;
 }
 
 interface ArticleState {
@@ -17,7 +23,7 @@ const initialState: ArticleState = {
 };
 
 export const createArticle=createAsyncThunk('articleContent/createArticle',
- async(articleData:any,{rejectWithValue})=>{
+ async(articleData:any, {rejectWithValue})=>{
     try{
         const response=await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/articles`,articleData);
         return response.data;

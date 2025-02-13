@@ -1,18 +1,21 @@
-import { Button, Input, Modal, Select } from "antd";
+import { Button, Input, message, Modal, Select,Form } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { Edit, Search } from "lucide-react";
 import React, { useState } from "react";
 import { BiFastForward, BiPlus } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createArticle } from "../../Redux/Adminslice/Article_Slice";
+import { useForm } from "antd/es/form/Form";
 
 function Article_Management() {
+  const status=useSelector((state:Rootstate)=>state.articleContent.data||[]);
   const [selectCategory, setSelectCategory] = useState("AllCategory");
   const [CreateArticleModal, setCreateArticleModal] = useState(false);
   const [editArticleModal, setEditArticleModal] = useState(false);
   const [currentArticle,setCurrentArticle]=useState(null);
   const Dispatch=useDispatch();
+  const [form]=useForm();
 
   const handleOpenModal = (article = null) => {
     if (article) {
@@ -32,28 +35,36 @@ function Article_Management() {
 const handleEditClick =(article) => {
     handleOpenModal(article);
 };
-
-const handleSubmitArticle = async (article) => {
-    const articleData={
-        title: article.title,
-        category: article.category,
-        content: article.content,
-        image: article.image,
-        id: article.id || Date.now(),
-    }
+// logic to take courseId from local storage
+const handleSubmitArticle = async () => {
+  
     try{
-        const result= await Dispatch(createArticle(articleData));
+      await form.validateFields();
+      const courseId=localStorage.getItem("courseId"); 
+      const articleData=await form.getFieldsValue();
+      if(!courseId){
+        message.error("Please select a course");
+        return;
+      }
+      const coverImage=articleData.coverImage?.file;
+     if(coverImage){
+      const formData=new FormData();
+      formData.append("coverImage",coverImage);
+     }
+      const result= await Dispatch(createArticle({...articleData, courseId,
+        coverImage: articleData.coverImage?.file?.name || '',
+        dateUploaded: new Date(articleData.dateUploaded).toISOString()}));
         if(createArticle.fulfilled.match(result)){
             setCreateArticleModal(false);
             setCurrentArticle(null);
             message.success("Article created successfully!");
+            form.resetFields();
         }
     }
     catch(error){
         const errorMessage=(error as Error).message;
         message.error(`Failed to create article: ${errorMessage}`);
     }
-
 };
 
 
@@ -180,35 +191,69 @@ const handleSubmitArticle = async (article) => {
         </div>
       </div>
       {/* Modal for creating article */}
-    <Modal open={CreateArticleModal} onCancel={handleCancelCreateArticleModal} footer={null} title={editArticleModal?" Edit Article":"Create new Article"} >
+    <Modal open={CreateArticleModal} onCancel={handleCancelCreateArticleModal} footer={null}
+     title={editArticleModal?" Edit Article":"Create new Article"} >
     <div className="rounded  m-2">
-    <div className="my-2">
-    <label htmlFor="">Title</label>
-    <Input type="text" name="title" placeholder="article title" required/>
-    </div>
-   <div className="my-2">
-    <label htmlFor="">Author</label>
-    <Input type="text" name="title" placeholder="article title" required/>
-   </div> <div className="my-2">
-    <label htmlFor="">Cover Image</label>
-    <Input type="file" name="coverImage" required/>
-   </div> <div className="my-2">
-    <label htmlFor=""> Category</label>
-    <Select name="category" className="w-full" required value={""}>
-        <Option value="">Select Category</Option>
-        <Option value="category1">Category 1</Option>
-        <Option value="category2">Category 2</Option>
-        <Option value="category3">Category 3</Option>
-    </Select> 
-   </div> <div className="my-2">
-    <label htmlFor=""> Date Uploaded</label>
-    <Input type="date" name="dateUploaded" required/>
-   </div> <div className="my-2">
-    <label htmlFor=""> Content</label>
-    <TextArea name="content" placeholder="Article content" required/>
-    </div> </div>  
+      <Form form={form} layout="vertical">
+     <Form.Item
+     name="title"
+     label="Article Title"
+     rules={[
+       {required: true,message:'Please enter title'}]}
+     >
+    <Input placeholder="article title" />
+    </Form.Item>
+    <Form.Item
+    name="author"
+    label="Author"
+    rules={[
+       {required: true,message:'Please enter author'}]}
+    >
+      <Input placeholder="Enter name of Author" />
+
+    </Form.Item>
+    <div className="flex gap-3">
+   <Form.Item
+    name="category"
+    label="Category"
+    className="w-full"
+    rules={[
+       {required: true,message:'Please select category'}]}
+   >
+    <Input placeholder="article category"/>
+    </Form.Item>
+    <Form.Item
+    name="dateUploaded"
+    label="Date Uploaded"
+    className="w-full"
+    rules={[
+       {required: true,message:'Please select date uploaded'}]}>
+    <Input type="date" />
+</Form.Item>
+</div>
+ 
+<Form.Item
+    name="coverImage"
+    label="Cover Image"
+    rules={[
+       {required: true,message:'Please select cover image'}]}
+>
+    <Input type="file"/>
+    </Form.Item>
+
+<Form.Item
+    name="content"
+    label="Content"
+    rules={[
+       {required: true,message:'Please enter content'}]}>
+    <TextArea placeholder="Article content"/>
+    </Form.Item>
+    </Form>
+     </div>  
     <div className="flex justify-end">
-    <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full font-bold py-2 px-4 rounded flex" type="submit" onClick={handleSubmitArticle}>
+    <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full font-bold py-2 px-4 rounded flex" 
+    type="submit" 
+    onClick={handleSubmitArticle} loading={status==="loading"} disabled={status==='loading'}>
     {editArticleModal ? "Update Article" : "Add Article"}
       </Button>
     </div>  

@@ -18,6 +18,8 @@ import Data_Security from '../components/Admin/Data_Security';
 import Data_BackUp from '../components/Admin/Data_BackUp';
 import Financial_Management from '../components/Admin/Financial_Management';
 import Legal_Complaints from '../components/Admin/Legal_Complaints';
+import Course_Management from '../components/Admin/Course_Management';
+
 
 
 const AdminDashboard = () => {
@@ -58,6 +60,8 @@ const AdminDashboard = () => {
       return <Financial_Management/>
       case 'Legal and Complaints':
         return< Legal_Complaints/>;
+        case 'Courses Management':
+          return <Course_Management/>;
 
     default:
         return <div className='text-black text-2xl'>Select a menu option</div>;

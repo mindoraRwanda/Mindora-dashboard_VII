@@ -14,6 +14,7 @@
   import CommunityPostReducer from './Adminslice/CommunityPost';
   import ArticlesReducer from './Adminslice/Article_Slice';
 import BillingReportsReducer from './Adminslice/BillingReportSlice';
+import CourseReducer from './Adminslice/CourseSlice';
   
   const store = configureStore({
     reducer: {
@@ -30,8 +31,10 @@ import BillingReportsReducer from './Adminslice/BillingReportSlice';
       AllAppointment: AllAppointmentReducer,
       Community: CommunityReducer,
       CommunityPost: CommunityPostReducer,
-      articles: ArticlesReducer,
-      BillingReports: BillingReportsReducer
+      articleContent: ArticlesReducer,
+      BillingReports: BillingReportsReducer,
+      courses: CourseReducer, 
+
      
     },
   });

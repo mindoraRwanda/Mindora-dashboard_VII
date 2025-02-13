@@ -15,6 +15,7 @@ import {
   FaCalendarCheck,
   FaReadme,
   FaEdit,
+  FaForward,
 } from "react-icons/fa";
 
 import { Image } from "antd";
@@ -291,9 +292,25 @@ export default function Sidebar(props: SidebarProps) {
             <a onClick={() => setActiveComponent("Community Management")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <PiCallBellBold className="mr-3 text-xl" /> Community Management
             </a>
-            <a onClick={() => setActiveComponent("Artcicle_management")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
-              <SiFiles className="mr-3" /> Article Management
+
+            <div className="relative">
+              <a onClick={() => toggleDropdown("CourseManagement")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                <SiDatabricks className="mr-3" />Courses Management <GoChevronDown className="ml-1" />
               </a>
+            {
+              openDropdown ==='CourseManagement' &&(
+                <div className="ml-6">
+                <a onClick={() => setActiveComponent("Courses Management")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                  <p className="flex"><FaForward className="m-1" />Courses Management</p>
+                </a>
+                <a onClick={() => setActiveComponent("Artcicle_management")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                <FaForward className="mr-3" /> Article Management
+                </a>
+                </div>
+              )
+            }
+            </div>
+
             <div className="relative">
               <a onClick={() => toggleDropdown("dataManagement")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                 <SiDatabricks className="mr-3" /> Report Management <GoChevronDown className="ml-1" />

@@ -1,15 +1,17 @@
-import { Button, Input, message, Modal, Select,Form } from "antd";
+import { Button, Input, message, Modal,Form, Upload } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { Edit, Search } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiFastForward, BiPlus } from "react-icons/bi";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaUpload } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { createArticle } from "../../Redux/Adminslice/Article_Slice";
+import { createArticle, deleteArticle, getAllArticle, UpdateArticle } from "../../Redux/Adminslice/Article_Slice";
 import { useForm } from "antd/es/form/Form";
+import { RootState } from "../../Redux/store";
 
-function Article_Management() {
-  const status=useSelector((state:Rootstate)=>state.articleContent.data||[]);
+function Article_Management({selectedCourseId,setActiveButton}) {
+  const status=useSelector((state:RootState)=>state.articleContent.status);
+  const articles=useSelector((state:RootState)=>state.articleContent.data||[]);
   const [selectCategory, setSelectCategory] = useState("AllCategory");
   const [CreateArticleModal, setCreateArticleModal] = useState(false);
   const [editArticleModal, setEditArticleModal] = useState(false);
@@ -21,9 +23,17 @@ function Article_Management() {
     if (article) {
         setEditArticleModal(true);
         setCurrentArticle(article);
+        form.setFieldsValue({
+          title: article.title,
+          content: article.content,
+          category: article.category,
+          author: article.author,
+          publishedDate: article.publishedDate? article.publishedDate.slice(0, 10) : "",
+        });
     } else {
         setEditArticleModal(false);
         setCurrentArticle(null);
+        form.resetFields();
     }
     setCreateArticleModal(true);
 };
@@ -32,67 +42,115 @@ function Article_Management() {
     setCurrentArticle(null);
     setEditArticleModal(false);
   };
-const handleEditClick =(article) => {
-    handleOpenModal(article);
-};
-// logic to take courseId from local storage
-const handleSubmitArticle = async () => {
-  
-    try{
-      await form.validateFields();
-      const courseId=localStorage.getItem("courseId"); 
-      const articleData=await form.getFieldsValue();
-      if(!courseId){
-        message.error("Please select a course");
-        return;
-      }
-      const coverImage=articleData.coverImage?.file;
-     if(coverImage){
-      const formData=new FormData();
-      formData.append("coverImage",coverImage);
-     }
-      const result= await Dispatch(createArticle({...articleData, courseId,
-        coverImage: articleData.coverImage?.file?.name || '',
-        dateUploaded: new Date(articleData.dateUploaded).toISOString()}));
-        if(createArticle.fulfilled.match(result)){
-            setCreateArticleModal(false);
-            setCurrentArticle(null);
-            message.success("Article created successfully!");
-            form.resetFields();
+const handleEditClick =async() => {
+  try{
+  const values=await form.validateFields();
+  if(!currentArticle?.id){
+    message.error("No article selected for editing");
+    return;
+  }
+  const formData=new FormData();
+  formData.append('courseId', selectedCourseId);
+  formData.append('title', values.title);
+  formData.append('content', values.content);
+  formData.append('category', values.category);
+  formData.append('author', values.author);
+  formData.append('publishedDate', values.dateUploaded);
+  const imageFile = values.coverImage?.fileList?.[0]?.originFileObj;
+        if (imageFile) {
+            formData.append('picture', imageFile);
         }
-    }
-    catch(error){
-        const errorMessage=(error as Error).message;
-        message.error(`Failed to create article: ${errorMessage}`);
-    }
+  await Dispatch(UpdateArticle({id:currentArticle.id,formData})).unwrap();
+  message.success("Article updated successfully");
+  handleCancelCreateArticleModal();
+  Dispatch(getAllArticle(selectedCourseId));
+  form.resetFields();
+}
+  catch(error){
+    message.error(`Failed to update article: ${error}`);
+  }
 };
 
+const handleDeleteArticle=async(article:any)=>{
+  try{
+    if(!article.id){
+      message.error("No article selected for deletion");
+      return;
+    }
+    await Dispatch(deleteArticle(article.id)).unwrap();
+    message.success("Article deleted successfully");
+    Dispatch(getAllArticle(selectedCourseId));
+  }
+  catch(error){
+    const errorMessage = error?.message || 'Unknown error occurred';
 
+    message.error(`Failed to delete article: ${errorMessage}`);
+  }
+};
+
+useEffect(() => {
+  if(selectedCourseId){
+    console.log('The articles of selectedCourseId are:', selectedCourseId);
+  Dispatch(getAllArticle(selectedCourseId));
+  }
+},[selectedCourseId]);
+
+// logic to take courseId from local storage
+const handleCreateArticle=async() => {
+  try {
+    const values = await form.validateFields();
+    const formData=new FormData();
+    if(!selectedCourseId){
+      message.error("Please select a course first");
+      return;
+    }
+   formData.append('courseId',selectedCourseId);
+   formData.append('title', values.title);
+   formData.append('content', values.content);
+   formData.append('category', values.category);
+   formData.append('author', values.author);
+   formData.append('publishedDate', values.dateUploaded);
+   const imageFile = values.coverImage?.fileList?.[0]?.originFileObj;
+   if(imageFile){
+    formData.append('picture',imageFile);
+   };
+    await Dispatch(createArticle(formData)).unwrap();
+    message.success("Article created successfully");
+    setCreateArticleModal(false);
+    setActiveButton('Course Articles');
+    form.resetFields();
+    Dispatch(getAllArticle(selectedCourseId));
+  } catch (error) {
+    message.error(`Failed to create article: ${error}`);
+  }
+};
   return (
     <>
-      <div className="text-2xl text-black m-4  mt-20 bg-white">
-        <div className="font-2xl justify-between mt-10 p-2 bg-white flex">
+      <div className="text-2xl text-black m-4   bg-white">
+        <div className="font-2xl justify-between  p-2 bg-white flex">
           <h1 className="text-black text-2xl font-semibold">
             Article Management
           </h1>
           <div className="p-1 border rounded text-lg italic">
             {" "}
             Total Articles:
-            <span className="text-blue-500 ml-2">150</span>
+            <span className="text-blue-500 ml-2">{articles.length}</span>
           </div>
-          <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex" onClick={()=>handleOpenModal()}>
-            <BiPlus size={23} /> New Article
-          </Button>
+        
         </div>
-        <div className="border rounded p-7 my-5 grid grid-cols-3">
-          <div className="rounded-md mx-2 px-5 py-2 border">
+        <div className="border rounded p-7 my-5 ">
+          {status==='loading'?(
+            <div className="text-center py-4">Loading ....</div>
+          ):
+          articles.length>0 ?(
+            <div className="grid grid-cols-3">
+          {articles.map((article,index)=>(
+          <div key={article.id || index} className="rounded-md mx-2 px-5 py-2 border">
             <div className="flex justify-between">
-              <h3 className="font-semibold my-2">Article Title</h3>
-              <h5 className="text-lg"> category</h5>
+              <h3 className="font-semibold my-2">{article.title}</h3>
+              <h5 className="text-lg"> {article.category}</h5>
             </div>
-            <p className="my-3">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
-              facilisi. Nulla facilisi. Nulla facilisi.
+            <p className="my-3">{article.content ? article.content: 'no content aveillable'}
             </p>
             <hr />
             <div className="flex gap-2 my-2 justify-end">
@@ -101,38 +159,11 @@ const handleSubmitArticle = async () => {
               </button>
             </div>
           </div>
-          <div className="rounded-md mx-2 px-5 py-2 border">
-            <div className="flex justify-between">
-              <h3 className="font-semibold my-2">Article Title</h3>
-              <h5 className="text-lg"> category</h5>
-            </div>
-            <p className="my-3">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
-              facilisi. Nulla facilisi. Nulla facilisi.
-            </p>
-            <hr />
-            <div className="flex gap-2 my-2 justify-end">
-              <button className="hover:ease-in-out text-purple-600  py-1 px-2 text-lg flex cursor-pointer">
-                More info <BiFastForward className="mt-2" />{" "}
-              </button>
-            </div>
-          </div>
-          <div className="rounded-md mx-2 px-5 py-2 border">
-            <div className="flex justify-between">
-              <h3 className="font-semibold my-2">Article Title</h3>
-              <h5 className="text-lg"> category</h5>
-            </div>
-            <p className="my-3">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
-              facilisi. Nulla facilisi. Nulla facilisi.
-            </p>
-            <hr />
-            <div className="flex gap-2 my-2 justify-end">
-              <button className="hover:ease-in-out text-purple-600  py-1 px-2 text-lg flex cursor-pointer">
-                More info <BiFastForward className="mt-2" />{" "}
-              </button>
-            </div>
-          </div>
+         ) )}
+         </div>
+        ):(
+        <p className="text-center text-gray-500 text-lg">No articles available.</p>
+       ) }
         </div>
         <div className="flex gap-4">
           <div className=" flex w-2/3 border rounded ">
@@ -153,42 +184,59 @@ const handleSubmitArticle = async () => {
             <option value="category2">Category 2</option>
             <option value="category3">Category 3</option>
           </select>
+          <Button className="bg-purple-600  text-white font-bold py-5 px-4 rounded flex" onClick={()=>handleOpenModal()}>
+            <BiPlus size={23} /> New Article
+          </Button>
         </div>
         <div className="rounded border p-10 my-2">
+        {articles.length >0 ? (
           <table className="min-w-full">
-            <thead>
-              <tr className="border-b-2 text-left text-sm text-gray-600">
-                <th>Article Image</th>
-                <th> Article Title</th>
-                <th> Article Category</th>
-                <th> Last Updated</th>
-                <th>Actions</th>
-              </tr>
-              <tr className="border text-left text-sm text-gray-800">
+              <tbody>
+                {articles.map ((article,index)=>(
+              <tr key={article.id|| index} className="border text-left text-sm text-gray-800">
                 <td>
+                  {article.picture?(
                   <img
-                    src="/Images/beauty1.jpg"
+                    src={article.picture}
                     alt="Article Image"
                     width={70}
                     height={50}
-                    className="rounded-md m-1"
+                    className="rounded-md m-2 object-cover"
                   />
+                ):(
+                  <img src= "https://via.placeholder.com/40"/>
+                )}
                 </td>
-                <td>Lorem ipsum dolor sit amet</td>
-                <td>Category 1</td>
-                <td>2022-01-01</td>
+                <td>{article.title}</td>
+                <td>{article.category}</td>
+                <td>{article.publishedDate}</td>
                 <td>
-                  <Button className="px-2 py-1 text-sm text-gray-600 hover:text-gray-800" onClick={handleEditClick}>
+                  <Button className="px-2 py-1 text-sm text-gray-600 hover:text-gray-800" onClick={()=>handleOpenModal(article)}
+                   
+                    >
                     <Edit />
                   </Button>
-                  <Button className="px-2 py-1 text-sm ml-3 text-gray-600 hover:text-gray-800">
+                  <Button className="px-2 py-1 text-sm ml-3 text-gray-600 hover:text-gray-800" onClick={()=>handleDeleteArticle(article)}>
                     <FaTrash size={20} color="red" />
                   </Button>
                 </td>
               </tr>
-            </thead>
-          </table>
-        </div>
+              ))}
+                 </tbody>
+                 </table>
+         
+            ):(
+              <table>
+                <tbody>
+              <tr>
+                <td colSpan={5} className="text-center text-gray-500 text-lg">
+                  No articles available.
+                </td>
+              </tr>
+              </tbody>
+              </table>
+            )}
+      </div>
       </div>
       {/* Modal for creating article */}
     <Modal open={CreateArticleModal} onCancel={handleCancelCreateArticleModal} footer={null}
@@ -224,7 +272,7 @@ const handleSubmitArticle = async () => {
     </Form.Item>
     <Form.Item
     name="dateUploaded"
-    label="Date Uploaded"
+    label="Published Date"
     className="w-full"
     rules={[
        {required: true,message:'Please select date uploaded'}]}>
@@ -233,13 +281,15 @@ const handleSubmitArticle = async () => {
 </div>
  
 <Form.Item
-    name="coverImage"
-    label="Cover Image"
-    rules={[
-       {required: true,message:'Please select cover image'}]}
->
-    <Input type="file"/>
-    </Form.Item>
+            name="coverImage"
+            label="Article Cover Image"
+           
+            rules={[
+              { required: false}]}>
+                <Upload maxCount={1} >
+                  <Button><FaUpload/>Select Image</Button>
+                </Upload>
+              </Form.Item>
 
 <Form.Item
     name="content"
@@ -253,14 +303,13 @@ const handleSubmitArticle = async () => {
     <div className="flex justify-end">
     <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full font-bold py-2 px-4 rounded flex" 
     type="submit" 
-    onClick={handleSubmitArticle} loading={status==="loading"} disabled={status==='loading'}>
+    onClick={editArticleModal? handleEditClick:handleCreateArticle} 
+    loading={status==="loading"} disabled={status==='loading'}
+    >
     {editArticleModal ? "Update Article" : "Add Article"}
       </Button>
     </div>  
   </Modal>
-    </> 
-  );
-
-}
-
+  </>
+  );}
 export default Article_Management;

@@ -1,4 +1,4 @@
-import { Button, Input, message, Modal, Select, Form, Spin } from "antd";
+import { Button, Input, message, Modal, Select, Form, Spin, Upload } from "antd";
 import { useForm } from "antd/es/form/Form";
 import TextArea from "antd/es/input/TextArea";
 import { Search } from "lucide-react";
@@ -8,13 +8,18 @@ import { FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { createCourses, deleteCourse, editCourse, getCourses } from "../../Redux/Adminslice/CourseSlice";
 import { RootState } from "../../Redux/store";
+import { createArticle } from "../../Redux/Adminslice/Article_Slice";
+import Article_Management from "./Article_Management";
 
 function Course_Management() {
   const allCourses=useSelector((state:RootState)=>state.courses.coursesData||[]);
+  const statusArticle=useSelector((state:RootState)=>state.articleContent.status);
   const status=useSelector((state:RootState)=>state.courses.status);
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [openArticleModal, setOpenArticleModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [activeButton, setActiveButton] = useState("Courses");
 
   const [form] = useForm();
   const Dispatch = useDispatch();
@@ -31,12 +36,24 @@ function Course_Management() {
     setOpenCreateModal(false);
 
   }
+  const showArticleModal=(course)=>{
+    setOpenArticleModal(true);
+    setSelectedCourse(course);
+    form.resetFields();
+    form.setFieldsValue({
+      category: course.category
+    });
+  };
   const handleClose = () => {
     setOpenCreateModal(false);
     setOpenEditModal(false);
+    setOpenArticleModal(false);
     setSelectedCourse(null);
     form.resetFields();
   };
+  const handleActiveButton = (buttonName:any) => {
+    setActiveButton(buttonName);
+  }
 
   // codese to create the course
   const handleCreateCourse = async () => {
@@ -55,6 +72,13 @@ function Course_Management() {
       message.error(`Failed to ${openEditModal? "Update":"create"} course: ${error}`);
     }
   };
+
+// function to handle selected course
+const handleSelectedCourse =(course:any)=>{
+  setSelectedCourse(course);
+  setActiveButton("Course Articles")
+}
+console.log('SelectedCourseid',selectedCourse?.id);
   // Function to display all courses
 useEffect(() => {
   Dispatch(getCourses());
@@ -75,17 +99,34 @@ const handleDeleteCourse=async(id:string) => {
   }
 };
 
-  return (
-    <>
-      <div className="text-2xl text-black m-4  mt-20 bg-white">
-        <div className="font-2xl justify-between mt-10 p-2 bg-white flex">
-          <h1 className="text-black text-2xl font-semibold">
-            Article Management
-          </h1>
+const renderContent=() => {
+  switch (activeButton) {
+    case "Courses":
+      return(
+      <div className="text-2xl text-black m-4  mt-4 bg-white">
+        <div className="border rounded grid grid-cols-3 gap-2 ">
+          <div className="flex">
+            <Search className=" my-6" />
+            <Input
+              type="text"
+              placeholder="Search Courses"
+              className="w-full mt-3 border rounded my-6"
+            />
+          </div>
+            <Select className=" mt-3" defaultValue="">
+              <Select.Option value="">All Courses</Select.Option>
+              <Select.Option value="asc">Active</Select.Option>
+              <Select.Option value="desc">Draft</Select.Option>
+              <Select.Option value="asc">Archived</Select.Option>
+            </Select>
+        </div>
+        <div className="border rounded p-5 my-5">
+          <div className="flex justify-between gap-2">
+          <span>All COURSES</span>
           <div className="p-1 border rounded text-lg italic">
             {" "}
             Total Articles:
-            <span className="text-blue-500 ml-2">150</span>
+            <span className="text-blue-500 ml-2">{allCourses.length}</span>
           </div>
           <Button
             className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded flex"
@@ -93,47 +134,7 @@ const handleDeleteCourse=async(id:string) => {
           >
             <BiPlus size={23} /> New Course
           </Button>
-        </div>
-        <div className="border rounded p-7 my-5 grid grid-cols-3">
-          <div className="rounded-md mx-2 px-5 py-2 border">
-            <div className="flex justify-between">
-              <h3 className="font-semibold my-2">Active Courses</h3>
-            </div>
-            <span className="my-3">20</span>
           </div>
-          <div className="rounded-md mx-2 px-5 py-2 border">
-            <div className="flex justify-between">
-              <h3 className="font-semibold my-2">Total Enrollement</h3>
-            </div>
-            <span className="my-3">10</span>
-          </div>
-          <div className="rounded-md mx-2 px-5 py-2 border">
-            <div className="flex justify-between">
-              <h3 className="font-semibold my-2">Completion Rate</h3>
-            </div>
-            <span className="my-3">20%</span>
-          </div>
-        </div>
-        <div className="border rounded grid grid-cols-2 gap-2 ">
-          <div className="flex">
-            <Search className="w-12 h-12 my-6" />
-            <Input
-              type="text"
-              placeholder="Search Courses"
-              className="w-full mt-3 border rounded my-6"
-            />
-          </div>
-          <div className="w-full">
-            <select className="border p-3 mt-3 ">
-              <option value="">All Courses</option>
-              <option value="asc">Active</option>
-              <option value="desc">Draft</option>
-              <option value="asc">Archived</option>
-            </select>
-          </div>
-        </div>
-        <div className="border rounded p-5 my-5">
-          <span>All COURSES</span>
           {status==="loading" ? (
         <div className="flex items-center justify-center text-red-600 min-h-screen">
           <Spin size="large" />
@@ -144,6 +145,7 @@ const handleDeleteCourse=async(id:string) => {
           <div key={index} className="flex justify-between my-3 border p-5">
             <div>
               <p className="text-2xl">{courses.title} </p>
+            
               <div className="flex gap-4 mt-5 ">
                 <span className="flex italic">
                   {" "}
@@ -160,21 +162,55 @@ const handleDeleteCourse=async(id:string) => {
                 </span>
               </div>
             </div>
-            <div className="flex gap-3">
-              <Button className="bg-purple-600 hover:bg-purple-600 text-white" onClick={()=>showEditMOdal(courses)}>
-                Edit
-              </Button>
-              <Button className="bg-red-600 hover:bg-red-600 text-white" onClick={()=>handleDeleteCourse(courses.id)}>
-                Delete
-              </Button>
+        
+        <div className="flex gap-3">
+          <Button className="bg-purple-600  text-white" onClick={()=>showEditMOdal(courses)}
+               loading={status==="loading"}disabled={status==="disabled"}
+            >
+
+            Edit
+          </Button>
+          <Button className="bg-red-600  text-white" onClick={()=>handleDeleteCourse(courses.id)}>
+            Delete
+          </Button>
+          <Button className="text-white bg-black" onClick={()=>handleSelectedCourse(courses)}>About Article</Button>
+        </div>
             </div>
-          </div>
            ))):(
             <p>No courses found</p>
            )}
         </div>
       
+      </div>)
+      case "Course Articles":
+        return<Article_Management selectedCourseId={selectedCourse?.id} setActiveButton={setActiveButton} selectedCourse={selectedCourse}/>
+  }
+
+};
+
+  return (
+    <>
+      <div className="bg-white rounded border mt-16 p-6">
+     <h1 className="text-white bg-purple-600  w-full p-1 rounded flex justify-center text-3xl font-semibold">
+       Courses Management 
+     </h1>
+     <div className="flex flex-row gap-7 mx-4 mt-9">
+        {["Courses", "Course Articles"].map((buttonName) => (
+          <button
+            key={buttonName}
+            className={`text-lg font-semibold px-6 py-2 rounded ${
+              activeButton === buttonName
+                ? "bg-purple-600 text-white hover:bg-purple-800"
+                : "bg-gray-200 text-black hover:bg-gray-400"
+            }`}
+            onClick={() => handleActiveButton(buttonName)}
+          >
+            {buttonName}
+          </button>
+        ))}
+        ;
       </div>
+      {renderContent()}
       <Modal
         open={openCreateModal || openEditModal}
         onCancel={handleClose}
@@ -261,9 +297,6 @@ const handleDeleteCourse=async(id:string) => {
                 </Select>
               </Form.Item>
             </div>
-
-           
-
             <Form.Item
               name="description"
               label="Course Description"
@@ -279,11 +312,83 @@ const handleDeleteCourse=async(id:string) => {
             onClick={ handleCreateCourse}
             type="submit"
             loading={status==="loading"}
+            disabled={status==="disabled"}
           >
             {openEditModal ? "Update Course":"Create Course"}
           </Button>
         </div>
       </Modal>
+      {/* Modal for create article */}
+
+    {/* <Modal open={openArticleModal} onCancel={handleClose} 
+    footer={null} title={`Create article In ${selectedCourse?.title||''}`}>
+      <div className="my-4">
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="title"
+            label="Article Title"
+            rules={[
+              { required: true, message: "Please input Article Title!" }
+            ]}
+          >
+            <Input placeholder="Article Title" />
+          </Form.Item>
+          <Form.Item
+          name="author"
+          label="Article Author"
+          rules={[
+            { required: true, message: "Please input Article Author!" }
+          ]}>
+            <Input placeholder="Article Author" />
+          </Form.Item>
+          <div className="flex gap-3">
+          <Form.Item
+          name='category'
+          label='Article Category'
+          className="w-full"
+          rules={[
+            { required: true, message: "Please select Article Category!" }
+          ]}>
+            <Input placeholder="Enter Category Name"/>
+          </Form.Item>
+          <Form.Item
+          name='publishedDate'
+          label='Date Uploaded'
+          className="w-full"
+          rules={[
+            { required: true, message: "Please select Date Uploaded!" }
+          ]}>
+            <Input type='date'/>
+          </Form.Item>
+          </div>
+          <Form.Item
+            name="image"
+            label="Article Cover Image"
+           
+            rules={[
+              { required: true, message: "Please input Article Image!" }]}>
+                <Upload maxCount={1} >
+                  <Button><FaUpload/>Select Image</Button>
+                </Upload>
+              </Form.Item>
+          <Form.Item
+            name="content"
+            label="Article Content"
+            rules={[
+              { required: true, message: "Please input Article Content!" }]}>
+                <TextArea placeholder="Article Content" />
+                </Form.Item>
+                <Button
+                  className="text-white bg-purple-600 w-full p-4"
+                  onClick={handleCreateArticle}
+                  type="submit"
+                  loading={statusArticle==="loading"}
+                  disabled={statusArticle==="loading"}
+                  > Create Article</Button>
+          </Form>
+          </div>
+    </Modal> */}
+    </div>
     </>
   );
 }

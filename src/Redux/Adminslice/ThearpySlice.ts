@@ -85,10 +85,18 @@ export const getTherapy=createAsyncThunk('getTherapy',
 export const getAllTherapists = createAsyncThunk(
   "Therapist/getAllTherapists",
   async (_, { rejectWithValue }) => {
+    const token=localStorage.getItem('token');
+    console.log(token);
     try {
-      const response = await axios.get(`https://mindora-backend-beta-version.onrender.com/api/therapists`);
-      // console.log("API response", response);
+      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/admin/therapists`,{
+        headers: {
+          Authorization: `Bearer ${token}` 
+        }
+      }
+      );
+     
       return response.data;
+      console.log("Response from API:", response);
     } catch (error) {
       return rejectWithValue(error.response?.data || "An Unexpected error occurred");
     }

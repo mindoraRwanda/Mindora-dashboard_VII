@@ -33,7 +33,8 @@ export const NewUser = createAsyncThunk(
             const response = await axios.post('https://mindora-backend-beta-version.onrender.com/api/auth/register', formData, {
 
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    
                 },
             });
             console.log('New User Response:', response.data);

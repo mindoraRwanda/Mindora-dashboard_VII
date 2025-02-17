@@ -34,7 +34,6 @@ import CourseReducer from './Adminslice/CourseSlice';
       articleContent: ArticlesReducer,
       BillingReports: BillingReportsReducer,
       courses: CourseReducer, 
-
      
     },
   });

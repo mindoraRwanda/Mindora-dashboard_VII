@@ -132,9 +132,9 @@ export default function AdminPatientsList() {
             (patient) =>
               new Paragraph({
                 children: [
-                  new TextRun(`Name: ${patient.user.firstName}`),
+                  new TextRun(`Name: ${patient.firstName}`),
                   new TextRun({
-                    text: `\nEmail: ${patient.user.email}`,
+                    text: `\nEmail: ${patient.email}`,
                     break: 1,
                   }),
                   new TextRun({
@@ -318,6 +318,9 @@ export default function AdminPatientsList() {
       <table id="Patient-table" className="min-w-full">
         <thead>
           <tr>
+          <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+          Profile
+            </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Name
             </th>
@@ -325,7 +328,7 @@ export default function AdminPatientsList() {
               phone
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Gender
+             Email
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Age
@@ -343,27 +346,39 @@ export default function AdminPatientsList() {
             <tr key={patient.id}>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 font-medium text-gray-900">
-                  {patient.user.firstName}
+                  {patient.profileImage ? (
+                 <img src={patient.profileImage}
+                  alt="Profile Picture"
+                  className="rounded-full h-10 w-10"
+                 />):(
+                 <img src= "https://via.placeholder.com/40"/>
+                 )}
+
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 font-medium text-gray-900">
+                  {patient.firstName} {patient.lastName}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {patient.user.email}
+                  {patient.phoneNumber}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {patient.personalInformation.gender}
+                  {patient.email}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {patient.personalInformation.age}
+                  {patient.age}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {patient.personalInformation.address}
+                  {patient.address}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">

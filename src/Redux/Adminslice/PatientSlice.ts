@@ -57,8 +57,13 @@ export const createPatient = createAsyncThunk('Patient/createPatient',
 
 export const allPatients = createAsyncThunk('getPatients',
     async (_, { rejectWithValue }) => {
+        const token=localStorage.getItem('token');
         try {
-            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients');
+            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/admin/patients',{
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            });
             console.log("API Response:", response.data);
             return response.data;
         }

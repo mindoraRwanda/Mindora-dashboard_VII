@@ -9,6 +9,7 @@ interface AuthState {
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   therapistId: string | null;
+  token: string | null;
 }
 
 const initialState: AuthState = {
@@ -103,6 +104,11 @@ const authSlice = createSlice({
         state.TherapistId = action.payload.user?.therapist?.id;
         localStorage.setItem('TherapistId', action.payload.user?.therapist?.id || '');
         console.log("therapy id stored:", state.TherapistId);
+        // codes for stora token at local storage when login succesfully 
+       if(action.payload.token){
+        localStorage.setItem('token',action.payload.token);
+        console.log('this is token after login sucessfully',action.payload.token);
+       }
 
         // To store name of any User logedIn
         const fullName = `${action.payload.user?.firstName || ''} ${action.payload.user?.lastName || ''}`.trim();

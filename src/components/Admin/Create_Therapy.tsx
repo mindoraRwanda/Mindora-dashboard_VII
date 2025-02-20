@@ -5,7 +5,7 @@ import { MdFileUpload } from "react-icons/md";
 import { LuFileUp } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../Redux/store";
-import { fetchTherapy, getAllTherapists } from "../../Redux/Adminslice/ThearpySlice";
+import { createTherapy, getAllTherapists } from "../../Redux/Adminslice/ThearpySlice";
 import { featchUserById } from "../../Redux/Adminslice/UserSlice";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -92,9 +92,9 @@ export default function CreateTherapy({ userId, onSuccess }: CreateTherapyProps)
     }
       
     try {
-      const resultAction = await dispatch(fetchTherapy(formData));
+      const resultAction = await dispatch(createTherapy(formData));
       console.log("Server Therapy response:", resultAction);
-      if (fetchTherapy.fulfilled.match(resultAction)) {
+      if (createTherapy.fulfilled.match(resultAction)) {
         message.success("New Therapies created successfully");
         dispatch(getAllTherapists());
   

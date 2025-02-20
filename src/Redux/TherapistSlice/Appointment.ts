@@ -30,9 +30,13 @@ export const summation_Appointment=(state:{appointments:AppointmentState})=>stat
 
 export const getAppointmentById = createAsyncThunk(
   "getAppointmentById/getAll",
-  async (therapistId: string | number, { rejectWithValue }) => {
+  async (therapistId: string | number,{rejectWithValue}) => {
     try {
-      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${therapistId}/appointments`);
+      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${therapistId}/appointments`,{
+        headers:{
+            Authorization:`Bearer ${localStorage.getItem('token')}`
+        }
+      });
       console.log("API Response:", response.data);
       return response.data;
     } catch (error: any) {
@@ -44,7 +48,11 @@ export const getAppointmentById = createAsyncThunk(
 export const getAllAppintmentforPatient=createAsyncThunk("getallappointofpatient",
   async (patientId: string | number, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${patientId}/appointments`);
+      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${patientId}/appointments`,{
+        headers:{
+            Authorization:`Bearer ${localStorage.getItem('token')}`
+        }
+      });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -58,7 +66,11 @@ export const updateAppointments = createAsyncThunk(
     try {
       const response = await axios.put(
         `https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${appointmentData.id}`,
-        appointmentData
+        appointmentData,{
+          headers:{
+              Authorization:`Bearer ${localStorage.getItem('token')}`
+          }
+        }
       );
       return response.data;
     } catch (error: any) {
@@ -72,7 +84,11 @@ export const deleteAppointment = createAsyncThunk(
   "deleteAppointment/delete",
   async (id: string | number, { rejectWithValue }) => {
     try {
-      const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${id}`);
+      const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments/${id}`,{
+        headers:{
+            Authorization:`Bearer ${localStorage.getItem('token')}`
+        }
+      });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.message);

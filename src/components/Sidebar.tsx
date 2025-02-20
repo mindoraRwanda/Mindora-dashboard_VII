@@ -116,6 +116,7 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
 
   return (
     <>
+    <>
       <button className="md:hidden fixed top-0 left-0 p-4 z-20" onClick={toggleOpenBar}>
         {SidebarOpen ? (
           <FaTimes className="text-3xl text-red-700" />
@@ -133,17 +134,17 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
         {userRole === "therapist" ? (
           
            <>
-               <div className="bg-gray-100  mx-5 rounded-md">
+           <div className="bg-gray-100  mx-5 rounded-md border-purple-600 border">
             <div className="rounded-full flex justify-center mx-5 p-2">
           <Image  src={profilePhoto || "https://via.placeholder.com/40"} 
             alt="Friend" className="my-1 rounded-full " width={150} height={150} />
             </div>
             <div className="flex justify-center">
-              <strong className="text-lg text-gray-500">{name}</strong>
+              <strong className="text-lg text-gray-500 my-2">{name}</strong>
             </div>
-            <div className="text-black flex justify-center my-3 gap-3 text-xl">
-             <Button><FaUpload/> Upload new image</Button>
-            </div>
+           <div>
+             <Button className="bg-purple-600 text-white w-full mt-1 " onClick={()=>setChangeProfile(true)}><FaUpload size={19}/>Upload new image</Button>
+             </div>
           </div>
               <a onClick={() => setActiveComponent("Home")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
              <FaHome className="mr-3" /> Home
@@ -288,7 +289,7 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
           </div>
              <a onClick={() => setActiveComponent('home')} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
           <FaHome className="mr-3" /> Home
-        </a>
+          </a>
             <a onClick={() => setActiveComponent('therapiest')} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <FaUserMd className="mr-3" /> View Therapists
             </a>
@@ -355,9 +356,9 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
                 <a onClick={() => setActiveComponent("Courses Management")} className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                   <p className="flex"><FaForward className="m-1" />Courses Management</p>
                 </a>
-                <a onClick={() => setActiveComponent("Artcicle_management")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
+                {/* <a onClick={() => setActiveComponent("Artcicle_management")} className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
                 <FaForward className="mr-3" /> Article Management
-                </a>
+                </a> */}
                 </div>
               )
             }
@@ -390,46 +391,48 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
             <a onClick={() => setActiveComponent("settings")} className="flex items-center text-2xl px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <FaCog className="mr-3" /> Settings
             </a>
-           <Modal open={changeProfile} footer={null} onCancel={()=>{setChangeProfile(false);form.resetFields()}} title='Upload new Image'>
-           <div className="rounded-full flex justify-center mx-5 p-2">
-          <Image  src={profilePhoto || "https://via.placeholder.com/40"} 
-            alt="Friend" className="my-1 rounded-full " width={120} height={120} />
-            </div>
-           <div className="p-4">
-            <Form form={form} layout="vertical">
-            <Form.Item
-            name="profile"
-            label="New Profile Image"
-              rules={[{ required: true, message: 'Please select an image' }]}>
-                <Upload maxCount={1} 
-                
-                beforeUpload={(file)=>{
-                  previewImage({target:{files:[file]}} as React.ChangeEvent<HTMLInputElement>);
-                  return false;
-                }}
-                accept="image/*"
-                
-                >
-                  <Button><FaUpload/>Select Image</Button>
-                </Upload>
-              </Form.Item>
-          </Form>
-          <Button 
-          className="w-full my-2 p-4 bg-purple-600 text-white" 
-          type="submit" 
-         onClick={handleProfile}
-          loading={status === 'loading'} 
-          disabled={status === 'loading'}
-        >
-          Save as profile Picture
-        </Button>
-        </div>
-           </Modal>
+         
           </>
         )}
       </nav>
     </div>
     </div>
     </>
+      <Modal open={changeProfile} footer={null} onCancel={()=>{setChangeProfile(false);form.resetFields()}} title='Upload new Image'>
+      <div className="rounded-full flex justify-center mx-5 p-2">
+     <Image  src={profilePhoto || "https://via.placeholder.com/40"} 
+       alt="Friend" className="my-1 rounded-full " width={120} height={120} />
+       </div>
+      <div className="p-4">
+       <Form form={form} layout="vertical">
+       <Form.Item
+       name="profile"
+       label="New Profile Image"
+         rules={[{ required: true, message: 'Please select an image' }]}>
+           <Upload maxCount={1} 
+           
+           beforeUpload={(file)=>{
+             previewImage({target:{files:[file]}} as React.ChangeEvent<HTMLInputElement>);
+             return false;
+           }}
+           accept="image/*"
+           
+           >
+             <Button><FaUpload/>Select Image</Button>
+           </Upload>
+         </Form.Item>
+     </Form>
+     <Button 
+     className="w-full my-2 p-4 bg-purple-600 text-white" 
+     type="submit" 
+    onClick={handleProfile}
+     loading={status === 'loading'} 
+     disabled={status === 'loading'}
+   >
+     Save as profile Picture
+   </Button>
+   </div>
+      </Modal>
+      </>
   );
 }

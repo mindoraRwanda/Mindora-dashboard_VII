@@ -1,4 +1,4 @@
-import { FiSearch } from "react-icons/fi";
+import { FiDownload, FiSearch } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
@@ -358,7 +358,7 @@ export default function AdminTherapistList() {
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Phone Number
             </th>
-            {/* <th className="px-6 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Diploma
             </th>
             <th className="px-6 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
@@ -366,7 +366,7 @@ export default function AdminTherapistList() {
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Gender
-            </th> */}
+            </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
@@ -403,7 +403,7 @@ export default function AdminTherapistList() {
                   {therapist.user.phoneNumber}
                 </div>
               </td>
-              {/* <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm w-40 leading-5 text-gray-900">
                   <button className="bg-transparent text-black flex flex-row gap-2 border-purple-600 border rounded p-2" 
                   onClick={()=>handleDiploma(therapist.diploma)}>
@@ -411,8 +411,8 @@ export default function AdminTherapistList() {
                   </button>
                 
                 </div>
-              </td> */}
-              {/* <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm w-40 leading-5 text-gray-900">
                 <button className="bg-transparent text-black flex flex-row gap-2 border-purple-600 border rounded p-2"
                 onClick={()=>handleLicense(therapist.license)}
@@ -421,12 +421,12 @@ export default function AdminTherapistList() {
                   </button>
                 
                 </div>
-              </td> */}
-              {/* <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+              </td> 
+               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
                   {therapist.personalInformation.gender}
                 </div>
-              </td> */}
+              </td>
            
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="flex text-sm leading-5 text-gray-900">

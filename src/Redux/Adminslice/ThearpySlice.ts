@@ -52,13 +52,17 @@ const initialState: TherapyState = {
 
 export const SelectedTotalTherapist=(state:{Therapy:TherapyState})=>state.Therapy.therapists.length;
 // This is for creating new therapist
-export const fetchTherapy = createAsyncThunk(
-  "Therapy/fetchTherapy",
+export const createTherapy = createAsyncThunk(
+  "Therapy/createTherapy",
   async (formData: FormData, { rejectWithValue }) => {
     try {
       const response = await axios.post<Therapist>(
         'https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists',
-      formData
+      formData,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
       );
       return response.data;
       console.log("Response from API:", response);
@@ -73,7 +77,11 @@ export const fetchTherapy = createAsyncThunk(
 export const getTherapy=createAsyncThunk('getTherapy',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${id}`);
+      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${id}`,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       return response.data;
     } catch (error:any) {
       return rejectWithValue(error.response?.data || "An Unexpected error occurred");
@@ -107,7 +115,11 @@ export const getAllTherapists = createAsyncThunk(
 export const deleteTherapy = createAsyncThunk('delete/Therapy',
   async (id, { rejectWithValue }) => {
     try {
-       await axios.delete(`https://mindora-backend-beta-version.onrender.com/api/therapists/${id}`);
+       await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${id}`,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+       });
       return {id};
     }
     catch (error:unknown) {
@@ -119,7 +131,7 @@ export const updateTherapy = createAsyncThunk(
   'update/updateTherapy',
   async ({ id, credentials }: { id: string; credentials: any }, { rejectWithValue }) => {
     try {
-      const response = await axios.put<Therapist>(`https://mindora-backend-beta-version.onrender.com/api/therapists/${id}`, {
+      const response = await axios.put<Therapist>(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${id}`, {
         personalInformation: {
           name: credentials.name,
           gender: credentials.gender,
@@ -130,6 +142,10 @@ export const updateTherapy = createAsyncThunk(
         diploma: credentials.diploma,
         licence: credentials.licence,
         userId: credentials.userId,
+      },{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       });
       return response.data;
     } catch (error: any) {
@@ -146,15 +162,15 @@ const TherapySlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-    .addCase(fetchTherapy.pending, (state) => {
+    .addCase(createTherapy.pending, (state) => {
       state.status = "loading";
     })
     
-      .addCase(fetchTherapy.fulfilled, (state, action) => {
+      .addCase(createTherapy.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.therapists.push(action.payload);
       })
-      .addCase(fetchTherapy.rejected, (state, action) => {
+      .addCase(createTherapy.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
       })

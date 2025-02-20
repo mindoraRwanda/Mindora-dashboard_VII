@@ -4,7 +4,11 @@ import axios from "axios";
 export const getAllAppointmnets = createAsyncThunk('getAll',
     async (_,{rejectedValue})=>{
         try{
-            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments');
+            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointments',{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         } catch (error){
            return rejectedValue(error as Error).message;

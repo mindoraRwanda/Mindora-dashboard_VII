@@ -123,20 +123,34 @@ const handleActiveButton= (buttonName:any) => {
 setActiveButton(buttonName);
 };
 
+// this is for time format
+const formatTime = (isoString) => {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true 
+  });
+};
+
 const renderContent=()=>{
   if (!selectedPatient) return <p>No data available</p>;
   switch(activeButton){
     case "Personal Information":
     return(
-    <div className="my-2 p-2 rounded-sm border">
+    <div className="my-2 p-2 rounded-sm border grid grid-cols-2">
+      <div>
          <h2 className="flex text-black gap-1 my-2"><FaUser size={20}/> Emergency Name</h2>
          <strong>{selectedPatient.patient?.emergencyContact?.name|| "no emergency name"}</strong>
+         </div><div>
       <h2 className="flex text-black gap-1 my-2"><FaPhone size={20}/>  Emergency Contact </h2>
-       <strong> {selectedPatient.patient?.emergencyContact?.contact|| "no emergency contact"}</strong>
+       <strong> {selectedPatient.patient?.emergencyContact?.contact|| "no emergency contact"}</strong></div>
+       <div>
       <h2 className="flex text-black gap-1 my-2"><FaEnvelope size={20}/> Emergency Email</h2>
-      <strong> {selectedPatient.patient?.emergencyContact?.email|| "no emergency Email"}</strong>
+      <strong> {selectedPatient.patient?.emergencyContact?.email|| "no emergency Email"}</strong></div>
+      <div>
       <h2 className="flex text-black gap-1 my-2"><FaMapMarkerAlt size={20}/> Address:</h2>
-      <strong> {selectedPatient.location|| "no address"}</strong>
+      <strong> {selectedPatient.location|| "no address"}</strong></div>
     </div>);
     case "Medical Informaton":
     return (
@@ -378,7 +392,13 @@ const handleReschedule=async(values:any)=>{
             >
               <div className="flex items-start space-x-4">
                 <div className="bg-gray-100 p-3 rounded-full mt-4">
-                  <FaUser className="h-6 w-6 text-gray-600" />
+                  {/* <FaUser className="h-6 w-6 text-gray-600" /> */}
+                  <img src={appointment.user?.profileImage}
+                  alt="UserProfile"
+                  className="object-cover w-12 h-12 rounded-full" 
+                  width={120}
+                  height={120} 
+                  />
                 </div>
                 <div>
                   <h3 className="text-black mb-2 font-semibold">
@@ -394,7 +414,7 @@ const handleReschedule=async(values:any)=>{
                     </span>
                     <span className="flex gap-1 text-sm text-gray-500">
                       <BiTime size={20} color="black" />
-                      {appointment.startTime} to {appointment.endTime}
+                      {formatTime(appointment.startTime)} to {formatTime(appointment.endTime)}
                     </span>
                   </div>
                   <p className="text-md mt-3 capitalize text-gray-500">
@@ -562,7 +582,12 @@ const handleReschedule=async(values:any)=>{
     <div>
       <div  className=" flex justify-center  ">
         <div  className=" p-6 flex justify-center border rounded-full">
-      <FaUser size={30}/>
+        <img src={selectedPatient.patient.user?.profileImage}
+                  alt="UserProfile"
+                  className="object-cover w-12 h-12 rounded-full" 
+                  width={120}
+                  height={120} 
+                  />
       </div>
       </div>
       <strong className="text-black text-xl flex justify-center">

@@ -346,8 +346,8 @@ export default function AdminPatientsList() {
             <tr key={patient.id}>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 font-medium text-gray-900">
-                  {patient.profileImage ? (
-                 <img src={patient.profileImage}
+                  {patient.user.profileImage ? (
+                 <img src={patient.user.profileImage}
                   alt="Profile Picture"
                   className="rounded-full h-10 w-10"
                  />):(
@@ -358,27 +358,27 @@ export default function AdminPatientsList() {
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 font-medium text-gray-900">
-                  {patient.firstName} {patient.lastName}
+                  {patient.user.firstName} {patient.user.lastName}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {patient.phoneNumber}
+                  {patient.user.phoneNumber}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {patient.email}
+                  {patient.user.email}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {patient.age}
+                  {patient.personalInformation.dateOfBirth}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {patient.address}
+                  {patient.personalInformation.address}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">

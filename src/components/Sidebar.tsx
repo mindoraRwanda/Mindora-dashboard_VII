@@ -18,15 +18,18 @@ import {
   FaForward,
 } from "react-icons/fa";
 
-import { Image } from "antd";
-import { FaBarsProgress, FaNotesMedical, FaRegFaceSurprise } from "react-icons/fa6";
+import { Button, Image, message, Modal, Upload,Form } from "antd";
+import { FaBarsProgress, FaNotesMedical, FaRegFaceSurprise, FaUpload } from "react-icons/fa6";
 import { GoChevronDown } from "react-icons/go";
 import { IoPeople } from "react-icons/io5";
 import { LuDot } from "react-icons/lu";
 import { MdOutlineDocumentScanner, MdOutlineMessage, MdOutlineSettings } from "react-icons/md";
 import { PiCallBellBold } from "react-icons/pi";
-import { SiArkecosystem, SiFiles, SiDatabricks } from "react-icons/si";
-import { EyeIcon } from "lucide-react";
+import { SiArkecosystem, SiDatabricks } from "react-icons/si";
+import { useDispatch, useSelector } from "react-redux";
+import { changeProfilePicture } from "../Redux/Adminslice/UserSlice";
+import { RootState } from "../Redux/store";
+
 
 
 interface SidebarProps {
@@ -34,16 +37,67 @@ interface SidebarProps {
   setActiveComponent: Dispatch<SetStateAction<string>>;
   setUserRole: Dispatch<SetStateAction<string>>;
 }
+
+
+
 export default function Sidebar(props: SidebarProps) {
+const status=useSelector((state:RootState)=>state.users.status);
   const { userRole, setActiveComponent } = props;
   const [profilePhoto, setProfilePhoto] = useState('');
   const [openDropdown, setOpenDropdown] = useState(null);
   const [SidebarOpen, setSidebarOpen] = useState(false);
+  const [changeProfile,setChangeProfile] = useState(false);
+  const [selectedFile,setSelectedFile] = useState<File| null> (null);
   const [name, setName] = useState('');
+  const dispatch=useDispatch();
+  const [form]=Form.useForm();
 
   const toggleDropdown = (dropdown:any) => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
   };
+// function to preview Image
+const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
+  const file=e.target.files?.[0];
+  if(file){
+  setSelectedFile(file);
+    message.success(`Selected file: ${file.name}`);
+  }
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    const result = e.target?.result as string;
+        setProfilePhoto(result);
+  }
+  reader.readAsDataURL(file);
+}
+
+  // function to change profile Image
+  const handleProfile=async()=>{
+    try{
+      if(!selectedFile){
+        message.error('Please select an image');
+        return;
+      }
+      const formData=new FormData();
+      formData.append('profile',selectedFile);
+      const userId=localStorage.getItem('UserId');
+      if(!userId){
+        message.error('User ID not found');
+        return;
+      }
+     const result= await dispatch(changeProfilePicture({id:userId,formData:formData})).unwrap();
+     if (result) {
+      message.success('Profile changed successfully');
+      if (result.profileImage) {
+          localStorage.setItem('profileImage', result.profileImage);
+      }
+      setChangeProfile(false);
+      form.resetFields();
+  }
+    }
+    catch(error:any){
+     message.error(`Failed to get update  : ${error.message}`);
+
+  }}
 
   const toggleOpenBar = () => {
     setSidebarOpen(!SidebarOpen);
@@ -88,8 +142,7 @@ export default function Sidebar(props: SidebarProps) {
               <strong className="text-lg text-gray-500">{name}</strong>
             </div>
             <div className="text-black flex justify-center my-3 gap-3 text-xl">
-              <FaEdit size={20}/> 
-              <EyeIcon size={25}/>
+             <Button><FaUpload/> Upload new image</Button>
             </div>
           </div>
               <a onClick={() => setActiveComponent("Home")} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
@@ -221,18 +274,17 @@ export default function Sidebar(props: SidebarProps) {
           
         ) : (
           <>
-          <div className="bg-gray-100  mx-5 rounded-md">
+          <div className="bg-gray-100  mx-5 rounded-md border-purple-600 border">
             <div className="rounded-full flex justify-center mx-5 p-2">
           <Image  src={profilePhoto || "https://via.placeholder.com/40"} 
             alt="Friend" className="my-1 rounded-full " width={150} height={150} />
             </div>
             <div className="flex justify-center">
-              <strong className="text-lg text-gray-500">{name}</strong>
+              <strong className="text-lg text-gray-500 my-2">{name}</strong>
             </div>
-            <div className="text-black flex justify-center my-3 gap-3 text-xl">
-              <FaEdit size={20}/> 
-              <EyeIcon size={25}/>
-            </div>
+           <div>
+             <Button className="bg-purple-600 text-white w-full mt-1 " onClick={()=>setChangeProfile(true)}><FaUpload size={19}/>Upload new image</Button>
+             </div>
           </div>
              <a onClick={() => setActiveComponent('home')} className="cursor-pointer flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200">
           <FaHome className="mr-3" /> Home
@@ -338,7 +390,41 @@ export default function Sidebar(props: SidebarProps) {
             <a onClick={() => setActiveComponent("settings")} className="flex items-center text-2xl px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer">
               <FaCog className="mr-3" /> Settings
             </a>
-           
+           <Modal open={changeProfile} footer={null} onCancel={()=>{setChangeProfile(false);form.resetFields()}} title='Upload new Image'>
+           <div className="rounded-full flex justify-center mx-5 p-2">
+          <Image  src={profilePhoto || "https://via.placeholder.com/40"} 
+            alt="Friend" className="my-1 rounded-full " width={120} height={120} />
+            </div>
+           <div className="p-4">
+            <Form form={form} layout="vertical">
+            <Form.Item
+            name="profile"
+            label="New Profile Image"
+              rules={[{ required: true, message: 'Please select an image' }]}>
+                <Upload maxCount={1} 
+                
+                beforeUpload={(file)=>{
+                  previewImage({target:{files:[file]}} as React.ChangeEvent<HTMLInputElement>);
+                  return false;
+                }}
+                accept="image/*"
+                
+                >
+                  <Button><FaUpload/>Select Image</Button>
+                </Upload>
+              </Form.Item>
+          </Form>
+          <Button 
+          className="w-full my-2 p-4 bg-purple-600 text-white" 
+          type="submit" 
+         onClick={handleProfile}
+          loading={status === 'loading'} 
+          disabled={status === 'loading'}
+        >
+          Save as profile Picture
+        </Button>
+        </div>
+           </Modal>
           </>
         )}
       </nav>

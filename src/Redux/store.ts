@@ -15,6 +15,7 @@
   import ArticlesReducer from './Adminslice/Article_Slice';
 import BillingReportsReducer from './Adminslice/BillingReportSlice';
 import CourseReducer from './Adminslice/CourseSlice';
+import CommentsReducer from './Adminslice/Comment';
   
   const store = configureStore({
     reducer: {
@@ -34,6 +35,7 @@ import CourseReducer from './Adminslice/CourseSlice';
       articleContent: ArticlesReducer,
       BillingReports: BillingReportsReducer,
       courses: CourseReducer, 
+      Postcomment:CommentsReducer,
      
     },
   });

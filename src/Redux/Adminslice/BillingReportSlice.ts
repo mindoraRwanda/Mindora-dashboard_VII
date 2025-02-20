@@ -42,6 +42,27 @@ export const createBillReport=createAsyncThunk("createBillReport",
             }
         }
     );
+    export const updateBillReport=createAsyncThunk("editBillReport",
+        async (formData:{id:string}, {rejectWithValue})=>{
+            try{
+                const response=await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/billing-reports/${formData.id}`,formData);
+                return response.data;
+            }
+            catch(error){
+                return rejectWithValue(error.message);
+            }
+
+        });
+    export const deleteBillReport=createAsyncThunk("deleteBillReport",
+        async (id:number, {rejectWithValue})=>{
+            try{
+                const response=await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/billing-reports/${id}`);
+                return response.data;
+            }
+            catch(error){
+                return rejectWithValue(error.message);
+            }
+        })
 
     const BillingReports=createSlice({
         name:"BillingReports",
@@ -70,6 +91,28 @@ export const createBillReport=createAsyncThunk("createBillReport",
             .addCase(getBillingReports.rejected,(state,action)=>{
                 state.status="rejected";
                 console.log(action.payload);
+            })
+            .addCase(updateBillReport.pending, (state)=>{
+                state.status="loading";
+            })
+            .addCase(updateBillReport.fulfilled, (state,action)=>{
+                state.status="succeeded";
+                state.data=state.data.map(report=>report.id===action.payload.id? action.payload : report);
+            })
+            .addCase(updateBillReport.rejected,(state,action)=>{
+                state.status="rejected";
+                console.log('Update Failed',action.payload);
+            })
+            .addCase(deleteBillReport.pending,(state)=>{
+                state.status="loading";
+            })
+            .addCase(deleteBillReport.fulfilled,(state,action)=>{
+                state.status="succeeded";
+                state.data=state.data.filter(report=>report.id!==action.payload);
+            })
+            .addCase(deleteBillReport.rejected,(state,action)=>{
+                state.status="rejected";
+                console.log('Delete Failed',action.payload);
             })
         }
 

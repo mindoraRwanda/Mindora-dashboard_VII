@@ -23,11 +23,13 @@ const initialState: CommunityState = {
 export const createCommunity = createAsyncThunk('createCommunity/create',
     async (formData: formData, { rejectedValue }) => {
         try {
+            const token=localStorage.getItem('token');
             const response = await axios.post<Community>('https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities',
                 formData,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`
                     },
                 }
             );
@@ -42,8 +44,13 @@ export const createCommunity = createAsyncThunk('createCommunity/create',
 
 export const getAllcommunity = createAsyncThunk("getAll/getAllCommunity",
     async (__, { rejectedValue }) => {
+        const token = localStorage.getItem('token');
         try {
-            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities');
+            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities',{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
             console.log("data to be displayed", response.data);
             return response.data;
         }
@@ -54,7 +61,12 @@ export const getAllcommunity = createAsyncThunk("getAll/getAllCommunity",
 export const GetCommunityById = createAsyncThunk('GetCommunityById',
     async (id, { rejectedValue }) => {
         try {
-            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities/${id}`);
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities/${id}`,{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
             return response.data;
         }
         catch (error) {
@@ -65,7 +77,11 @@ export const GetCommunityById = createAsyncThunk('GetCommunityById',
 export const UpdateCommunity = createAsyncThunk('UpdateCommunity/update',
     async ({ id, CommunityData }: { id: string, CommunityData: Partial<Community> }, { rejectWithValue }) => {
         try {
-            const response = await axios.put<Community>(`https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities/${id}`, CommunityData,
+            const response = await axios.put<Community>(`https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities/${id}`, CommunityData,{
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            }
             );
             console.log("data to be updated", response.data);
             return response.data;
@@ -77,7 +93,11 @@ export const UpdateCommunity = createAsyncThunk('UpdateCommunity/update',
 export const deleteCommunity = createAsyncThunk('deleteCommunity/delete',
     async (id: string, { rejectWithValue }) => {
         try {
-            const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities/${id}`);
+            const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/support-communities/${id}`,{
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            });
             console.log("data to be deleted", response.data);
             return response.data;
         }

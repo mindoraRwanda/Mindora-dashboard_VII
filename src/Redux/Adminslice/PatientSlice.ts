@@ -59,7 +59,7 @@ export const allPatients = createAsyncThunk('getPatients',
     async (_, { rejectWithValue }) => {
         const token=localStorage.getItem('token');
         try {
-            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/admin/patients',{
+            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients',{
                 headers:{
                     Authorization: `Bearer ${token}`
                 }

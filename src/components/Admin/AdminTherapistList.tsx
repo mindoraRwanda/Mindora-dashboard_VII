@@ -3,7 +3,6 @@ import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { useCallback, useEffect, useState } from "react";
-import { FiDownload } from 'react-icons/fi';
 
 import { message, Modal,Spin,Input} from "antd";
 import Create_Therapy from "./Create_Therapy";
@@ -58,7 +57,7 @@ export default function AdminTherapistList() {
     }
   }
   getAll();
-  }, [status, dispatch]);
+  }, [dispatch]);
 
 
   useEffect(() => {
@@ -266,7 +265,7 @@ export default function AdminTherapistList() {
 
   const handleCancel = () => {
     setShowModal(false);
-    SetChangePassModal(false);
+    // SetChangePassModal(false);
   };
 
   const formatDateForInput=(dateString: string) =>{
@@ -378,8 +377,8 @@ export default function AdminTherapistList() {
             <tr key={therapist.id}>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 font-medium text-gray-900">
-                  {therapist.profileImage ?(
-                 <img src= {therapist.profileImage|| "https://via.placeholder.com/40"}
+                  {therapist.user.profileImage ?(
+                 <img src= {therapist.user.profileImage|| "https://via.placeholder.com/40"}
                  alt="profile"
                  width="50"
                  height="50"
@@ -391,17 +390,17 @@ export default function AdminTherapistList() {
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {therapist.firstName} {therapist.lastName}
+                  {therapist.user.firstName} {therapist.user.lastName}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {therapist.email}
+                  {therapist.user.email}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
-                  {therapist.phoneNumber}
+                  {therapist.user.phoneNumber}
                 </div>
               </td>
               {/* <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
@@ -493,33 +492,32 @@ export default function AdminTherapistList() {
                 <input
                   type="text"
                   className="p-1 mt-2 border-2 rounded-md border-gray-300"
-                  value={selectedTherapy?.personalInformation?.name}
+                  value={selectedTherapy?.user.firstName}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
-                      ...selectedTherapy,
-                      personalInformation: {
-                        ...selectedTherapy?.personalInformation,
-                        name: e.target.value,
-                      },
+                      ...selectedTherapy,user:{
+                        ...selectedTherapy.user,
+                        firstName: e.target.value,
+                      }
                     })
                   }
                 />
               </p>
               <p className="text-black m-3">
-                <span>Address:</span>
+                <span>Email Address:</span>
                 <br />
                 <input
                   type="text"
-                  className="p-1 mt-2 border-2 rounded-md border-gray-300"
-                  value={selectedTherapy?.personalInformation?.address}
+                  className="p-1 mt-2 w-full border-2 rounded-md border-gray-300"
+                  value={selectedTherapy?.user.email}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
                       ...selectedTherapy,
-                      personalInformation: {
-                        ...selectedTherapy?.personalInformation,
-                        address: e.target.value,
+                      user:{
+                        ...selectedTherapy.user,
+                        email: e.target.value,
                       },
                     })
                   }
@@ -532,39 +530,38 @@ export default function AdminTherapistList() {
                 <input
                   type="number"
                   className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy?.personalInformation?.phoneNumber}
+                  value={selectedTherapy?.user.phoneNumber}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
-                      ...selectedTherapy,
-                      personalInformation: {
-                        ...selectedTherapy?.personalInformation,
+                      ...selectedTherapy,user:{
+                        ...selectedTherapy.user,
                         phoneNumber: e.target.value,
-                      },
+                      }
                     })
                   }
                 />
               </p>
 
               <p className="text-black m-3">
-                <span>Gender:</span> <br />
+                <span>UserName:</span> <br />
                 <input
                   type="text"
                   className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy?.personalInformation?.gender}
+                  value={selectedTherapy?.user.username}
                   readOnly={!isEditable}
                   onChange={(e) =>
                     setSelectedTherapy({
-                      ...selectedTherapy,
-                      personalInformation: {
-                        ...selectedTherapy?.personalInformation,
-                        gender: e.target.value,
-                      },
-                    })
+                      ...selectedTherapy,user:{
+                        ...selectedTherapy.user,
+                        username: e.target.value,
+                      }
+                      }
+                    )
                   }
                 />
               </p>
-              <p className="text-black m-3">
+              {/* <p className="text-black m-3">
                 <span>Diploma:</span> <br />
                 <input
                   type="text"
@@ -593,7 +590,7 @@ export default function AdminTherapistList() {
                     })
                   }
                 />
-              </p>
+              </p> */}
               <p className="text-black m-3">
                 <span>DateOfBirth:</span> <br />
                 <Input

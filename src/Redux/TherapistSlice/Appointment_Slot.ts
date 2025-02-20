@@ -30,7 +30,12 @@ const initialState: AvailableSlotState = {
 export const createAvailableSlot = createAsyncThunk('CreateAvailableSlot/createSlot',
     async (data:AvailableSlot,{rejectWithValue})=>{
         try {
-            const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots', data);
+            const token=localStorage.getItem('token');
+            const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots', data,{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
             console.log("Those are data Reach to database", response);
             return response.data;
         }
@@ -42,8 +47,14 @@ export const createAvailableSlot = createAsyncThunk('CreateAvailableSlot/createS
 // Redux Slice for Getting All Availlable Slot of Therapist
 export const getAllAvailableSlot=createAsyncThunk('getAllAvailableSlot/getAll',
 async (therapistId: string,{rejectWithValue})=>{
+   
     try{
-        const response= await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/therapists/${therapistId}`);
+        const token=localStorage.getItem('token');
+        const response= await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/therapists/${therapistId}`,{
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+        });
         return response.data;
     }
     catch (err) {
@@ -56,7 +67,12 @@ async (therapistId: string,{rejectWithValue})=>{
 export const deleteAvailableSlot=createAsyncThunk('deleteAvailableSlot/delete',
     async(id:string,{rejectWithValue})=>{
         try{
-            await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/${id}`);
+            const token=localStorage.getItem('token');
+            await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/${id}`,{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
             return id;
         }
         catch (err){
@@ -70,7 +86,12 @@ export const deleteAvailableSlot=createAsyncThunk('deleteAvailableSlot/delete',
 export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
     async(data:{id:string;[key:string]:unknown},{rejectWithValue})=>{
         try{
-            const response=await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/${data.id}`,data);
+            const token=localStorage.getItem('token');
+            const response=await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/${data.id}`,data,{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
             return response.data;
         }
         catch (err){

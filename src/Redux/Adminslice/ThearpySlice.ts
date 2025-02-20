@@ -88,7 +88,7 @@ export const getAllTherapists = createAsyncThunk(
     const token=localStorage.getItem('token');
     console.log(token);
     try {
-      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/admin/therapists`,{
+      const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists`,{
         headers: {
           Authorization: `Bearer ${token}` 
         }

@@ -17,12 +17,11 @@ import {
 import { RootState } from "../../Redux/store";
 import CommunityDetails from "./CommunityDetails";
 import { deletePots, getAllCommunityPost, UpdatePost } from "../../Redux/Adminslice/CommunityPost";
+import { fetchPostCommnet } from "../../Redux/Adminslice/Comment";
 
 export default function Communication() {
-  const communities = useSelector(
-    (state: RootState) => state.Community.communities
-  );
-  const status = useSelector((state: RootState) => state.Community.status);
+  const communities = useSelector((state: RootState) => state.Community.communities);
+  const PostStatus=useSelector((state: RootState) => state.Postcomment.status);
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
   const [Posts, setPosts] = useState([]);
   const [AllPost, setAllPost] = useState([]);
@@ -37,6 +36,7 @@ export default function Communication() {
   const [selectedCommunityId, setSelectedCommunityId] = useState([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [commentsValue, setCommentsValue] = useState<comments[]>([]);
   const dispatch = useDispatch();
 
   // This is for getting User id stored on Local storage
@@ -148,13 +148,18 @@ const handleDeletePost=async(id) =>{
     setShowCommDetails(false);
     setSelectedCommunityId(null);
   };
-  // for creating new community
-  const handleModal = () => {
-    setShowModal(true);
-  };
-  const cancelModal = () => {
-    setShowModal(false);
-  };
+ // function to display comment on specific task
+ const handlePostCommnent= async(post) => {
+  setSelectedTopic(post);
+  try{
+
+   const result=await dispatch(fetchPostCommnet(post.id));
+   setCommentsValue(result.payload);
+  }
+  catch(error){
+    message.error(`Error fetching comments: ${error.message}`);
+  }
+ };
   // Modal update community
   const ShowUpdateModal = (community: Community) => {
     setSelectedCommunity(community);
@@ -207,9 +212,7 @@ const handleDeletePost=async(id) =>{
 
   // FUnction that will handle the Topic clicked
 
-  const handleTopicClick = (post) => {
-    setSelectedTopic(post);
-  };
+
 // Codes for showing Data in Form Modal 
 const handleEdit= (post) => {
   setSelectedPost(post);
@@ -249,7 +252,7 @@ const cancelUpdateModal = () => {
           Community Management
         </h4>
         <div className="flex justify-end">
-          <Button type="primary" className="my-2" onClick={handleModal}>
+          <Button type="primary" className="my-2" onClick={()=> setShowModal(true)}>
             <BiPlus size={20} />
             Add Community
           </Button>
@@ -334,7 +337,7 @@ const cancelUpdateModal = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                    <div className="text-sm leading-5 font-medium text-gray-900 cursor-pointer" onClick={()=>handleTopicClick(post)}>
+                    <div className="text-sm leading-5 font-medium text-gray-900 cursor-pointer" onClick={()=>handlePostCommnent(post)}>
                       <h4 className="text-black text-lg  my-3 mx-1 ">
                         {post?.title || "No Title"}
                       </h4>
@@ -410,6 +413,7 @@ const cancelUpdateModal = () => {
                     <td colSpan="3" className="text-center">No Topic Selected</td>
                   </tr>
                 )}
+                
               </tbody>
             </table>
             <div className="m-2">
@@ -417,32 +421,38 @@ const cancelUpdateModal = () => {
                 Topic Comments
               </h3>
               <hr className="text-black border border-gray-400" />
-              {communities.map((user) => (
-                <tr key={user.id}>
-                  <td className="px-6 py-4 whitespace-no-wrap">
+             {PostStatus==='loading'?(
+              <div className="flex justify-center">
+                <Spin size="large" />
+              </div>
+             ):commentsValue.length > 0?(
+              commentsValue.map((comment)=>(
+                <div key={comment.id} className="border-b p-3 flex justify-between">
+                  <div className="flex gap-2">
                     <div className="text-sm leading-5 font-medium text-gray-900">
-                      {user.name}
+                      {comment.user.firstName||"No Name"} {comment.user.lastName}
                     </div>
-                  </td>
-
-                  <td className="px-6 py-4 whitespace-no-wrap">
-                    <div className="text-sm leading-5 font-medium text-gray-900">
-                      <h4 className="text-black text-xl my-3 mx-1">
-                        Tomorrow at 12:00 PM we have a meeting, and it's very
-                        important for everyone to be there. Don't plan to miss.
-                      </h4>
+                    <div className="text-sm text-gray-500">
+                      {comment.createdAt.substring(0, 10)}
                     </div>
-                  </td>
-                  <td className="flex gap-2 mt-12">
+                  </div>
+                  <div className="text-sm leading-5 font-medium text-gray-900">
+                    {comment.content}
+                  </div>
+                  <div className="flex gap-2">
                     <Button>
                       <MdEdit size={24} color="blue" />
                     </Button>
                     <Button>
                       <MdDelete size={24} color="red" />
                     </Button>
-                  </td>
-                </tr>
-              ))}
+                  </div>
+                </div>
+              ))
+             ):(
+              <div className="text-center">No Comments Yet</div>
+             )
+             }
             </div>
           </div>
         </div>
@@ -512,7 +522,7 @@ const cancelUpdateModal = () => {
       <Modal
         open={showModal}
         footer={null}
-        onCancel={cancelModal}
+        onCancel={()=>setShowModal(false)}
         title="CREATE COMMUNITY GROUP"
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>

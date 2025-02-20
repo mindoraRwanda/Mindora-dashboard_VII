@@ -21,8 +21,13 @@ const initialState: CommunityPostState = {
 }
 export const getAllCommunityPost=createAsyncThunk("getPost",
     async(__,{rejectWithValue})=>{
+        const token=localStorage.getItem('token');
         try{
-            const response=await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/posts`);
+            const response=await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/posts`,{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             return response.data;
         }
         catch(error){
@@ -33,7 +38,11 @@ export const getAllCommunityPost=createAsyncThunk("getPost",
 export const deletePots=createAsyncThunk('deletePsot',
     async(id,{rejectWithValue})=>{
         try{
-            await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/posts/${id}`);
+            await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/posts/${id}`,{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return id;
         }
         catch(error){
@@ -41,10 +50,14 @@ export const deletePots=createAsyncThunk('deletePsot',
         }
     }
 );
-export const UpdatePost=createAsyncThunk('UapdatePost',
+export const UpdatePost=createAsyncThunk('UpdatePost',
     async({id,postData})=>{
         try{
-            const response=await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/posts/${id}`,postData);
+            const response=await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/posts/${id}`,postData,{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         }
         catch(error){

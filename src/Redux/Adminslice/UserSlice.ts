@@ -114,6 +114,25 @@ export const changeRole = createAsyncThunk('User/changeRole',
         }
     });
 
+    export const changeProfilePicture=createAsyncThunk('changeProfle',
+        async({id,formData},{rejectWithValue}) => {
+            try {
+                const response = await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/upload/${id}`,formData,{
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                        // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                return response.data;
+            }
+            catch (error) {
+                return rejectWithValue(error.response.data);
+            }
+          
+        });
+
+
+
 
 const userSlice = createSlice({
     name: 'users',
@@ -202,6 +221,17 @@ const userSlice = createSlice({
                 }
             })
             .addCase(changeRole.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload;
+            })
+            .addCase(changeProfilePicture.pending,(state)=>{
+                state.status='loading';
+            })
+            .addCase(changeProfilePicture.fulfilled,(state,action)=>{
+                state.status='succeeded';
+                state.selectedUser=action.payload;
+            })
+            .addCase(changeProfilePicture.rejected, (state,action) => {
                 state.status = 'failed';
                 state.error = action.payload;
             })

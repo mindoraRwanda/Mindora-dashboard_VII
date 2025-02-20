@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal,message } from "antd";
+import { Button, Form, Input, Modal,Spin,message } from "antd";
 import { CheckCircle } from "lucide-react";
 import React, { useEffect, useState } from 'react';
 import{ BiEdit, BiPlus, BiTrash } from "react-icons/bi";
@@ -6,22 +6,54 @@ import { BsCalendar } from "react-icons/bs";
 import { FaDollarSign } from "react-icons/fa";
 import { MdPending } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { createBillReport, getBillingReports } from "../../Redux/Adminslice/BillingReportSlice";
+import { createBillReport, deleteBillReport, getBillingReports, updateBillReport } from "../../Redux/Adminslice/BillingReportSlice";
 import { RootState } from "../../Redux/store";
 
 
 export default function BillingReports(){
   const reports = useSelector((state: RootState) => state.BillingReports.data);
+  const status=useSelector((state: RootState) => state.BillingReports.status);
   const [OpenBillMOdal,setOpenBillModal]=useState(false);
+  const [updateModal,setUpdateModal]=useState(false);
+  const [currentBill,setCurrentBill]=useState(false);
   const dispatch=useDispatch();
   const [form] = Form.useForm();
+
  const handleReportOpen=()=>{
    setOpenBillModal(true);
  }
-  const handleCloseBillModal=()=>{
-    setOpenBillModal(false);
-    form.resetFields();
-  };
+ const handleCloseBillModal=()=>{
+  setOpenBillModal(false);
+  setUpdateModal(false);
+  form.resetFields();
+};
+ const OpenUpdateModel=(report)=>{
+   setCurrentBill(report);
+   form.setFieldsValue({
+    totalRevenue:report.totalRevenue,
+    approvedInsuranceClaims:report.approvedInsuranceClaims,
+    rejectedInsuranceClaims:report.rejectedInsuranceClaims,
+    pendingInsuranceClaims:report.pendingInsuranceClaims,
+    totalOutstandingBalance:report.totalOutstandingBalance,
+   })
+   setUpdateModal(true);
+ };
+
+ // function update
+ const handleUpdateBillReport =async () => {
+   try {
+    const Values=form.getFieldsValue();
+    if(!currentBill)return;
+     await dispatch(updateBillReport({id:currentBill.id,...Values})).unwrap();
+     message.success("Report updated successfully");
+     setUpdateModal(false);
+     form.resetFields();
+     dispatch(getBillingReports());
+   } catch (error) {
+     message.error("Failed to update report: " + error);
+   } 
+ };
+ 
  
 // here to create bill
   const handleCreateReport = async (values: any) => {
@@ -38,6 +70,20 @@ export default function BillingReports(){
     } catch (error) {
       message.error("Failed to create report: " + error);
     }
+  };
+
+  // function to delete Bill Report
+  const handleDeleteReport = async (id: string) => {
+   const confirm= window.confirm("Are you sure you want to delete");
+    if(confirm){
+    try {
+      await dispatch(deleteBillReport(id)).unwrap();
+      message.success("Report deleted successfully");
+      dispatch(getBillingReports());
+    } catch (error) {
+      message.error("Failed to delete report: " + error);
+    }
+  }
   };
 
   // here to get all bills
@@ -64,7 +110,12 @@ export default function BillingReports(){
             <BiPlus size={23} /> New Report
           </Button>
         </div>
-        {reports.length > 0 ? (
+        {status==='loading'?(
+          <div className="flex items-center justify-center min-h-screen">
+            <Spin size="large" />
+          </div>
+        ):(
+        reports.length > 0 ? (
       reports.map((report, index) => (
         <div key={index} className="border-2 rounded p-2 bg-white m-2 my-4">
         <div className="flex justify-between">
@@ -75,8 +126,8 @@ export default function BillingReports(){
           </span>
         </div>
         <div className="flex gap-1">
-          <Button><BiEdit size={20} /></Button>
-          <Button><BiTrash size={20} color="red" /></Button>
+          <Button onClick={()=>OpenUpdateModel(report)} ><BiEdit size={20} /></Button>
+          <Button onClick={()=>handleDeleteReport(report.id)}><BiTrash size={20} color="red" /></Button>
         </div>
       </div>
 
@@ -120,7 +171,9 @@ export default function BillingReports(){
   ))
 ) : (
   <h2>No Reports Available</h2>
-)} </div>
+))} 
+
+</div>
           <Modal footer={null} open={OpenBillMOdal} onCancel={handleCloseBillModal}>
            <Form onFinish={handleCreateReport}>
             <h1 className="text-2xl justify-center font-semibold m-2">New Report</h1>
@@ -130,11 +183,56 @@ export default function BillingReports(){
           <Form.Item label="End Time" name="endTime">
           <Input type="date" placeholder="Enter End Time" />
             </Form.Item>
-
             <Button type="primary" htmlType="submit" className="w-full">
               Create
             </Button>
         </Form>
+      </Modal>
+      {/* MOdal to update Bill */}
+      <Modal open={updateModal} onCancel={handleCloseBillModal} footer={null} title='Update Bill'>
+        <Form form={form} layout="vertical" >
+        <div className="grid grid-cols-2 gap-3">
+          <Form.Item
+          name="totalRevenue"
+          label="Total Revenue"
+          rules={[
+            {required:false}]}>
+              <Input placeholder="Enter total Revenue" />
+            </Form.Item>
+            <Form.Item
+            name="approvedInsuranceClaims"
+            label="Approved Insurance Claims"
+            rules={[
+              {required:false}]}>
+                <Input placeholder="Enter Approved Insurance Claims" />
+              </Form.Item>
+              <Form.Item
+              name="rejectedInsuranceClaims"
+              label="Rejected Insurance Claims"
+              rules={[
+                {required:false}]}>
+                  <Input placeholder="Enter Rejected Insurance Claims" />
+                </Form.Item>
+                <Form.Item
+                name="pendingInsuranceClaims"
+                label="Pending Insurance Claims"
+                rules={[
+                  {required:false}]}>
+                    <Input placeholder="Enter Pending Insurance Claims" />
+                  </Form.Item>
+                  </div>
+                    <Form.Item
+                    name='totalOutstandingBalance'
+                    label='TotalOutstanding Balance'
+                    rules={[
+                    {required:false}]}>
+                      <Input placeholder='Enter TotalOutstanding Balance' />
+                    </Form.Item>
+        </Form>
+        <Button className="bg-purple-600 w-full p-2 text-white" type="submit" onClick={handleUpdateBillReport}
+       loading={status==="loading"} disabled={status==='loading'}
+        > Update Bill</Button>
+
       </Modal>
     </>
   );

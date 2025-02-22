@@ -16,6 +16,8 @@
 import BillingReportsReducer from './Adminslice/BillingReportSlice';
 import CourseReducer from './Adminslice/CourseSlice';
 import CommentsReducer from './Adminslice/Comment';
+import invoicesReducer from './TherapistSlice/Invoice';
+import serviceReducer from './TherapistSlice/Service';
   
   const store = configureStore({
     reducer: {
@@ -36,7 +38,8 @@ import CommentsReducer from './Adminslice/Comment';
       BillingReports: BillingReportsReducer,
       courses: CourseReducer, 
       Postcomment:CommentsReducer,
-     
+      invoice: invoicesReducer,
+      servicess: serviceReducer,
     },
   });
 

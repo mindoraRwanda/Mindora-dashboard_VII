@@ -42,7 +42,7 @@ export default function DashboardPage() {
       case 'Patients':
        return <PatientsList goToPlan={goToPlan} />;
        case "PatientsList":
-        return <AdminPatientsList />
+        return <PatientsList />
       case 'Messages':
         return <PatientMessages />;
       case 'reports':

@@ -42,6 +42,7 @@ function Article_Management({selectedCourseId,setActiveButton}) {
     setCurrentArticle(null);
     setEditArticleModal(false);
   };
+  
 const handleEditClick =async() => {
   try{
   const values=await form.validateFields();
@@ -93,7 +94,7 @@ useEffect(() => {
     console.log('The articles of selectedCourseId are:', selectedCourseId);
   Dispatch(getAllArticle(selectedCourseId));
   }
-},[selectedCourseId]);
+},[Dispatch, selectedCourseId]);
 
 // logic to take courseId from local storage
 const handleCreateArticle=async() => {

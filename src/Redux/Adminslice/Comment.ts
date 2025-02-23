@@ -35,6 +35,29 @@ export const fetchPostCommnet=createAsyncThunk('fetchCommnet',
         }
     }
 );
+export const updateComment=createAsyncThunk('updateComment',
+    async({id,commentData},{rejectWithValue})=>{
+        try{
+            const response=await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/post/comments/${id}`,commentData);
+            return response.data;
+        }
+        catch(error){
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const deleteComment=createAsyncThunk('deleteComment',
+    async(commentId:string,{rejectWithValue})=>{
+        try{
+            const response=await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/post/comments/${commentId}`);
+            return response.data;
+        }
+        catch(error){
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 const CommentSlice=createSlice({
     name: 'comments',
@@ -53,6 +76,18 @@ const CommentSlice=createSlice({
             state.status='rejected';
             state.error = action.error.message;
             console.log("comment not visible",action.payload);
+        })
+        .addCase(deleteComment.pending,(state)=>{
+            state.status='loading';
+        })
+        .addCase(deleteComment.fulfilled,(state,action)=>{
+            state.status='succeeded';
+            state.data=state.data.filter(comment=>comment.id!==action.payload);
+        })
+        .addCase(deleteComment.rejected,(state,action)=>{
+            state.status='rejected';
+            state.error=action.payload;
+            console.log("comment not deleted",action.payload);
         })
     }
  });

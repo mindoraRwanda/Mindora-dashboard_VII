@@ -6,11 +6,11 @@ import ManageAppointMents from '../components/Therapist/Appointment AvaillableSl
  import VideoCall from '../components/Therapist/VideoCall';
 import Reports from '../components/Therapist/Reports';
 import PatientsList from '../components/Therapist/PatientsList';
-import AdminPatientsList from '../components/Admin/AdminPatientList';
+// import AdminPatientsList from '../components/Admin/AdminPatientList';
 import PatientMessages from '../components/Therapist/PatientMessages';
 import TreatmentPlanupdate from '../components/Therapist/TreatmentPlanupdate';
 //  import SetGoal from '../components/Therapist/SetGoal';
-import TrackPatient from '../components/Therapist/TrackPatient';
+import Medication from '../components/Therapist/Medication';
 //  import SetMilestone from '../components/Therapist/SetMilestones';
 import Appointmets from '../components/Therapist/Appointmets';
 import AppointmentChange from '../components/Therapist/Appointment Change';
@@ -35,8 +35,8 @@ export default function DashboardPage() {
           return <VideoCall />
       case 'TreatmentPlan':
       return <TreatmentPlanupdate />;
-      case 'TrackPatient':
-      return <TrackPatient />;
+      case 'Medication':
+      return <Medication />;
       case 'AvaillableSlots':
        return <ManageAppointMents />;
       case 'Patients':

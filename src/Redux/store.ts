@@ -18,6 +18,7 @@ import CourseReducer from './Adminslice/CourseSlice';
 import CommentsReducer from './Adminslice/Comment';
 import invoicesReducer from './TherapistSlice/Invoice';
 import serviceReducer from './TherapistSlice/Service';
+  import medicationReducer from './TherapistSlice/MedicationSlice';
   
   const store = configureStore({
     reducer: {
@@ -40,6 +41,7 @@ import serviceReducer from './TherapistSlice/Service';
       Postcomment:CommentsReducer,
       invoice: invoicesReducer,
       servicess: serviceReducer,
+      Medication: medicationReducer,
     },
   });
 

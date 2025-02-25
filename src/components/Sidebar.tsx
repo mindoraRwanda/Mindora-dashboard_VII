@@ -162,19 +162,19 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
                    onClick={() => setActiveComponent("AvaillableSlots")}
                    className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
                  >
-                   <p className="flex"><LuDot className="m-1" /> Availlable slots</p>
+                   <p className="flex"><FaForward className="m-1" /> Availlable slots</p>
                  </a>
                  <a
                    onClick={() => setActiveComponent("Appointmets")}
                    className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
                  >
-                   <p className="flex"><LuDot className="m-1 text-sm" /> Appointments</p>
+                   <p className="flex"><FaForward className="m-1 text-sm" /> Appointments</p>
                  </a>
                  <a
                    onClick={() => setActiveComponent("Appointment Changes")}
                    className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
                  >
-                   <p className="flex"><LuDot className="m-1 text-sm" /> Appointment Changes</p>
+                   <p className="flex"><FaForward className="m-1 text-sm" /> Appointment Changes</p>
                  </a>
                </div>
              )}
@@ -211,16 +211,16 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
              {openDropdown === "MedicationManagement" && (
                <div className="ml-6">
                  <a
-                   onClick={() => setActiveComponent("TrackPatient")}
+                   onClick={() => setActiveComponent("Medication")}
                    className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
                  >
-                   <p className="flex"><LuDot className="m-1" />Track Patient</p>
+                   <p className="flex"><FaForward className="m-1" />Medication management</p>
                  </a>
                  <a
                    onClick={() => setActiveComponent("Recommandation")}
                    className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
                  >
-                   <p className="flex"><LuDot className="m-1 text-sm" /> Provide Recommendations</p>
+                   <p className="flex"><FaForward className="m-1 text-sm" /> Provide Recommendations</p>
                  </a>
                </div>
              )}

@@ -15,6 +15,7 @@ import Medication from '../components/Therapist/Medication';
 import Appointmets from '../components/Therapist/Appointmets';
 import AppointmentChange from '../components/Therapist/Appointment Change';
 import { useNavigate } from 'react-router-dom';
+import Prescription from '../components/Therapist/Prescrition';
 
 const UserRole = {
   THERAPIST: "therapist",
@@ -48,12 +49,14 @@ export default function DashboardPage() {
       case 'reports':
         return <Reports />;
           case 'Appointmets':
-            return <Appointmets/>
+            return <Appointmets/>;
             case 'Appointment Changes':
-              return<AppointmentChange/>
+              return<AppointmentChange/>;
+              case'Prescription':
+              return <Prescription/>
       default:
        return (
-        <div><h1 className='text-black text-2xl'>No Data</h1></div>
+        <div><h1 className='text-black text-2xl'>No Content</h1></div>
        );
     }
   };

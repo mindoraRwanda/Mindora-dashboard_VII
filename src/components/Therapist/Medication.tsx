@@ -5,13 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { createMedication, deleteMedication, getAllMedication, updateMedication } from "../../Redux/TherapistSlice/MedicationSlice";
 import TextArea from "antd/es/input/TextArea";
-import { createAsyncThunk } from "@reduxjs/toolkit";
+
+
 
 export default function Medication() {
   const medicals=useSelector((state:RootState)=>state.Medication.data);
   const status=useSelector((state:RootState)=>state.Medication.status);
-
-  const [activeButton, setActiveButton] = useState("Medication");
   const [showMedication, setShowMedication] = useState(false);
   const [form] = Form.useForm();
   const dispatch=useDispatch();
@@ -110,17 +109,11 @@ const handleDeleteMedication=async(id:string)=>{
     }
   }
 };
-
-  const handleActive = (buttonName: any) => {
-    setActiveButton(buttonName);
-  };
-  const renderContent = () => {
-    switch (activeButton) {
-      case "Medication":
-        return (
-          <div className="w-full">
-            <div className="flex justify-between gap-5 w-full my-2">
-              <h2 className="text-xl font-bold text-black">Medication Data</h2>
+  return (
+    <div className="bg-white rounded border pt-6 px-2 mt-14">
+      <div className="ml-10">
+            <div className="flex justify-between gap-5 p-5 w-full my-2">
+              <h2 className="text-xl font-bold text-black">Medication Management</h2>
               <div className="flex items-center w-1/3  border-r rounded px-2">
                 <Input
                   type="text"
@@ -176,94 +169,6 @@ const handleDeleteMedication=async(id:string)=>{
                   )))}
               </tbody>
             </table>
-          </div>
-        );
-      case "Prescription":
-        return (
-          <div className="w-full">
-            <div className="flex justify-between gap-5 w-full my-2">
-              <h2 className="text-xl font-bold text-black">
-                Medication Prescription
-              </h2>
-              <div className="flex items-center w-1/3  border-r rounded px-2">
-                <Input
-                  type="text"
-                  placeholder="Search articles..."
-                  className="w-full text-lg px-2"
-                />
-                <Search className="ml-auto" size={30} color="black" />
-              </div>
-
-              <Button className="mt-1 p-5 text-white font-semibold bg-purple-600 rounded-md">
-                Create Prescription
-              </Button>
-            </div>
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b text-gray-600  ">
-                  <th className="p-3 text-left ">ID</th>
-                  <th className="p-3 text-left ">Name</th>
-                  <th className="p-3 text-left ">Notes</th>
-                  <th className="p-3 text-left ">Dosage</th>
-                  <th className="p-3 text-left ">Duration</th>
-                  <th className="p-3 text-left ">start date</th>
-                  <th className="p-3 text-left ">End date</th>
-                  <th className="p-3 text-left ">Status</th>
-                  <th className="p-3 text-left ">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="text-black">
-                  <td className="p-3">1</td>
-                  <td className="p-3">Muhumuza</td>
-                  <td className="p-3">
-                    {" "}
-                    Medical drug should be taken in proper way
-                  </td>
-                  <td className="p-3">20 mg</td>
-                  <td className="p-3">1 week</td>
-                  <td className="p-3">2022-03-14</td>
-                  <td className="p-3">2022-03-16</td>
-                  <td className="p-3">Active</td>
-                  <td className="p-3">
-                    <Button className="text-sm font-semibold text-white bg-blue-600 rounded-md p-2">
-                      Edit
-                    </Button>
-                    <Button className="ml-2 text-sm font-semibold text-white bg-red-600 rounded-md p-2">
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        );
-    }
-  };
-  return (
-    <div className="bg-white rounded border pt-6 px-2 mt-14">
-      <div className="flex gap-10 border rounded p-5">
-        <h1 className="text-black text-2xl font-bold ">
-          Medication Management
-        </h1>
-        <div className="flex  gap-9 mt-2 flex-row">
-          {["Medication", "Prescription"].map((buttonName) => (
-            <Button
-              key={buttonName}
-              className={`text-lg font-semibold p-4 rounded ${
-                activeButton === buttonName
-                  ? "bg-purple-600 text-white hover:bg-purple-800"
-                  : "bg-gray-200 text-black hover:bg-gray-400"
-              }`}
-              onClick={() => handleActive(buttonName)}
-            >
-              {buttonName}
-            </Button>
-          ))}
-          ;
-        </div>
-      </div>
-      <div className="flex p-5 my-3 rounded-sm border">{renderContent()}</div>
       <Modal
         open={showMedication}
         onCancel={() => {setShowMedication(false);form.resetFields()}}
@@ -296,6 +201,7 @@ const handleDeleteMedication=async(id:string)=>{
           </Form.Item>
         </Form>
       </Modal>
+      </div>
     </div>
   );
 }

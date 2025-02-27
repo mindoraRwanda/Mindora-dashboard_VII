@@ -217,10 +217,10 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
                    <p className="flex"><FaForward className="m-1" />Medication management</p>
                  </a>
                  <a
-                   onClick={() => setActiveComponent("Recommandation")}
+                   onClick={() => setActiveComponent("Prescription")}
                    className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
                  >
-                   <p className="flex"><FaForward className="m-1 text-sm" /> Provide Recommendations</p>
+                   <p className="flex"><FaForward className="m-1 text-sm" />Medication Prescrition</p>
                  </a>
                </div>
              )}

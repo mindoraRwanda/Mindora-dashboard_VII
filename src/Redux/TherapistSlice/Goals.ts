@@ -20,7 +20,11 @@ interface GoalState{
 export const createGoal=createAsyncThunk('CreateGoal/createGoal',
     async (goalData: Goal, { rejectWithValue }) => {
         try {
-            const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals', goalData);
+            const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals', goalData,{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -33,7 +37,11 @@ export const createGoal=createAsyncThunk('CreateGoal/createGoal',
 export const getAllGoals=createAsyncThunk('GetAllGoals/getAll',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals');
+            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals',{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -46,7 +54,11 @@ export const getAllGoals=createAsyncThunk('GetAllGoals/getAll',
 export const getGoalById=createAsyncThunk('GetGoalById/get',
     async (id:string, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals/${id}`);
+            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals/${id}`,{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -58,7 +70,11 @@ export const getGoalById=createAsyncThunk('GetGoalById/get',
 export const deleteGoals=createAsyncThunk('DeleteGoals/delete',
     async (id:string, { rejectWithValue }) => {
         try {
-            const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals/${id}`);
+            const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals/${id}`,{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -70,7 +86,11 @@ export const deleteGoals=createAsyncThunk('DeleteGoals/delete',
 export const updateGoals=createAsyncThunk('UpdateGoals/update',
     async (data:{id:string; goalData: GoalState}, { rejectWithValue }) => {
         try {
-            const response = await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals/${data.id}`, data.goalData);
+            const response = await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/treatment-goals/${data.id}`, data.goalData,{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.message);

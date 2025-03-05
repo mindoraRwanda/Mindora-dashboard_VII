@@ -28,18 +28,15 @@ export const selectedTotalUser=(state:{users:UserState})=>state.users.users.leng
 export const NewUser = createAsyncThunk(
     'users/NewUser',
     async (formData: FormData, { rejectWithValue }) => {
-
         try {
             const response = await axios.post('https://mindora-backend-beta-version.onrender.com/api/auth/register', formData, {
-
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` 
                 },
             });
             console.log('New User Response:', response.data);
             return response.data;
-
         }
         catch (error) {
             return rejectWithValue(error.response?.data || error.response);
@@ -51,9 +48,12 @@ export const NewUser = createAsyncThunk(
 
 export const featchUserById = createAsyncThunk('user/featchUserById',
     async (id: string, { rejectWithValue }) => {
-
         try {
-            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/users/${id}`);
+            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/users/${id}`,{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             console.log('Fetched User by ID:', response.data);
             return response.data;
         }
@@ -67,7 +67,11 @@ export const featchUserById = createAsyncThunk('user/featchUserById',
 
 export const GetAllUsers = createAsyncThunk('User/GetAllUsers', async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`https://mindora-backend-beta-version.onrender.com/api/users`, _);
+        const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/users`, _,{
+            headers: {
+                Authorization: 'Bearer '+ localStorage.getItem('token'),
+            }
+        });
         return response.data;
         console.log('All Users Fetched:', response.data);
     }
@@ -81,9 +85,12 @@ export const deleteUser = createAsyncThunk('users/deleteUser',
     async (id: string, { rejectWithValue }) => {
         console.log("User deleted");
         try {
-            const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/users/${id}`);
+            const response = await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/users/${id}`,{
+                headers: {
+                    Authorization: 'Bearer '+ localStorage.getItem('token'),
+                }
+            });
             return response.data;
-
         }
         catch (error) {
             return rejectWithValue(error.response.data);
@@ -94,7 +101,11 @@ export const deleteUser = createAsyncThunk('users/deleteUser',
 export const updateUser = createAsyncThunk('Users/updateUser',
     async ({ id, credentials }, { rejectWithValue }) => {
         try {
-            const response = await axios.put(`https://mindora-backend-beta-version.onrender.com/api/users/${id}`, credentials);
+            const response = await axios.put(`https://mindora-backend-beta-version.onrender.com/api/users/${id}`, credentials,{
+                headers: {
+                    Authorization: 'Bearer '+ localStorage.getItem('token'),
+                },
+            });
             return response.data;
         }
         catch (error) {
@@ -106,7 +117,11 @@ export const updateUser = createAsyncThunk('Users/updateUser',
 export const changeRole = createAsyncThunk('User/changeRole',
     async ({ id, credentials }, { rejectWithValue }) => {
         try {
-            const response = await axios.put(`https://mindora-backend-beta-version.onrender.com/admin/rbac/roles/${id}`, credentials);
+            const response = await axios.put(`https://mindora-backend-beta-version.onrender.com/admin/rbac/roles/${id}`, credentials,{
+                headers: {
+                    Authorization: 'Bearer '+ localStorage.getItem('token'),
+                },
+            });
             return response.data;
         }
         catch (error) {
@@ -119,8 +134,8 @@ export const changeRole = createAsyncThunk('User/changeRole',
             try {
                 const response = await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/upload/${id}`,formData,{
                     headers: {
-                        'Content-Type': 'multipart/form-data'
-                        // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
                 });
                 return response.data;

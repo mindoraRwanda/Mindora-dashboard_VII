@@ -148,35 +148,71 @@ export default function AdminTherapistList() {
 
 
 
-  const handleUpdate = async (therapist:any) => {
-    const comfirm = window.confirm("Are you sure you want to update");
-    if (comfirm) {
-      try {
-        await dispatch(
-          updateTherapy({
-            id: therapist.id,
-            credentials: {
-              name: therapist.personalInformation.name,
-              gender: therapist.personalInformation.gender,
-              dateOfBirth: therapist.personalInformation.dateOfBirth,
-              address: therapist.personalInformation.address,
-              phoneNumber: therapist.personalInformation.phoneNumber,
-              diploma: therapist.diploma,
-              license: therapist.license,
-              userId: therapist.userId,
-            },
-          })
-        );
-        message.success("Updated Successfully");
-        dispatch(getAllTherapists()); // Fetch the updated list
-        setShowModal(false);
-      } catch (error) {
-        const errorMessage = (error as Error).message;
-        message.error(`Failed to update therapist: ${errorMessage}`);
-      }
-    }
-  };
+  // const handleUpdate = async (therapist:any) => {
+  //   const comfirm = window.confirm("Are you sure you want to update");
+  //   if (comfirm) {
+  //     try {
+  //       await dispatch(
+  //         updateTherapy({
+  //           id: therapist.id,
+  //           credentials: {
+  //             personalInformation: {
+  //               email: therapist.personalInformation.email,
+  //               phone: therapist.personalInformation.phone,
+  //               gender: therapist.personalInformation.gender,
+  //               address: therapist.personalInformation.address,
+  //               lastName: therapist.personalInformation.lastName,
+  //               firstName: therapist.personalInformation.firstName,
+  //               dateOfBirth: therapist.personalInformation.dateOfBirth
+  //             },
+  //             diploma: therapist.diploma,
+  //             license: therapist.license
+  //           }
+  //         })
+  //       );
+  //       message.success("Updated Successfully");
+  //       dispatch(getAllTherapists()); // Fetch the updated list
+  //       setShowModal(false);
+  //     } catch (error) {
+  //       const errorMessage = (error as Error).message;
+  //       message.error(`Failed to update therapist: ${errorMessage}`);
+  //     }
+  //   }
+  // };
+// Suggested Modification
+const handleUpdate = async (therapist:any) => {
+  const confirm = window.confirm("Are you sure you want to update");
+  if (confirm) {
+    try {
+      console.log('Therapist Data to Update:', therapist);
+      const updatePayload = {
+        id: therapist.id,
+        personalInformation: {
+          email: therapist.user?.email || therapist.personalInformation?.email,
+          phoneNumber: therapist.user?.phoneNumber || therapist.personalInformation?.phone,
+          gender: therapist.personalInformation?.gender,
+          address: therapist.personalInformation?.address,
+          lastName: therapist.user?.lastName || therapist.personalInformation?.lastName,
+          firstName: therapist.user?.firstName || therapist.personalInformation?.firstName,
+          dateOfBirth: therapist.personalInformation?.dateOfBirth
+        },
+        diploma: therapist.diploma,
+        license: therapist.license
+      };
+      console.log('Update Payload:', updatePayload);
 
+    const response=  await dispatch(updateTherapy(updatePayload));
+
+    console.log('updated response:', response);
+      message.success("Updated Successfully");
+      dispatch(getAllTherapists()); 
+      setShowModal(false);
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      message.error(`Failed to update therapist: ${errorMessage}`);
+    }
+  }
+};
   const handleExportPDF = () => {
     const input = document.getElementById("therapist-table");
     html2canvas(input, { scale: 2 }).then((canvas) => {
@@ -272,11 +308,8 @@ export default function AdminTherapistList() {
     return dateString ? dateString.split('T')[0]:''; 
    };
 
-  return       loading ? (
-    <div className="flex justify-center items-center min-h-screen">
-      <Spin size="large" />
-    </div>
-  ) : (
+  return (
+   
     <div className="bg-white rounded-lg shadow-xl p-6">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-semibold mb-4 text-purple-600">
@@ -299,6 +332,10 @@ export default function AdminTherapistList() {
           </button>
         </div>
       </div>
+      {loading? ( <div className="flex justify-center items-center min-h-screen">
+      <Spin size="large" />
+      </div>
+       ) : (<>
       <div className="flex gap-4 mb-8">
         <div className="flex float-left border-2 border-slate-300 rounded-md mt-4">
           <a
@@ -561,54 +598,26 @@ export default function AdminTherapistList() {
                   }
                 />
               </p>
-              {/* <p className="text-black m-3">
-                <span>Diploma:</span> <br />
-                <input
-                  type="text"
-                  className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy?.diploma}
-                  readOnly={!isEditable}
-                  onChange={(e) =>
-                    setSelectedTherapy({
-                      ...selectedTherapy,
-                      diploma: e.target.value,
-                    })
-                  }
-                />
-              </p>
               <p className="text-black m-3">
-                <span>license:</span> <br />
-                <input
-                  type="text"
-                  className="p-1 mt-2 rounded-md border-2 border-gray-300"
-                  value={selectedTherapy?.license}
-                  readOnly={!isEditable}
-                  onChange={(e) =>
-                    setSelectedTherapy({
-                      ...selectedTherapy,
-                      license: e.target.value,
-                    })
-                  }
-                />
-              </p> */}
-              <p className="text-black m-3">
-                <span>DateOfBirth:</span> <br />
-                <Input
+  <span>DateOfBirth:</span> <br />
+  <Input
     type="date"
-    value={formatDateForInput(selectedTherapy?.personalInformation?.dateOfBirth)} 
+    value={
+      selectedTherapy?.personalInformation?.dateOfBirth 
+        ? formatDateForInput(selectedTherapy.personalInformation.dateOfBirth)
+        : ''
+    }
     onChange={(e) =>
-      setFormData((prev) => ({
-        ...prev,
+      setSelectedTherapy((prevTherapy) => ({
+        ...prevTherapy,
         personalInformation: {
-          ...prev.personalInformation,
-          dateOfBirth:e.target.value,
+          ...prevTherapy.personalInformation,
+          dateOfBirth: e.target.value,
         },
       }))
-      
     }
-    
   />
- </p>
+</p>
  </div>
  <div className="mt-3 border-2 w-full rounded-md">
           <span className="text-lg font-semibold ml-2 my-10">Therapist Available Slot</span>
@@ -660,7 +669,7 @@ export default function AdminTherapistList() {
           />
         )}
       </Modal>
-     
+      </>)}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { MdDelete, MdEdit } from "react-icons/md";
-import { BiPlus } from "react-icons/bi";
+import { BiDislike, BiLike, BiPlus } from "react-icons/bi";
 import { BiTrash, BiEdit } from "react-icons/bi";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { FaEllipsisV } from "react-icons/fa";
@@ -288,13 +288,13 @@ const handleUpdatePost=async(values)=>{
  
 
   return (
-    <div className="mt-10 mx-3">
-      <div className="flex justify-between mt-20 ">
-        <h4 className="text-purple-600 text-2xl font-semibold my-4">
+    <div className="mx-3 bg-white">
+      <div className="flex justify-between mt-5 ">
+        <h4 className="text-purple-600 text-3xl font-semibold m-4">
           Community Management
         </h4>
         <div className="flex justify-end">
-          <Button type="primary" className="my-2" onClick={()=> setShowModal(true)}>
+          <Button type="primary" className="my-2 mr-3" onClick={()=> setShowModal(true)}>
             <BiPlus size={20} />
             Add Community
           </Button>
@@ -305,7 +305,7 @@ const handleUpdatePost=async(values)=>{
           <Spin size="large" />
         </div>
       ):(
-      <div className="flex gap-3 items-center ">
+      <div className="flex gap-3 items-center m-4 ">
         {communities.map((community) => {
           return (
             <>
@@ -348,7 +348,7 @@ const handleUpdatePost=async(values)=>{
         onClose={()=>{setShowCommDetails(false);setSelectedCommunityId(null)}}
         communityId={selectedCommunityId}
       />
-      <div className="flex gap-5 mt-3">
+      <div className="flex gap-5 m-4">
         <div className="w-1/3 border-2 border-gray-300 rounded-lg bg-white">
           <h3 className="text-purple-600 font-semibold mx-4 my-2 text-xl">
             Therapist Community Topics
@@ -472,6 +472,7 @@ const handleUpdatePost=async(values)=>{
                   </div>
                   <div className="text-sm leading-5 font-medium text-gray-900">
                     {comment.content}
+                    <div className="flex gap-3 p-2"><Button><BiLike size={20}/></Button><Button><BiDislike size={20}/></Button></div>
                   </div>
                   <div className="flex gap-2">
                     <Button>
@@ -491,7 +492,7 @@ const handleUpdatePost=async(values)=>{
           </div>
         </div>
       </div>
-      <div className="bg-white rounded border p-10 my-3">
+      <div className="bg-white rounded border p-10 m-4">
         <h2 className="text-xl text-purple-600"> ALL POST WITHIN SYSTEM</h2>
         <hr className="text-black border border-gray-400" />
         {isloading? (
@@ -532,8 +533,8 @@ const handleUpdatePost=async(values)=>{
                     </h4>
                     <p className="text-gray-700 my-2 text-xl">
                       {post?.content || "No Content"}
-                   
                     </p>
+                    <div className="flex gap-3 p-2"><Button><BiLike size={20}/></Button><Button><BiDislike size={20}/></Button></div>
                   </div>
                 </td>
                 <td>

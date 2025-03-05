@@ -247,30 +247,14 @@ finally{
     XLSX.writeFile(workbook, "Users_list.xlsx");
   };
 
-  const handleCopy = () => {
-    const text = filteredUsers
-      .map(
-        (user) =>
-          `Name: ${user.firstName}, Email: ${user.email}, Last Login: ${user.lastLogin}`
-      )
-      .join("\n");
-    navigator.clipboard.writeText(text).then(() => {
-      message.success("Data copied to clipboard!");
-    });
-  };
-
   const handleSuccess = () => {
     setIsModalVisible(false);
   };
 
-  return loading ? (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spin size="large" />
-      </div>
-    ) : (
+  return (
     <div className="bg-white rounded-lg shadow-xl p-3">
       <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-semibold mb-4 text-purple-600">Users</h2>
+        <h2 className="text-3xl font-bold m-5 text-purple-600">Users</h2>
         <div className="items-center border rounded bg-white flex float-right">
           <input
             type="text"
@@ -288,11 +272,16 @@ finally{
           </button>
         </div>
       </div>
+     { loading ? (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spin size="large" />
+      </div>
+    ) : (<>
       <div className="flex gap-4 mb-8">
-        <div className="flex float-left border-2 border-slate-300 rounded-md mt-4">
+        <div className="flex float-left border-2 border-slate-300 rounded-md mt-4 ml-5">
           <a
             onClick={showModal}
-            className="text-white font-bold p-2 px-2 cursor-pointer bg-purple-600 rounded-md "
+            className="text-white font-bold p-2 px-2   cursor-pointer bg-purple-600 rounded-md "
           >
             {" "}
             + Add New
@@ -320,13 +309,6 @@ finally{
             <FaFileWord size={20} />
             Word
           </button>
-          <button
-            className="text-white font-bold border-2 border-slate-300 p-2 cursor-pointer bg-purple-600 rounded-md flex"
-            onClick={handleCopy}
-          >
-            <MdFileCopy size={20} />
-            copy
-          </button>
         </div>
       </div>
 
@@ -337,6 +319,9 @@ finally{
         <thead>
           <tr>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              no
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               FirstName
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
@@ -345,25 +330,31 @@ finally{
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Email
             </th>
-
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Roles
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Change Roles
             </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+            </th>
+         
+          
           </tr>
         </thead>
 
         <tbody>
-          {currentUsers.map((user) => (
+          {currentUsers.map((user,index) => (
             <tr key={user.id}>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 font-medium text-gray-900">
+                  {index+1}
+                </div>
+              </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 font-medium text-gray-900">
                   {user.firstName}
@@ -378,6 +369,27 @@ finally{
                 <div className="text-sm leading-5 text-gray-900">
                   {user.email}
                 </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <button onClick={() => handleChangeRole(user)}>
+                  <div className="text-sm leading-5 text-white bg-purple-600 p-1 rounded-md ">
+                    {/* // we need to display roles here */}
+                    {user.role ? user.role : "no Role assigned"}
+                  </div>
+                </button>
+              </td>
+               
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <select
+                  className="border text-black w-30 my-2 rounded-md p-2 "
+                  onChange={(e) => handleTherapyRole(e, user)}
+                  value={user.role || ""}
+                >
+                  <option value="">Select Role</option>
+                  <option value="admin">Admin</option>
+                  <option value="patient">Patient</option>
+                  <option value="therapy">Therapy</option>
+                </select>
               </td>
               <td className="py-5 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900 ml-5">
@@ -411,26 +423,7 @@ finally{
                   </button>
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <button onClick={() => handleChangeRole(user)}>
-                  <div className="text-sm leading-5 text-white bg-purple-600 p-1 rounded-md ">
-                    {/* // we need to display roles here */}
-                    {user.role ? user.role : "no Role assigned"}
-                  </div>
-                </button>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <select
-                  className="border text-black w-30 my-2 rounded-md p-2 "
-                  onChange={(e) => handleTherapyRole(e, user)}
-                  value={user.role || ""}
-                >
-                  <option value="">Select Role</option>
-                  <option value="admin">Admin</option>
-                  <option value="patient">Patient</option>
-                  <option value="therapy">Therapy</option>
-                </select>
-              </td>
+           
             </tr>
           ))}
         </tbody>
@@ -519,6 +512,7 @@ finally{
       <Modal open={PatientRole} footer={null} onCancel={handleCancel}>
         <CreatePatient userId={PatientId} onSuccess={handleSuccess}/>
       </Modal>
+      </>)}
     </div>
   );
 }

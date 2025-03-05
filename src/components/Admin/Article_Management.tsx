@@ -151,8 +151,7 @@ const handleCreateArticle=async() => {
               <h3 className="font-semibold my-2">{article.title}</h3>
               <h5 className="text-lg"> {article.category}</h5>
             </div>
-            <p className="my-3">{article.content ? article.content: 'no content aveillable'}
-            </p>
+            {/* <p className="my-3">{article.content ? article.content: 'no content aveillable'}</p> */}
             <hr />
             <div className="flex gap-2 my-2 justify-end">
               <button className="hover:ease-in-out text-purple-600  py-1 px-2 text-lg flex cursor-pointer">

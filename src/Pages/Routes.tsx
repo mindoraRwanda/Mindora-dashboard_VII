@@ -64,7 +64,7 @@ const AdminDashboard = () => {
           return <Course_Management/>;
 
     default:
-        return <div className='text-black text-2xl'>Select a menu option</div>;
+        return <div className='flex justify-center text-black text-3xl mt-10'>?</div>;
     }
   };
 
@@ -73,9 +73,9 @@ const AdminDashboard = () => {
        <div className="w-1/5 px-3 -ml-3">
       <Sidebar userRole={admin} setActiveComponent={setActiveComponent} />
       </div>
-      <div className="flex flex-col flex-grow w-4/5">
+      <div className="flex flex-col flex-grow w-4/5 pl-10">
         <TopBar userRole={admin}/>
-        <div className="flex-grow   bg-gray-200">
+        <div className="flex-grow bg-gray-200 mt-14">
         {renderComponent()}
         </div>
       </div>

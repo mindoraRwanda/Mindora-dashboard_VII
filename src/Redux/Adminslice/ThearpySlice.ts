@@ -133,15 +133,16 @@ export const updateTherapy = createAsyncThunk(
     try {
       const response = await axios.put<Therapist>(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${id}`, {
         personalInformation: {
-          name: credentials.name,
-          gender: credentials.gender,
-          dateOfBirth: credentials.dateOfBirth,
-          address: credentials.address,
-          phoneNumber: credentials.phoneNumber,
+          email: credentials.personalInformation.email,
+          phoneNumber: credentials.personalInformation.phone,
+          gender: credentials.personalInformation.gender,
+          address: credentials.personalInformation.address,
+          lastName: credentials.personalInformation.lastName,
+          firstName: credentials.personalInformation.firstName,
+          dateOfBirth: credentials.personalInformation.dateOfBirth
         },
         diploma: credentials.diploma,
         licence: credentials.licence,
-        userId: credentials.userId,
       },{
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`

@@ -41,7 +41,11 @@ export const createPatient = createAsyncThunk('Patient/createPatient',
         console.log('Sending data to the server:', PatientData); 
         try {
             const response = await axios.post<Patient>('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients', 
-                PatientData);   
+                PatientData,{
+                    headers:{
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                });   
             return response.data;
             console.log('Server response:', response);
         }
@@ -57,11 +61,10 @@ export const createPatient = createAsyncThunk('Patient/createPatient',
 
 export const allPatients = createAsyncThunk('getPatients',
     async (_, { rejectWithValue }) => {
-        const token=localStorage.getItem('token');
         try {
             const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients',{
                 headers:{
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
             console.log("API Response:", response.data);
@@ -90,7 +93,11 @@ export const fetchTherapistPatient=createAsyncThunk('fetchPatientPrescriptions',
 export const getPatientById = createAsyncThunk( 'patient/getById',
     async (id:string, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`);
+            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`,{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         }
         catch (err) {
@@ -105,7 +112,11 @@ export const updatePatient = createAsyncThunk('updatePatient',
     async ({id,updatePatientData}: { id: number | string; updatePatientData: Partial<Patient> }, { rejectWithValue }) => {
         
         try {
-            const response = await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`,updatePatientData);
+            const response = await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`,updatePatientData,{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
         }
         catch (err) {
@@ -118,7 +129,12 @@ export const updatePatient = createAsyncThunk('updatePatient',
 export const deletePatient = createAsyncThunk('deletePatient',
     async (id:number|string, { rejectWithValue }) => {
         try {
-         await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`);
+         await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`,{
+             headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
+   
+         });
             return id;
         }
         catch (err) {

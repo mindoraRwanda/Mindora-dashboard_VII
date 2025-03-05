@@ -190,11 +190,11 @@ const renderContent=() => {
 
   return (
     <>
-      <div className="bg-white rounded border mt-16 p-6">
-     <h1 className="text-white bg-purple-600  w-full p-1 rounded flex justify-center text-3xl font-semibold">
+      <div className="bg-white rounded border  p-6">
+     {/* <h1 className="text-white bg-purple-600  w-full p-1 rounded flex justify-center text-3xl font-semibold">
        Courses Management 
-     </h1>
-     <div className="flex flex-row gap-7 mx-4 mt-9">
+     </h1> */}
+     <div className="flex flex-row gap-7 mx-4">
         {["Courses", "Course Articles"].map((buttonName) => (
           <button
             key={buttonName}

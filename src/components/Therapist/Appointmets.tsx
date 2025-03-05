@@ -1,7 +1,7 @@
 import {  useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BiTime } from "react-icons/bi";
-import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid } from "react-icons/fa";
+import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid, FaBriefcase, FaBriefcaseMedical } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import {
   deleteAppointment,
@@ -390,9 +390,9 @@ const handleReschedule=async(values:any)=>{
               key={appointment.id}
               className="bg-white rounded-lg flex flex-row justify-between border-2 p-6 mt-3"
             >
-              <div className="flex items-start space-x-4">
-                <div className="bg-gray-100 p-3 rounded-full mt-4">
-                  {/* <FaUser className="h-6 w-6 text-gray-600" /> */}
+              <div className=" items-start space-x-4">
+                <div className="flex gap-2">
+                <div className="bg-gray-100 p-3 rounded-full">
                   <img src={appointment.user?.profileImage}
                   alt="UserProfile"
                   className="object-cover w-12 h-12 rounded-full" 
@@ -401,23 +401,43 @@ const handleReschedule=async(values:any)=>{
                   />
                 </div>
                 <div>
-                  <h3 className="text-black mb-2 font-semibold">
+                  <h3 className="text-black mb-2 mt-2 font-semibold">
                   {`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
                   </h3>
-                  <p className="text-sm ml-2 text-gray-500">
-                    {appointment.appointmentType}
+                  <p className="text-black capitalize">{appointment.patient.personalInformation.gender}</p>
+                  </div>
+                  </div>
+                  <hr className="text-black w-full m-4" />
+                  <div>
+                  
+                  <div className="space-x-2 mt-1 grid grid-cols-2">
+                  <p className="text-md ml-2 text-gray-700 flex gap-2">
+                    <FaBriefcaseMedical size={24} color="blue" className="mt-4"/>
+                    <div className="text-md">
+                    <p className="text-lg">condition</p>
+                    <strong>{appointment.appointmentType}</strong>
+                    </div>
                   </p>
-                  <div className="space-x-2 mt-1">
-                    <span className="flex gap-1 text-sm my-3 text-gray-500">
-                      <MdLocationOn size={20} color="black" />
-                      {appointment.location}
+                    <span className="flex gap-1 text-md my-3 text-gray-700">
+                      <MdLocationOn size={25} color="blue" className="mt-4" />
+                      <div className="text-md">
+                      <p className="text-lg">Location</p>
+                     <strong>{appointment.location}</strong> </div>
                     </span>
-                    <span className="flex gap-1 text-sm text-gray-500">
-                      <BiTime size={20} color="black" />
-                      {formatTime(appointment.startTime)} to {formatTime(appointment.endTime)}
+                    <span className="flex gap-1 text-md text-gray-700">
+                      <BiTime size={25} color="blue" className="mt-3" />
+                      <div className="text-md">
+                      <p className="text-lg">Start Time</p>
+                      <strong>{formatTime(appointment.startTime)}</strong></div>
+                    </span>
+                    <span className="flex gap-1 text-md text-gray-700">
+                      <BiTime size={25} color="blue" className="mt-3" />
+                      <div className="text-md">
+                      <p className="text-lg">End Time</p>
+                      <strong>{formatTime(appointment.endTime)}</strong></div>
                     </span>
                   </div>
-                  <p className="text-md mt-3 capitalize text-gray-500">
+                  <p className="text-2xl my-5 mx-3 capitalize text-gray-800">
                     Notes: {appointment.notes}
                   </p>
                   <Button
@@ -448,18 +468,7 @@ const handleReschedule=async(values:any)=>{
                   </Button>
                 </div>
               </div>
-              <div
-                className={`italic m-5 p-2 ${
-                  appointment?.status === "Scheduled"
-                    ? "text-blue-600"
-                    : appointment?.status === "Rescheduled"
-                    ? "text-green-500"
-                    : appointment?.status === "canceled"
-                    ? "text-red-700"
-                    : ""
-                }`}
-              >
-                {appointment?.status}
+              <div className={`italic m-5 p-2 ${appointment?.status === "Scheduled"? "text-blue-600": appointment?.status === "Rescheduled"? "text-green-500": appointment?.status === "canceled" ? "text-red-700": ""}`}>{appointment?.status}
               </div>
             </div>
             )
@@ -548,15 +557,15 @@ const handleReschedule=async(values:any)=>{
             </Select>
           </Form.Item>
           
-          <Form.Item name="actionBy" label="Action By">
+          <Form.Item name="actionBy" label="Action By" hidden>
             <Input className="p-1 rounded-md text-black" disabled />
           </Form.Item>
-        </div>
+      
 
         <Form.Item name="actionTime" label="Action Time">
           <Input className="p-1" type="datetime-local" />
         </Form.Item>
-        
+        </div>
         <Form.Item name="reason" label="Reason">
           <TextArea className="p-2 rounded-md" />
         </Form.Item>

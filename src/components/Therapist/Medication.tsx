@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { createMedication, deleteMedication, getAllMedication, updateMedication } from "../../Redux/TherapistSlice/MedicationSlice";
 import TextArea from "antd/es/input/TextArea";
+import { BiPlus } from "react-icons/bi";
 
 
 
@@ -127,7 +128,7 @@ const handleDeleteMedication=async(id:string)=>{
                 className="mt-1 p-5 text-white font-semibold bg-purple-600 rounded-md"
                 onClick={() => setShowMedication(true)}
               >
-                Add Medication
+              <BiPlus size={25}/>  Add Medication
               </Button>
             </div>
             <table className="w-full border-collapse mt-6">

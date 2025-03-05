@@ -251,12 +251,9 @@ export default function AdminPatientsList() {
     navigator.clipboard.writeText(text);
   };
 
-  return loading ? (
-    <div className="flex justify-center items-center min-h-screen">
-      <Spin size="large" />
-    </div>
-  ) : (
+  return (
     <div className="bg-white rounded-lg shadow-xl p-6">
+     
       <div className="flex justify-between ">
         <h2 className="text-purple-600 text-3xl font-semibold">Patients</h2>
         <div className="items-center border rounded bg-white flex float-right">
@@ -276,7 +273,11 @@ export default function AdminPatientsList() {
           </button>
         </div>
       </div>
-
+      { loading ? (
+    <div className="flex justify-center items-center min-h-screen">
+      <Spin size="large" />
+    </div>
+     ) : (<>
       <div className="flex gap-4 mb-8">
         <div className="flex float-left border-2 border-slate-300 rounded-md mt-4">
           <button
@@ -625,6 +626,8 @@ export default function AdminPatientsList() {
 
         )}
       </Modal>
+      </> )}
+    
     </div>
   );
 }

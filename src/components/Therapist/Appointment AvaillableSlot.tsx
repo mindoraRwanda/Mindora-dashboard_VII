@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Modal, Form, Input, Button, Select, message, Switch,Spin } from "antd";
-import { BiEdit } from "react-icons/bi";
+import { BiCalendar, BiEdit, BiTime } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { RootState } from "../../Redux/store";
 import { AppDispatch } from "../../Redux/store";
@@ -16,6 +16,7 @@ import {
   updateAvailableSlot,
 } from "../../Redux/TherapistSlice/Appointment_Slot";
 import { createAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
+import { Clock } from "lucide-react";
 
 interface SlotData {
   id: string;
@@ -230,7 +231,14 @@ const handleActive = (buttonName:string) => {
   setActiveButton(buttonName);
 };
 
-
+const formatTime = (isoString) => {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true 
+  });
+};
 
   const renderScheduleContent = () => (
     loading? (
@@ -265,18 +273,26 @@ const handleActive = (buttonName:string) => {
                 <h1 className="text-purple-600 text-3xl font-semibold mb-5">
                   {item.availableDay}
                 </h1>
-                <p className="text-black text-xl my-2">Date: {item.date}</p>
-                <p className="text-black text-xl my-2">
-                  Start Time: {item.startTime}
-                </p>
-                <p className="text-black text-xl my-2">
-                  End Time: {item.endTime}
+                <div className="text-black text-xl my-2 flex gap-2">
+                    <BiCalendar color="blue" size={24} className=""/>
+                   <span>Date: </span>
+                   <strong>{item.date}</strong> 
+                 
+                  </div>
+                <div className="text-black text-xl my-2 flex gap-2">
+                  <BiTime color="blue" size={24}/>
+                  Start Time:  <strong>{formatTime(item.startTime)}</strong>
+                </div>
+                <p className="text-black text-xl my-2 flex  gap-2">
+                <BiTime color="blue" size={24}/>
+                  End Time: <strong>{formatTime(item.endTime)}</strong>
                 </p>
                 <p className="text-black text-xl my-2">
                   Recurring: {item.recurring ? "Yes" : "No"}
                 </p>
-                <p className="text-black text-xl my-2">
-                  Time Zone: {item.timeZone}
+                <p className="text-black text-xl my-2 flex gap-2">
+                  <Clock color="blue" size={24}/>
+                  Time Zone: <strong>{item.timeZone}</strong> 
                 </p>
               </div>
               <div>

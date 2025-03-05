@@ -7,6 +7,7 @@ import TextArea from 'antd/es/input/TextArea';
 import { getAllMedication } from '../../Redux/TherapistSlice/MedicationSlice';
 import { fetchTherapistPatient } from '../../Redux/Adminslice/PatientSlice';
 import dayjs from 'dayjs';
+import { BiPlus } from 'react-icons/bi';
 
 export default function Prescription() {
   const medicaPredictions=useSelector((state:RootState)=>state.MedicationPrescription.data);
@@ -173,7 +174,7 @@ const handleDeletePrescription=(id:string)=>{
               </div>
 
               <Button className="mt-1 p-5 text-white font-semibold bg-purple-600 rounded-md" onClick={()=>setShowPrescription(true)}>
-                Create Prescription
+              <BiPlus size={25}/>  Create Prescription
               </Button>
             </div>
             <table className="w-full border-collapse">

@@ -168,7 +168,7 @@ export default function TreatmentPlan_Goal({callMilestone}:TreatmentPlanPros) {
             name="treatmentPlanId"
             label="TreatmentPlanId:"
             initialValue={treatmentPlanId}
-            hidden
+            // hidden
           >
             <Input type="text" readOnly />
           </Form.Item>

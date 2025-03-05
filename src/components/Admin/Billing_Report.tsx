@@ -104,9 +104,9 @@ export default function BillingReports(){
     <>
       {" "}
       <div className="bg-white pb-4 m-4">
-        <div className="font-2xl justify-between mt-20 p-2 bg-white flex">
+        <div className="font-2xl justify-between  p-2 bg-white flex">
           <h1 className="text-black text-2xl font-bold">Billing Reports</h1>
-          <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex" onClick={handleReportOpen}>
+          <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-5 px-4 rounded flex" onClick={handleReportOpen}>
             <BiPlus size={23} /> New Report
           </Button>
         </div>
@@ -117,7 +117,7 @@ export default function BillingReports(){
         ):(
         reports.length > 0 ? (
       reports.map((report, index) => (
-        <div key={index} className="border-2 rounded p-2 bg-white m-2 my-4">
+        <div key={index} className="border border-black rounded p-2 bg-white m-2 my-10">
         <div className="flex justify-between">
         <div className="flex gap-1">
           <BsCalendar size={23} color="black" />
@@ -125,7 +125,7 @@ export default function BillingReports(){
             Billing period: {report.startDate} - {report.endDate}
           </span>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-2 my-3">
           <Button onClick={()=>OpenUpdateModel(report)} ><BiEdit size={20} /></Button>
           <Button onClick={()=>handleDeleteReport(report.id)}><BiTrash size={20} color="red" /></Button>
         </div>
@@ -163,9 +163,9 @@ export default function BillingReports(){
         <h2 className="text-black mr-4">{report.rejectedInsuranceClaims}</h2>
       </div>
 
-      <div className="flex justify-between">
-        <h2 className="text-xl text-black ml-2">Last Updated:</h2>
-        <h2 className="text-black mr-5">{formatTime(report.updatedAt)}</h2>
+      <div className="flex gap-2 mt-5">
+        <strong className="text-xl text-black ml-2">Last Updated:</strong>
+        <strong className="text-black text-xl">{formatTime(report.updatedAt)}</strong>
       </div>
     </div>
   ))

@@ -58,7 +58,6 @@ export const createPatient = createAsyncThunk('Patient/createPatient',
 
 );
 // Get all the patient
-
 export const allPatients = createAsyncThunk('getPatients',
     async (_, { rejectWithValue }) => {
         try {
@@ -75,7 +74,7 @@ export const allPatients = createAsyncThunk('getPatients',
         }
     }
 );
-export const fetchTherapistPatient=createAsyncThunk('fetchPatientPrescriptions',
+export const getAllPatientOfTherapy=createAsyncThunk('getAllPatientOfTherapy',
     async(therapistId:string,{rejectWithValue})=>{
         try{
             const response=await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${therapistId}/patients`,{
@@ -88,6 +87,8 @@ export const fetchTherapistPatient=createAsyncThunk('fetchPatientPrescriptions',
             return rejectWithValue(error.message);
         }
     });
+
+
 
 // the following is for getting single patient
 export const getPatientById = createAsyncThunk( 'patient/getById',
@@ -225,14 +226,14 @@ const patientSlice = createSlice({
                 state.status = 'rejected';
                 state.error = action.payload as string;
             })
-            .addCase(fetchTherapistPatient.pending,(state)=>{
+            .addCase(getAllPatientOfTherapy.pending,(state)=>{
                 state.status='loading';
             })
-            .addCase(fetchTherapistPatient.fulfilled,(state,action)=>{
+            .addCase(getAllPatientOfTherapy.fulfilled,(state,action)=>{
                 state.status='succeeded';
                 state.data=action.payload;
             })
-            .addCase(fetchTherapistPatient.rejected,(state,action)=>{
+            .addCase(getAllPatientOfTherapy.rejected,(state,action)=>{
                 state.status='rejected';
                 console.log(action.payload);
             })

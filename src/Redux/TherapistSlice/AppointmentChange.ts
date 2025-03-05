@@ -25,7 +25,11 @@ export const createReschedule=createAsyncThunk('createReschedule/createReschedul
         try {
             // console.log('Sending data to the server:', data)
         
-            const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_changes', data);
+            const response = await axios.post('https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_changes', data,{
+                headers:{
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
           
             console.log('Reschedule response on Appointment changes:', response.data);
             return response.data;

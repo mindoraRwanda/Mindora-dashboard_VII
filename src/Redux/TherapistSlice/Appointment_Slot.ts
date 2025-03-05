@@ -1,7 +1,9 @@
-import { PayloadAction,createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
 
-export interface Appointment {
+
+
+export interface AvaillableSlot {
     id: string;
     startTime: string;
     endTime: string;
@@ -39,7 +41,7 @@ export const createAvailableSlot = createAsyncThunk('CreateAvailableSlot/createS
             console.log("Those are data Reach to database", response);
             return response.data;
         }
-        catch (err) {
+        catch (err:any) {
             return rejectWithValue(err.response?.data || 'unexpected error');
         }
     });
@@ -57,7 +59,7 @@ async (therapistId: string,{rejectWithValue})=>{
         });
         return response.data;
     }
-    catch (err) {
+    catch (err: any) {
         return rejectWithValue(err.response?.data || 'unexpected error');
     }
 }) ;
@@ -75,7 +77,7 @@ export const deleteAvailableSlot=createAsyncThunk('deleteAvailableSlot/delete',
             });
             return id;
         }
-        catch (err){
+        catch (err: any) {
             return rejectWithValue(err.response?.data || 'unexpected error');
         }
     }
@@ -85,6 +87,7 @@ export const deleteAvailableSlot=createAsyncThunk('deleteAvailableSlot/delete',
 
 export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
     async(data:{id:string;[key:string]:unknown},{rejectWithValue})=>{
+        // const dispatch=useDispatch();
         try{
             const token=localStorage.getItem('token');
             const response=await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/appointment_available_slots/${data.id}`,data,{
@@ -94,7 +97,7 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
             });
             return response.data;
         }
-        catch (err){
+        catch (err: any) {
             return rejectWithValue(err.response?.data || 'unexpected error');
         }
     }
@@ -103,13 +106,7 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
     const AvailableSlotData =createSlice({
         name: 'availableSlot',
         initialState,
-            // Add Slot Reducer
-            reducers: {
-                resetStatus: (state) => {
-                  state.status = 'idle';
-                  state.error = null;
-                },
-        },
+            reducers: {},
         extraReducers: (builder) => {
             builder
                 // Create Slot Cases
@@ -117,12 +114,15 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                     state.status = 'loading';
                     state.error = null;
                 })
-                .addCase(createAvailableSlot.fulfilled, (state, action: PayloadAction<AvailableSlot>) => {
+                .addCase(createAvailableSlot.fulfilled, (state, action) => {
                     state.status = 'succeeded';
-                    state.data.push(action.payload);
+                    const existingIndex = state.data.findIndex(slot => slot.id === action.payload.id);
+                    if (existingIndex === -1) {
+                        state.data.push(action.payload);
+                    }
                     state.error = null;
                 })
-                .addCase(createAvailableSlot.rejected, (state, action:PayloadAction<string>) => {
+                .addCase(createAvailableSlot.rejected, (state, action) => {
                     state.status = 'rejected';
                     state.error = action.payload as string;
                 })
@@ -132,12 +132,12 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                     state.status='loading';
                     state.error=null;       
                 })
-                .addCase(getAllAvailableSlot.fulfilled, (state, action: PayloadAction<AvailableSlot[]>) => {
+                .addCase(getAllAvailableSlot.fulfilled, (state, action) => {
                     state.status = 'succeeded';
                     state.data = action.payload;
                     state.error = null;
                 })
-             .addCase(getAllAvailableSlot.rejected, (state,  action: PayloadAction<string>)=>{
+             .addCase(getAllAvailableSlot.rejected, (state,  action)=>{
                  state.status='rejected';
                  state.error=action.payload as string;
              })
@@ -147,13 +147,13 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                  state.status='loading';
                  state.error=null;
              })
-             .addCase(deleteAvailableSlot.fulfilled, (state, action: PayloadAction<string>) => {
+             .addCase(deleteAvailableSlot.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.data = state.data.filter(slot => slot.id !== action.payload);
                 state.error = null;
             })
             
-             .addCase(deleteAvailableSlot.rejected, (state, action: PayloadAction<AvailableSlot>)=>{
+             .addCase(deleteAvailableSlot.rejected, (state, action)=>{
                  state.status='rejected';
                  state.error=action.payload as string;
              })
@@ -165,7 +165,7 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                  state.error=null;
              })
 
-             .addCase(updateAvailableSlot.fulfilled, (state, action: PayloadAction<AvailableSlot>) => {
+             .addCase(updateAvailableSlot.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 const index = state.data.findIndex((slot) => slot.id === action.payload.id);
                 if (index !== -1) {
@@ -177,15 +177,9 @@ export const updateAvailableSlot=createAsyncThunk('updataAvaillableSlot/update',
                 state.status='rejected';
                 state.error=action.payload as string;
             })
-             // Reset Status
-             .addCase(resetStatus, (state) => {
-                state.status = 'idle';
-                state.error = null;
-             })
-            ;
+          
          
         }});
-        export const { resetStatus } = AvailableSlotData.actions;
         export default AvailableSlotData.reducer;
         
 

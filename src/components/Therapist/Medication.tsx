@@ -159,10 +159,10 @@ const handleDeleteMedication=async(id:string)=>{
                   <td className="p-3">{formatDate(med.createdAt)}</td>
                   <td className="p-3">{formatDate(med.updatedAt)}</td>
                   <td className="p-3 flex">
-                    <Button className="text-sm font-semibold text-white bg-blue-600 rounded-md p-2" onClick={()=>handleUpdateMedication(med.id)}>
+                    <Button className="px-3 py-1 bg-indigo-500 text-white rounded flex items-center justify-center hover:bg-indigo-600 transition-colors ml-2" onClick={()=>handleUpdateMedication(med.id)}>
                       Edit
                     </Button>
-                    <Button className="ml-2 text-sm font-semibold text-white bg-red-600 rounded-md p-2" onClick={()=>handleDeleteMedication(med.id)}>
+                    <Button className="px-3 py-1 bg-rose-500 text-white rounded flex items-center justify-center hover:bg-rose-600 transition-colors ml-2"onClick={()=>handleDeleteMedication(med.id)}>
                       Delete
                     </Button>
                   </td>

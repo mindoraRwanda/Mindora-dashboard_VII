@@ -43,8 +43,9 @@ function Appointments() {
           setChangedAppointments(changedResult);
           setLoading(false);
         } catch (error) {
-          const errorMessage = (error as Error).message;
-          message.error(`Failed to load appointments: ${errorMessage}`);
+          message = error.message
+          // const errorMessage = (error as Error).message;
+          // message.error(`Failed to load appointments: ${errorMessage}`);
         } finally {
           setLoading(false);
         }
@@ -241,10 +242,10 @@ const handleChangeModal=(appointment:Appointment)=>{
     reason: '',
   });
 };
-const handleCancleReschedule=()=>{
-  setRescheduleModal(false);
-  form.resetFields();
-};
+// const handleCancleReschedule=()=>{
+//   setRescheduleModal(false);
+//   form.resetFields();
+// };
 
 const handleReschedule=async(values:any)=>{
   try{
@@ -393,7 +394,7 @@ const handleReschedule=async(values:any)=>{
               <div className=" items-start space-x-4">
                 <div className="flex gap-2">
                 <div className="bg-gray-100 p-3 rounded-full">
-                  <img src={appointment.user?.profileImage}
+                  <img src={appointment.therapist.user.profileImage}
                   alt="UserProfile"
                   className="object-cover w-12 h-12 rounded-full" 
                   width={120}
@@ -527,7 +528,7 @@ const handleReschedule=async(values:any)=>{
     {/* Modal for appointment change */}
     <Modal
       open={rescheduleModal}
-      onCancel={handleCancleReschedule}
+      onCancel={()=>{setRescheduleModal(false);form.resetFields()}}
       footer={null}
       title="Reschedule Appointment">
       <Form

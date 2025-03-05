@@ -63,7 +63,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
       <div className="bg-white flex flex-col items-center rounded-md p-8 space-y-4">
-        <h1 className="text-3xl font-bold text-center text-gray-800">Welcome To Mindola</h1>
+        <h1 className="text-3xl font-bold text-center text-gray-800">Welcome Back</h1>
         <div className="flex space-x-8">
           <div className="rounded-lg w-96 h-96 flex items-center justify-center">
             <img 

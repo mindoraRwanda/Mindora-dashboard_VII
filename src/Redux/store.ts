@@ -21,6 +21,7 @@ import serviceReducer from './TherapistSlice/Service';
 import medicationReducer from './TherapistSlice/MedicationSlice';
 import medication_prescriptionReducer from './TherapistSlice/MedicationPrescription';
 import messagesReducer from './Adminslice/messageSlice';
+import reportReducer from './TherapistSlice/ReportSlice';
 
 const store = configureStore({
   reducer: {
@@ -45,7 +46,8 @@ const store = configureStore({
     servicess: serviceReducer,
     Medication: medicationReducer,
     MedicationPrescription: medication_prescriptionReducer,
-    messages: messagesReducer
+    messages: messagesReducer,
+    reports: reportReducer,
   },
 });
 

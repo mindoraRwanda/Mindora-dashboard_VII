@@ -3,20 +3,17 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Modal, Form, Input, Button, Select, message, Switch,Spin } from "antd";
 import { BiCalendar, BiEdit, BiTime } from "react-icons/bi";
-import { FaTrash } from "react-icons/fa";
+import { FaPlus, FaTrash } from "react-icons/fa";
 import { RootState } from "../../Redux/store";
 import { AppDispatch } from "../../Redux/store";
-import { FaCalendar } from "react-icons/fa";
-import PatientsList from "../Admin/AdminPatientList";
 
 import {
   deleteAvailableSlot,
   getAllAvailableSlot,
-  resetStatus,
   updateAvailableSlot,
 } from "../../Redux/TherapistSlice/Appointment_Slot";
 import { createAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
-import { Clock } from "lucide-react";
+import { Globe } from "lucide-react";
 
 interface SlotData {
   id: string;
@@ -50,24 +47,12 @@ export default function ManageAppointMents() {
   const [therapistId, setTherapistId] = useState("");
   const [formData, setFormData] = useState({ recurring: false });
 
-  const { status, error } = useSelector((state: RootState) => ({
-    status: state.availableSlot?.status,
-    error: state.availableSlot?.error,
-  }));
+  const {status } = useSelector((state: RootState) => ({status: state.availableSlot.status}));
   
-
-  // Add useEffect to handle status changes
-  useEffect(() => {
-    if (status === "succeeded") {
-      message.success("Operation Successfully");
-
-      dispatch(getAllAvailableSlot(therapistId));
-    } else if (status === "rejected" && error) {
-      message.error(error || "Failed to create appointment");
-      dispatch(resetStatus());
-    }
-  }, [status, error, form, dispatch, therapistId]);
-
+  // useEffect to update slotData 
+  useEffect(()=>{
+    setSlotData(SlotData);
+  },[SlotData])
   //  useEffect to get TherapistId from localStorage when component mounts
     useEffect(() => {
     const storedTherapistId = localStorage.getItem("TherapistId");
@@ -77,8 +62,9 @@ export default function ManageAppointMents() {
       form.setFieldsValue({
         TherapistId: storedTherapistId,
       });
+      dispatch(getAllAvailableSlot(storedTherapistId));
     }
-  }, [form]);
+  }, [dispatch, form]);
 
   // This useEffect will help us to get all availableslot of Therapist
   useEffect(() => {
@@ -110,8 +96,6 @@ export default function ManageAppointMents() {
   };
   const handleCancelModal = () => {
     setModalVisible(false);
-    // form.resetFields();
-    // dispatch(resetStatus());
   };
 
   // The Modal For Update Available Slot
@@ -150,11 +134,13 @@ export default function ManageAppointMents() {
        }
        else{
         message.error("Failed to delete Slot");
+        dispatch(getAllAvailableSlot(therapistId));
        }
       } catch (error) {
         const errorMessage = (error as Error).message;
         message.error(`Failed to load users: ${errorMessage}`);
       }
+
     }
   };
 
@@ -176,8 +162,9 @@ export default function ManageAppointMents() {
   const result= await dispatch(createAvailableSlot(FormData));
  if(createAvailableSlot.fulfilled.match(result)) {
   message.success("Appointment Slot created successfully!");
-  form.resetFields();
   setModalVisible(false);
+  form.resetFields();
+  dispatch(getAllAvailableSlot(therapistId));;
  }
     } catch (error) {
       const errorMessage = (error as Error).message;
@@ -209,12 +196,11 @@ const handleUpdate = async (values:any) => {
       message.success("Appointment Slot updated successfully!");
       form.resetFields();
       setEditMOdal(false);
-      // dispatch(resetStatus());
-      // setActiveButton("View Plans");
+      dispatch(getAllAvailableSlot(therapistId));
     }
     else{
       message.error("Failed to update appointment slot.");
-      dispatch(resetStatus());
+      dispatch(getAllAvailableSlot(therapistId));
     }
    
     } catch (error) {
@@ -255,7 +241,7 @@ const formatTime = (isoString) => {
           className="bg-purple-600 text-white p-2 rounded font-semibold flex flex-row gap-2"
           onClick={showModal}
         >
-          <FaCalendar size={20} />
+          <FaPlus size={20} />
           Add New Slot
         </button>
       </div>
@@ -287,11 +273,11 @@ const formatTime = (isoString) => {
                 <BiTime color="blue" size={24}/>
                   End Time: <strong>{formatTime(item.endTime)}</strong>
                 </p>
-                <p className="text-black text-xl my-2">
+                {/* <p className="text-black text-xl my-2">
                   Recurring: {item.recurring ? "Yes" : "No"}
-                </p>
+                </p> */}
                 <p className="text-black text-xl my-2 flex gap-2">
-                  <Clock color="blue" size={24}/>
+                  <Globe color="blue" size={24}/>
                   Time Zone: <strong>{item.timeZone}</strong> 
                 </p>
               </div>
@@ -379,8 +365,8 @@ const formatTime = (isoString) => {
               <Select.Option value="Saturday">Saturday</Select.Option>
               <Select.Option value="Sunday">Sunday</Select.Option>
             </Select>
-          </Form.Item>
-          <div className="grid grid-cols-2 gap-2">
+            </Form.Item>
+             <div className="grid grid-cols-2 gap-2">
             <Form.Item
               label="Start Time"
               name="startTime"
@@ -455,7 +441,7 @@ const formatTime = (isoString) => {
               loading={isCreating}
               disabled={isCreating}
             >
-              {status === "loading" ? "Creating..." : "Create Slot"}
+              {status === "loading" ? "Create Slot" : "Create Slot"}
             </Button>
           </Form.Item>
         </Form>

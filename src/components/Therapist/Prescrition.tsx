@@ -5,7 +5,7 @@ import { Button, DatePicker,Form,Input, Modal, Select, Spin,message } from 'antd
 import { Search } from 'lucide-react';
 import TextArea from 'antd/es/input/TextArea';
 import { getAllMedication } from '../../Redux/TherapistSlice/MedicationSlice';
-import { fetchTherapistPatient } from '../../Redux/Adminslice/PatientSlice';
+import { getAllPatientOfTherapy } from '../../Redux/Adminslice/PatientSlice';
 import dayjs from 'dayjs';
 import { BiPlus } from 'react-icons/bi';
 
@@ -31,7 +31,7 @@ const formatDate = (isoString) => {
 };
 //to get patient information for therapist
 useEffect(()=>{
-  dispatch(fetchTherapistPatient());
+  dispatch(getAllPatientOfTherapy());
 },[dispatch]);
 
 // This is for getting all medications

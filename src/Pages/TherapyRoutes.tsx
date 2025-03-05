@@ -54,7 +54,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen ">
-      <div className='px-3 ml-3 w-1/5'>
+      <div className=' w-1/5'>
       <Sidebar 
         userRole={userRole} 
         setActiveComponent={setActiveComponent} 

@@ -1,4 +1,4 @@
-import { Modal,message } from "antd";
+import { Button, Dropdown, Modal,message } from "antd";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineMessage, MdNotificationsNone } from "react-icons/md";
@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from "react-redux";
 import { changePass } from "../Redux/Adminslice/authSlice";
 import { RootState } from "../Redux/store";
+import { fetchMessages } from "../Redux/Adminslice/messageSlice";
+import { Key } from "lucide-react";
 
 interface TopBarProps {
   userRole: string;
@@ -29,7 +31,23 @@ export default function TopBar({ userRole, items = [] }:TopBarProps) {
   const dispatch=useDispatch();
 
   const {status}=useSelector((state:RootState)=>state.auth);
+  const {messages,messageCount}=useSelector((state:RootState)=>state.messages);
 
+  useEffect(()=>{
+    dispatch(fetchMessages());
+  },[dispatch]);
+  const menuItems=messages.map((msg)=>({
+    Key:msg.id,
+    label:(
+      <div className="flex flex-col p-2 border">
+       <p className="flex text-sm my-1">Names: {msg.sender.firstName} {msg.sender.lastName}</p>
+        <div className="flex gap-1 my-2">
+          <MdOutlineMessage size={20} className="text-black" />
+          <span className="text-black text-sm">{msg.messageText}</span>
+        </div>
+      </div>
+    )
+  }));
 
   const ShowPassModal = () => {
     SetChangePassModal(true);
@@ -149,9 +167,19 @@ export default function TopBar({ userRole, items = [] }:TopBarProps) {
           <button className="text-purple-600 mx-3" onClick={handleModal}>
             <IoCalendarNumber size={32} />
           </button>
-          <a className="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          <Dropdown
+           menu={{ items: menuItems }}
+           trigger={['click']}
+          placement="bottomRight"
+   n        >
+          <div className="relative">
+          <button className="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <MdOutlineMessage className="text-3xl ml-5 text-purple-600" />
-          </a>
+            {messageCount>0 &&(
+              <span className="absolute -top-3 -right-1 italic rounded-full text-xl font-medium text-red-500">{messageCount}</span>
+            )}
+          </button>
+          </div></Dropdown>
 
           <a href="#" data-bs-toggle="dropdown">
             <MdNotificationsNone className="text-3xl ml-5 text-purple-600" />

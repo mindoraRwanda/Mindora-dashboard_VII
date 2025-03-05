@@ -222,8 +222,8 @@ const handleGender= (appointment: Appointment[]) => {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <h3 className="text-gray-700 text-3xl font-medium mb-6">
-        Welcome back, Dr. Smith!
+      <h3 className="text-gray-700 text-3xl font-medium mb-6 flex justify-center">
+        Welcome back to  <strong className="ml-2">Dashboard</strong>
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -263,7 +263,7 @@ const handleGender= (appointment: Appointment[]) => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+        {/* <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-red-600 bg-opacity-75 text-white">
               <BsFillCalendar2EventFill size={24} />
@@ -273,7 +273,7 @@ const handleGender= (appointment: Appointment[]) => {
               <div className="text-gray-500">Upcoming event</div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -20,6 +20,7 @@ import invoicesReducer from './TherapistSlice/Invoice';
 import serviceReducer from './TherapistSlice/Service';
 import medicationReducer from './TherapistSlice/MedicationSlice';
 import medication_prescriptionReducer from './TherapistSlice/MedicationPrescription';
+import messagesReducer from './Adminslice/messageSlice';
 
 const store = configureStore({
   reducer: {
@@ -44,6 +45,7 @@ const store = configureStore({
     servicess: serviceReducer,
     Medication: medicationReducer,
     MedicationPrescription: medication_prescriptionReducer,
+    messages: messagesReducer
   },
 });
 

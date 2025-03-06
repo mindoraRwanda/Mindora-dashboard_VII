@@ -14,13 +14,14 @@ import {
 } from "chart.js";
 import { MdAddCircle } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
-import { Form, Image, Input, Modal } from "antd";
+import { Button, Form, Image, Input, Modal } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { getAllTherapists, SelectedTotalTherapist } from "../../Redux/Adminslice/ThearpySlice";
 import { selectedTotalUser } from "../../Redux/Adminslice/UserSlice";
 import { SelectedTotalPatints } from "../../Redux/Adminslice/PatientSlice";
+import { BiCalendar, BiPhone, BiUser } from "react-icons/bi";
 
 
 Chart.register(DoughnutController, ArcElement, Legend, Tooltip);
@@ -73,9 +74,10 @@ const Home = ({ userRole }) => {
 
   const [upcomingMeetings, setUpcomingMeetings] = useState<Meeting[]>([
     {
-      name: "Muvunyi Patrick:: Boy Mental therapy",
-      time: "Today at:2:00 - 3:00",
-      link: "@ meet.google.mxz",
+      name: "Ptrick",
+      phoneNumber: "0789897235",
+      time: "2:00 - 3:00",
+      link: "https://meet.google.com",
     }
   ]);
   const [formData, setFormData] = useState({
@@ -147,7 +149,7 @@ const Home = ({ userRole }) => {
         },
       });
     }
-  },[therapists]);
+  },[]);
 
 
 
@@ -177,7 +179,7 @@ const CountPatientGender=(patients: Patient[])=>{
         },
       });
     }
-  }, [patients]);
+  }, []);
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
@@ -372,14 +374,22 @@ const CountPatientGender=(patients: Patient[])=>{
               <div
                 key={index}
                 className="text-black border border-gray-300 m-5 p-2 rounded"
-              >
-                <h4 className="font-semibold mt-3">{meeting.name}</h4>
-                <p className="leading-3 capitalize my-2">
-                  {meeting.phoneNumber}
+              > <div className="flex gap-7">
+                <div>
+                <BiUser size={24}/>
+                <h4 className="font-semibold mt-3">Name:{meeting.name}</h4>
+                </div>
+                <div>
+                  <BiPhone size={24}/>
+                <p className="my-3">
+                 Phone: {meeting.phoneNumber}
                 </p>
-                <p className="leading-3 capitalize my-2">{meeting.time}</p>
-                <p className="leading-3 capitalize my-2">{meeting.link}</p>
-              </div>
+                <p className="leading-3 capitalize my-1">Time: {meeting.time}</p>
+                </div>
+                <div>
+                  <BiCalendar size={24}/>
+                <p className=" my-3">Meet Link: {meeting.link}</p>
+              </div></div></div>
             ))}
             <button
               className="text-white bg-purple-600 border border-gray-300 rounded px-3 mr-4 py-1 flex float-right"
@@ -396,7 +406,8 @@ const CountPatientGender=(patients: Patient[])=>{
             onCancel={hanleCancelModal}
             footer={null}
           >
-            <Form>
+            <Form layout="vertical">
+              <div className="grid grid-cols-2 gap-2">
               <FormItem name="Name" label="Name:" rules={[{ required: true }]}>
                 <Input
                   placeholder="Enter name"
@@ -405,7 +416,7 @@ const CountPatientGender=(patients: Patient[])=>{
                   onChange={handleInputChange}
                 />
               </FormItem>
-              <br />
+  
 
               <FormItem name="role" label="Role" rules={[{ required: true }]}>
                 <Input
@@ -415,7 +426,7 @@ const CountPatientGender=(patients: Patient[])=>{
                   onChange={handleInputChange}
                 />
               </FormItem>
-              <br />
+         
 
               <FormItem
                 name="Phone No:"
@@ -429,7 +440,7 @@ const CountPatientGender=(patients: Patient[])=>{
                   onChange={handleInputChange}
                 />
               </FormItem>
-              <br />
+
 
               <FormItem name="Time" label="Time:" rules={[{ required: true }]}>
                 <Input
@@ -439,7 +450,7 @@ const CountPatientGender=(patients: Patient[])=>{
                   onChange={handleInputChange}
                 />
               </FormItem>
-              <br />
+ 
 
               <FormItem name="Link" label="Link:" rules={[{ required: true }]}>
                 <Input
@@ -449,17 +460,18 @@ const CountPatientGender=(patients: Patient[])=>{
                   onChange={handleInputChange}
                 />
               </FormItem>
-              <br />
+              </div>
             </Form>
-            <div className="flex justify-center mt-4">
-              <button
-                className="text-white bg-purple-600 border border-gray-300 px-2 py-1 rounded items-center flex"
+          
+           
+              <Button
+                className="text-white bg-purple-600 border border-gray-300 px-2 py-1 rounded items-center flex w-full"
                 onClick={handleSend}
               >
                 <MdAddCircle size={24} />
                 Send
-              </button>
-            </div>
+              </Button>
+    
           </Modal>
         </div>
       )}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BiShow, BiEditAlt } from "react-icons/bi";
-import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
+import { MdDelete, MdPictureAsPdf} from "react-icons/md";
 import CreatePatient from "./Create_Patient";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
@@ -238,18 +238,7 @@ export default function AdminPatientsList() {
     XLSX.writeFile(workbook, "Patients_list.xlsx");
   };
 
-  const handleCopy = () => {
-    const text = filteredPatient
-      .map(
-        (patient) =>
-          `Name: ${patient.user.firstName}, ` +
-          `Email: ${patient.user.email}, ` +  
-          `Gender: ${patient.personalInformation.gender}, ` + 
-          `Address: ${patient.personalInformation.address}, `   
-      )
-      .join("\n");
-    navigator.clipboard.writeText(text);
-  };
+ 
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
@@ -306,12 +295,7 @@ export default function AdminPatientsList() {
           >
             <FaFileWord size={20} /> Word
           </button>
-          <button
-            className="text-white font-bold border-2 border-slate-300 p-2 cursor-pointer bg-purple-600 rounded-md flex"
-            onClick={handleCopy}
-          >
-            <MdFileCopy size={20} /> Copy
-          </button>
+        
         </div>
       </div>
 

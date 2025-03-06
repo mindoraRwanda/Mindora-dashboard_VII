@@ -2,23 +2,42 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { createPrescription, deletePrescription, fetchAllPrescription, updatePrescription, } from '../../Redux/TherapistSlice/MedicationPrescription';
 import { Button, DatePicker,Form,Input, Modal, Select, Spin,message } from 'antd';
-import { Search } from 'lucide-react';
 import TextArea from 'antd/es/input/TextArea';
 import { getAllMedication } from '../../Redux/TherapistSlice/MedicationSlice';
 import { getAllPatientOfTherapy } from '../../Redux/Adminslice/PatientSlice';
 import dayjs from 'dayjs';
 import { BiPlus } from 'react-icons/bi';
+import { FiSearch } from 'react-icons/fi';
 
 export default function Prescription() {
   const medicaPredictions=useSelector((state:RootState)=>state.MedicationPrescription.data);
   const statusPre=useSelector((state:RootState)=>state.MedicationPrescription.status);
   const medicals=useSelector((state:RootState)=>state.Medication.data);
-  const specificPatients=useSelector((state:RootState)=>state.patients.Patient);
+  const specificPatients = useSelector((state: RootState) => state.patients.data?.patients);
+   const [filteredMedicationsPrescription, setFilteredMedicationsPrescription] = useState<MedicalPrescription[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
   const [showPrescription,setShowPrescription]=useState(false);
   const [currentPrescriptionId, setCurrentPrescriptionId] = useState(null);
   const dispatch=useDispatch();
   const [form] = Form.useForm();
+
+   // function for search
+   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setFilteredMedicationsPrescription(medicaPredictions);
+    } else {
+      const filtered = medicaPredictions.filter((pre: MedicalPrescription) =>
+        pre.medication.name?.toLowerCase().includes(query.toLowerCase())
+      ) as MedicalPrescription[];
+      setFilteredMedicationsPrescription(filtered);
+    }
+  };
+  useEffect(() => {
+    setFilteredMedicationsPrescription(medicaPredictions);
+  }, [medicaPredictions]);
 
 // this is for converting date inf proper form
 const formatDate = (isoString) => {
@@ -30,9 +49,10 @@ const formatDate = (isoString) => {
   });
 };
 //to get patient information for therapist
+const therapistId=localStorage.getItem('TherapistId');
 useEffect(()=>{
-  dispatch(getAllPatientOfTherapy());
-},[dispatch]);
+  dispatch(getAllPatientOfTherapy(therapistId));
+},[dispatch, therapistId]);
 
 // This is for getting all medications
 useEffect(() => {
@@ -142,21 +162,59 @@ const handleDeletePrescription=(id:string)=>{
       <h1 className="text-black text-2xl font-bold ">
         List of Patient
       </h1>
-      <ul className="list-disc pl-6">
-      {specificPatients && specificPatients.length > 0 ? (
-        specificPatients.map((patients)=>(
-          <li key={patients.id} className="border-b py-2">
-            <div className="flex gap-4">
-              <h3 className="text-gray-600 text-sm">{patients.name}</h3>
-              <Button className="p-2 text-white font-semibold bg-blue-600 rounded-md">
-                View
-              </Button>
-            </div>
-          </li>
-        ))):(
-          <p className="text-center text-gray-500">No Patient Found</p>
-        )}
-      </ul>
+    
+      <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-md mt-6">
+  <thead className="bg-gray-100">
+    <tr className="text-left text-gray-700">
+      <th className="py-3 px-4 font-semibold text-sm uppercase tracking-wider border-b">ID</th>
+      <th className="py-3 px-4 font-semibold text-sm uppercase tracking-wider border-b">Name</th>
+      <th className="py-3 px-4 font-semibold text-sm uppercase tracking-wider border-b">Actions</th>
+    </tr>
+  </thead>
+  <tbody className="divide-y divide-gray-200">
+    {statusPre === 'loading' ? (
+      <tr>
+        <td colSpan={3} className="py-4">
+          <div className="flex items-center justify-center">
+            <Spin size="small" />
+          </div>
+        </td>
+      </tr>
+    ) : (
+      specificPatients && specificPatients.length > 0 ? (
+        specificPatients.map((patient, index) => (
+          <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
+            <td className="py-3 px-4 text-gray-800">{index + 1}</td>
+            <td className="py-3 px-4 text-gray-800 font-medium">{patient.user.firstName}</td>
+            <td className="py-3 px-4">
+              <div className="flex space-x-2">
+                <Button 
+                  className="px-4 py-2 text-white font-medium bg-blue-600 hover:bg-blue-700 rounded-md transition-colors duration-150 text-sm" 
+                  onClick={() => handleShowPrescription(patient.id)}
+                >
+                  View
+                </Button>
+                <Button 
+                  className="px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 rounded-md transition-colors duration-150 text-sm" 
+                  onClick={() => handleDeletePrescription(patient.id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan={3} className="py-8 text-center text-gray-500">
+            No Patients Found
+          </td>
+        </tr>
+      )
+    )}
+  </tbody>
+</table>
+
       
       </div>
       <div className="w-2/3">
@@ -164,14 +222,22 @@ const handleDeletePrescription=(id:string)=>{
               <h2 className="text-xl font-bold text-black">
                 Medication Prescription
               </h2>
-              <div className="flex items-center w-1/3  border-r rounded px-2">
-                <Input
-                  type="text"
-                  placeholder="Search articles..."
-                  className="w-full text-lg px-2"
-                />
-                <Search className="ml-auto" size={30} color="black" />
-              </div>
+              <div className="items-center border rounded bg-white flex float-right">
+                         <input
+                           type="text"
+                           name="query"
+                           placeholder="Search"
+                           value={searchQuery}
+                           onChange={handleSearch}
+                           className="rounded outline-none text-black -m-3 pl-6 "
+                         />
+                         <button
+                           type="submit"
+                           className="p-2 text-xl text-black bg-white rounded-r"
+                         >
+                           <FiSearch />
+                         </button>
+                       </div>
 
               <Button className="mt-1 p-5 text-white font-semibold bg-purple-600 rounded-md" onClick={()=>setShowPrescription(true)}>
               <BiPlus size={25}/>  Create Prescription
@@ -196,14 +262,12 @@ const handleDeletePrescription=(id:string)=>{
                     <div className="flex items-center justify-center ">
                       <Spin size="large" />
                   </div>
-                ):(medicaPredictions.map((prescrition,index)=>(
+                ):(filteredMedicationsPrescription.length>0?(
+                  filteredMedicationsPrescription.map((prescrition,index)=>(
                 <tr className="text-black" key={index}>
                   <td className="p-3">{index+1}</td>
                   <td className="p-3">{prescrition.medication ? prescrition.medication.name : 'N/A'}</td>
-                  <td className="p-3">
-                    {prescrition.notes}
-                   
-                  </td>
+                  <td className="p-3">{prescrition.notes}</td>
                   <td className="p-3">{prescrition.dosage}</td>
                   <td className="p-3">{prescrition.duration}</td>
                   <td className="p-3">{formatDate(prescrition.startDate)}</td>
@@ -218,7 +282,9 @@ const handleDeletePrescription=(id:string)=>{
                     </Button>
                   </td>
                 </tr> 
-                )))}
+                ))):(
+                  <p className="text-center text-gray-500">No Prescription Found</p>
+               ))}
               </tbody>
             </table>
           </div></div>

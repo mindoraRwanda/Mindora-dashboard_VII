@@ -145,7 +145,7 @@ export default function SetMilestones() {
       {/* <h1 className="text-white font-semibold rounded-sm text-3xl bg-purple-600 p-2 w-full">
         Treatment Plan Management - Milestones
       </h1> */}
-      <div className="bg-white rounded  p-6 my-3">
+      <div className="bg-white rounded  p-2 my-1">
         <div className="bg-slate-100 p-2 flex justify-between">
           <h2 className="text-purple-600 text-3xl font-semibold">
              Milestones
@@ -225,7 +225,7 @@ export default function SetMilestones() {
           {currentMilestone ? "Update Milestone" : "Create Milestone"}
           </h1>
           {!currentMilestone && (
-            <Form.Item name="goalId" label="Enter GoalId:">
+            <Form.Item name="goalId" label="Enter GoalId:" hidden>
              <Input
   className="p-2 text-black"
   type="text"

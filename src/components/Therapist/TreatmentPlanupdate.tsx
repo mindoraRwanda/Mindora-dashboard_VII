@@ -138,7 +138,7 @@ export default function TreatmentPlanContent() {
           <TreatmentPlan_Goal callMilestone={()=>setCurrentStep(currentStep+1)}/>
           <div className="flex justify-between">
           <Button type="primary" onClick={()=>setCurrentStep(currentStep-1)}>Previous</Button>
-          {/* <Button type="primary" onClick={()=>setCurrentStep(currentStep+1)} className="mr-5">Next</Button> */}
+          <Button type="primary" onClick={()=>setCurrentStep(currentStep+1)} className="mr-5">Next</Button>
           </div>
         </div>
       )
@@ -148,7 +148,7 @@ export default function TreatmentPlanContent() {
       content:(
         <div>
            <SetMilestones/>
-           <div className="flex justify-between">
+           <div className="flex justify-between my-2">
           <Button type="primary" onClick={()=>setCurrentStep(currentStep-1)} >Previous</Button>
           <Button type="primary"onClick={()=>setCurrentStep(0)}className="mr-5">Done</Button>
           </div>

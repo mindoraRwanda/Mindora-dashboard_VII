@@ -27,33 +27,32 @@ export interface Patient {
     totalUsers?: number;
 }
 
-
 export interface PatientsListProps {
     goToPlan: (patientId: number | string) => void;
-  }
+}
 
-  export const SelectedTotalPatints=(state:{patients:Patient})=>state.patients.patients.length;
+export const SelectedTotalPatints = (state: { patients: Patient }) => state.patients.patients.length;
 
 
 // the following ia about creating new patient
 export const createPatient = createAsyncThunk('Patient/createPatient',
     async (PatientData: patientData<Patient>, { rejectWithValue }) => {
-        console.log('Sending data to the server:', PatientData); 
+        console.log('Sending data to the server:', PatientData);
         try {
-            const response = await axios.post<Patient>('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients', 
-                PatientData,{
-                    headers:{
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });   
+            const response = await axios.post<Patient>('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients',
+                PatientData, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             return response.data;
             console.log('Server response:', response);
         }
         catch (err) {
-            console.error('Error in createPatient:', err.response||err); 
+            console.error('Error in createPatient:', err.response || err);
             return rejectWithValue((err as Error).message);
-         }
-         
+        }
+
     }
 
 );
@@ -61,8 +60,8 @@ export const createPatient = createAsyncThunk('Patient/createPatient',
 export const allPatients = createAsyncThunk('getPatients',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients',{
-                headers:{
+            const response = await axios.get('https://mindora-backend-beta-version-m0bk.onrender.com/api/patients', {
+                headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
@@ -74,16 +73,17 @@ export const allPatients = createAsyncThunk('getPatients',
         }
     }
 );
-export const getAllPatientOfTherapy=createAsyncThunk('getAllPatientOfTherapy',
-    async(therapistId:string,{rejectWithValue})=>{
-        try{
-            const response=await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${therapistId}/patients`,{
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem('token')}`
-                   }})
-          return response.data;
-            }
-            catch(error){
+export const getAllPatientOfTherapy = createAsyncThunk('getAllPatientOfTherapy',
+    async (therapistId: string, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists/${therapistId}/patients`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            return response.data;
+        }
+        catch (error) {
             return rejectWithValue(error.message);
         }
     });
@@ -91,12 +91,12 @@ export const getAllPatientOfTherapy=createAsyncThunk('getAllPatientOfTherapy',
 
 
 // the following is for getting single patient
-export const getPatientById = createAsyncThunk( 'patient/getById',
-    async (id:string, { rejectWithValue }) => {
+export const getPatientById = createAsyncThunk('patient/getById',
+    async (id: string, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`,{
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem('token')}`
+            const response = await axios.get(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
             return response.data;
@@ -110,12 +110,12 @@ export const getPatientById = createAsyncThunk( 'patient/getById',
 // the following Api is for Updating Patient
 
 export const updatePatient = createAsyncThunk('updatePatient',
-    async ({id,updatePatientData}: { id: number | string; updatePatientData: Partial<Patient> }, { rejectWithValue }) => {
-        
+    async ({ id, updatePatientData }: { id: number | string; updatePatientData: Partial<Patient> }, { rejectWithValue }) => {
+
         try {
-            const response = await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`,updatePatientData,{
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem('token')}`
+            const response = await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`, updatePatientData, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
             return response.data;
@@ -128,14 +128,14 @@ export const updatePatient = createAsyncThunk('updatePatient',
 // the followinf codes are for deleting the patient
 
 export const deletePatient = createAsyncThunk('deletePatient',
-    async (id:number|string, { rejectWithValue }) => {
+    async (id: number | string, { rejectWithValue }) => {
         try {
-         await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`,{
-             headers:{
-                    Authorization:`Bearer ${localStorage.getItem('token')}`
+            await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/patients/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
-   
-         });
+
+            });
             return id;
         }
         catch (err) {
@@ -150,10 +150,13 @@ const patientSlice = createSlice({
         patients: [] as Patient[],
         status: 'idle',
         error: null,
+        data: [] as Patient[],
     },
-    reducers: {   setPatients: (state, action) => {
-        state.patients = action.payload;
-    },},
+    reducers: {
+        setPatients: (state, action) => {
+            state.patients = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder
             // this is for creating patient
@@ -184,16 +187,16 @@ const patientSlice = createSlice({
                 state.status = 'rejected';
                 state.error = action.payload;
             })
-            .addCase(getPatientById.pending,(state)=>{
+            .addCase(getPatientById.pending, (state) => {
                 state.status = 'loading';
                 state.error = null;
             })
-            .addCase(getPatientById.fulfilled,(state,action) => {
-                state.status ='succeeded';
+            .addCase(getPatientById.fulfilled, (state, action) => {
+                state.status = 'succeeded';
                 state.error = null;
                 state.selectedPatient = action.payload;
             })
-            .addCase(getPatientById.rejected, (state,action)=>{
+            .addCase(getPatientById.rejected, (state, action) => {
                 state.status = 'rejected';
                 state.error = action.payload as string;
             })
@@ -202,46 +205,46 @@ const patientSlice = createSlice({
             .addCase(updatePatient.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(updatePatient.fulfilled,(state,action)=>{
+            .addCase(updatePatient.fulfilled, (state, action) => {
                 const index = state.patients.findIndex(patient => patient.id === action.payload.id);
                 if (index > -1) {
-                  state.patients[index] = action.payload;
+                    state.patients[index] = action.payload;
                 }
-              })
+            })
             .addCase(updatePatient.rejected, (state, action) => {
                 state.status = 'rejected';
                 state.error = action.payload as string;
             })
 
-             // The Following Extra redux are for deleting patient
-             .addCase(deletePatient.pending, (state) => {
+            // The Following Extra redux are for deleting patient
+            .addCase(deletePatient.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(deletePatient.fulfilled,(state,action)=>{
-                state.patients = state.patients.filter(patient => patient.id!== action.payload);
-                state.status ='succeeded';
+            .addCase(deletePatient.fulfilled, (state, action) => {
+                state.patients = state.patients.filter(patient => patient.id !== action.payload);
+                state.status = 'succeeded';
 
             })
             .addCase(deletePatient.rejected, (state, action) => {
                 state.status = 'rejected';
                 state.error = action.payload as string;
             })
-            .addCase(getAllPatientOfTherapy.pending,(state)=>{
-                state.status='loading';
+            .addCase(getAllPatientOfTherapy.pending, (state) => {
+                state.status = 'loading';
             })
-            .addCase(getAllPatientOfTherapy.fulfilled,(state,action)=>{
-                state.status='succeeded';
-                state.data=action.payload;
+            .addCase(getAllPatientOfTherapy.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.data = action.payload;
             })
-            .addCase(getAllPatientOfTherapy.rejected,(state,action)=>{
-                state.status='rejected';
+            .addCase(getAllPatientOfTherapy.rejected, (state, action) => {
+                state.status = 'rejected';
                 console.log(action.payload);
             })
     }
 }
 
 );
-export const {setPatients}=patientSlice.actions;
+export const { setPatients } = patientSlice.actions;
 export default patientSlice.reducer;
 
 

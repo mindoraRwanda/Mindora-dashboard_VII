@@ -592,7 +592,7 @@ const handleReschedule=async(values:any)=>{
     <div>
       <div  className=" flex justify-center  ">
         <div  className=" p-6 flex justify-center border rounded-full">
-        <img src={selectedPatient.patient.user?.profileImage}
+        <img src={selectedPatient.therapist.user.profileImage}
                   alt="UserProfile"
                   className="object-cover w-12 h-12 rounded-full" 
                   width={120}

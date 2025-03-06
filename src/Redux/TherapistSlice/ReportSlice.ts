@@ -2,37 +2,43 @@ import axios from "axios";
 import { createAsyncThunk,createSlice } from "@reduxjs/toolkit";
 
 interface Report {
-    id?: string;
-    startDate?: string;
-    endDate?: string;
+    id: string;
+    startDate: string | number;
+    endDate: string | number;
     moodSummary?: {
         averageRating?: number;
+        moodDistribution?: Record<string, number>;
+        mostFrequentMood?: string;
     };
-    // stressSummary?: {
-    //     averageRating?: number;
-    // };
+    symptomSummary?: {
+        mostSeverity?: string;
+        mostFrequentSymptom?: string | null;
+        symptomDistribution?: Record<string, number>;
+    };
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 interface ReportState {
-    Report: Report[];
+    Reports: Report[];
     status: "idle" | "loading" | "succeeded" | "rejected" ;
     error: string | null;
 }
 
 const initialState: ReportState = {
-    Report: [],
+    Reports: [],
     status: "idle",
     error: null,
 };
 
 export const createReport=createAsyncThunk('createReport',
-    async(userId: string,{rejectWithValue})=>{
+    async(reportData,{rejectWithValue})=>{
         try{
-            const response=await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/progress/logs/report`,{userId});
+            const response=await axios.post(`https://mindora-backend-beta-version-m0bk.onrender.com/api/progress/logs/report`,reportData);
             return response.data;
         }
         catch(error){
-            rejectWithValue(error.message);
+           return rejectWithValue(error.message);
         }
     }
 );
@@ -49,7 +55,7 @@ export const getAllReports=createAsyncThunk('getReport',
 );
 
 export const updatePatientReport = createAsyncThunk('updatePatientReport',
-    async(updateData,{rejectWithValue})=>{
+    async(updateData:Report,{rejectWithValue})=>{
         try{
             const response=await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/progress/logs/report/${updateData.id}`,updateData);
             return response.data;
@@ -61,8 +67,8 @@ export const updatePatientReport = createAsyncThunk('updatePatientReport',
     export const deletePatientReport = createAsyncThunk('deletePatientReport',
         async(id,{rejectWithValue})=>{
             try{
-                const response=await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/progress/logs/report/${id}`);
-                return response.data;
+                await axios.delete(`https://mindora-backend-beta-version-m0bk.onrender.com/api/progress/logs/report/${id}`);
+                return id;
             }
             catch(error){
                 return rejectWithValue(error.message);
@@ -80,7 +86,7 @@ const reportSlice = createSlice({
         })
         .addCase(createReport.fulfilled,(state,action)=>{
             state.status="succeeded";
-            state.Report=[...state.Report, action.payload];
+            state.Reports=[...state.Reports, action.payload];
         })
         .addCase(createReport.rejected,(state,action)=>{
             state.status="failed";
@@ -91,7 +97,8 @@ const reportSlice = createSlice({
         })
         .addCase(getAllReports.fulfilled,(state,action)=>{
             state.status="succeeded";
-            state.Report=action.payload;
+            state.Reports=action.payload;
+            state.error=null;
         })
         .addCase(getAllReports.rejected,(state,action)=>{
             state.status="failed";
@@ -102,7 +109,7 @@ const reportSlice = createSlice({
         })
         .addCase(updatePatientReport.fulfilled,(state,action)=>{
             state.status="succeeded";
-            state.Report=state.Report.map((report)=>report.id===action.payload.id? action.payload: report);
+            state.Reports=state.Reports.map((report)=>report.id===action.payload.id? action.payload: report);
         })
         .addCase(updatePatientReport.rejected,(state,action)=>{
             state.status="failed";
@@ -113,7 +120,7 @@ const reportSlice = createSlice({
         })
         .addCase(deletePatientReport.fulfilled,(state,action)=>{
             state.status="succeeded";
-            state.Report=state.Report.filter((report)=>report.id!==action.payload);
+            state.Reports=state.Reports.filter((report)=>report.id!==action.payload);
         })
         .addCase(deletePatientReport.rejected,(state,action)=>{
             state.status="failed";

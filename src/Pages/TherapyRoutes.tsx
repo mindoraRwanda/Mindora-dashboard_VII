@@ -47,7 +47,7 @@ export default function DashboardPage() {
               return <Prescription/>
       default:
        return (
-        <div><h1 className='text-black text-2xl'>No Content</h1></div>
+        <div><h1 className='text-black text-2xl flex justify-center mt-10'>No Content</h1></div>
        );
     }
   };

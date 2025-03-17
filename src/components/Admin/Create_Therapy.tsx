@@ -90,9 +90,9 @@ export default function CreateTherapy({ userId, onSuccess }: CreateTherapyProps)
       message.error("Please upload license");
       return;
     }
-      
+      const UserId=localStorage.getItem('UserId');
     try {
-      const resultAction = await dispatch(createTherapy(formData));
+      const resultAction = await dispatch(createTherapy({formData,UserId}));
       console.log("Server Therapy response:", resultAction);
       if (createTherapy.fulfilled.match(resultAction)) {
         message.success("New Therapies created successfully");

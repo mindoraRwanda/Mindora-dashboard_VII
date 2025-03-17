@@ -58,7 +58,7 @@ export const createTherapy = createAsyncThunk(
     try {
       const response = await axios.post<Therapist>(
         'https://mindora-backend-beta-version-m0bk.onrender.com/api/therapists',
-      formData,{
+      formData,UserId,{
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }

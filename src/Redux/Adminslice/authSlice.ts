@@ -45,7 +45,7 @@ export const changePass = createAsyncThunk(
   'auth/changePass',
   async ({ UserId, oldPassword, newPassword }: { UserId: string; oldPassword: string; newPassword: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(
+      const response = await axios.post(
         `https://mindora-backend-beta-version-m0bk.onrender.com/api/users/${UserId}/change_password`,
         { oldPassword, newPassword }
       );
@@ -78,7 +78,11 @@ export const resetPass = createAsyncThunk(
     try {
       const response = await axios.post(
         `https://mindora-backend-beta-version-m0bk.onrender.com/api/auth/reset_password/${token}`,
-        { password, confirmPassword }
+        { password, confirmPassword },{
+          headers:{
+            Authorization:`Bearer ${localStorage.getItem('token')}`
+          }
+        }
       );
       return response.data;
     } catch (error: any) {

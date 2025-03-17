@@ -1,4 +1,4 @@
-import { Button, Dropdown, Modal,message } from "antd";
+import { Button, Dropdown, Modal,Result,message } from "antd";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineMessage, MdNotificationsNone } from "react-icons/md";
@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { changePass } from "../Redux/Adminslice/authSlice";
 import { RootState } from "../Redux/store";
 import { fetchMessages } from "../Redux/Adminslice/messageSlice";
-import { Key } from "lucide-react";
+
 
 interface TopBarProps {
   userRole: string;
@@ -52,9 +52,6 @@ export default function TopBar({ userRole, items = [] }:TopBarProps) {
   const ShowPassModal = () => {
     SetChangePassModal(true);
     setOpen(false);
-  };
-  const CancelPassModal = () => {
-    SetChangePassModal(false);
   };
   const handleLogout = () => {
     navigate("/");
@@ -130,11 +127,16 @@ export default function TopBar({ userRole, items = [] }:TopBarProps) {
         oldPasswordLength: oldPassword.length, 
         newPasswordLength: newPassword.length 
       });
-  const response= await dispatch(changePass({UserId,oldPassword,newPassword})).unwrap();
-  console.log('Password change response:', response);
-    SetChangePassModal(false);
-    message.success('Changed password successfully');
-    }
+  const response= await dispatch(changePass({UserId,oldPassword,newPassword}));
+ if(changePass.fulfilled.match(response)){
+   message.success('Changed password successfully');
+   SetChangePassModal(false);
+   setOldPassword('');
+   setNewPassword('');
+ } else{
+   const errorMessage = response.payload?.message || 'Failed to change password';
+   message.error(errorMessage);
+ }}
     catch(error:any){
       const errorMessage = error.response?.data?.message || 'Something went wrong';
       message.error(`Failed to change password: ${errorMessage}`);
@@ -228,7 +230,7 @@ export default function TopBar({ userRole, items = [] }:TopBarProps) {
       {/* Modal for Change Password */}
 
       <Modal open={ChangePassModal}   onCancel={() => {
-          CancelPassModal();
+           SetChangePassModal(false);
           setOldPassword('');
           setNewPassword('');
         }} footer={null} className="float-end mr-5">

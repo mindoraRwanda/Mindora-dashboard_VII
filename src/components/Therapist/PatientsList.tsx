@@ -85,6 +85,7 @@ const invoicesStatus = useSelector((state: RootState) =>state.invoice.status);
   };
 
   // This used to get all patient in system
+  
   useEffect(() => {
     const getAllPatients=async()=>{
       try {

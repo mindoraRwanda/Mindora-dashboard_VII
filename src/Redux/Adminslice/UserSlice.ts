@@ -117,7 +117,7 @@ export const updateUser = createAsyncThunk('Users/updateUser',
 export const changeRole = createAsyncThunk('User/changeRole',
     async ({ id, credentials }, { rejectWithValue }) => {
         try {
-            const response = await axios.put(`https://mindora-backend-beta-version.onrender.com/admin/rbac/roles/${id}`, credentials,{
+            const response = await axios.put(`https://mindora-backend-beta-version-m0bk.onrender.com/api/users/${id}`, credentials,{
                 headers: {
                     Authorization: 'Bearer '+ localStorage.getItem('token'),
                 },

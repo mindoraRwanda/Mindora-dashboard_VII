@@ -32,9 +32,8 @@ export default function Settings() {
   };
 
   return (
-    <div className="space-x-6 mt-8 flex gap-3 flex-col md:flex-row justify-center items-center">
-      <Card className='flex justify-center items-center '>
-        <div className='w-full max-w-2xl space-y-6 border border-gray-200 shadow-md p-10 rounded-md' >
+    <div className="space-y-6">
+      <Card className='flex justify-center items-center'>
         <Typography.Title level={4}>Profile Information</Typography.Title>
         <Typography.Text type="secondary">Update your account profile information and settings</Typography.Text>
         
@@ -89,12 +88,10 @@ export default function Settings() {
             Save Changes
           </Button>
         </div>
-        </div>
       </Card>
 
-      <Card className='flex justify-center items-center '>
-        <div className='w-full max-w-2xl space-y-6 border border-gray-200 shadow-md p-10 rounded-md'>
-        <Typography.Title level={4}>Security & Privacy</Typography.Title>
+      <Card>
+        <Typography.Title level={4}>Security</Typography.Title>
         <Typography.Text type="secondary">Manage your password and security settings</Typography.Text>
         
         <Divider />
@@ -118,7 +115,6 @@ export default function Settings() {
         
         <div>
           <Button type="primary">Update Password</Button>
-        </div>
         </div>
       </Card>
     </div>

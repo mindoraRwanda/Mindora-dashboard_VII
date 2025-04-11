@@ -19,7 +19,6 @@ import Data_BackUp from '../components/Admin/Data_BackUp';
 import Financial_Management from '../components/Admin/Financial_Management';
 import Legal_Complaints from '../components/Admin/Legal_Complaints';
 import Course_Management from '../components/Admin/Course_Management';
-import Settings from '../components/Admin/settings';
 
 
 
@@ -63,8 +62,7 @@ const AdminDashboard = () => {
         return< Legal_Complaints/>;
         case 'Courses Management':
           return <Course_Management/>;
-          case 'Settings':
-            return <Settings/>
+          
 
     default:
         return <div className='flex justify-center text-black text-3xl mt-10'>?</div>;

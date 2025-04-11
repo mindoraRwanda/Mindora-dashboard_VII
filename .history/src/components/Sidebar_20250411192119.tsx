@@ -319,7 +319,7 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
                 </div>
               )}
             </div>
-            <a onClick={() => setActiveComponent("Settings")} className="flex items-center text-2xl font-semibold ml-4 my-5 text-gray-700 hover:bg-gray-50 p-2 transition duration-200 cursor-pointer">
+            <a onClick={() => setActiveComponent("settings")} className="flex items-center text-2xl font-semibold ml-4 my-5 text-gray-700 hover:bg-gray-50 p-2 transition duration-200 cursor-pointer">
               <FaCog className="mr-3" /> Settings
             </a>
          

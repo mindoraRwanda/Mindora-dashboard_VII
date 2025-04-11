@@ -216,30 +216,7 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
                </div>
              )}
            </div>
-           {/* <div className="relative">
-             <a
-               onClick={() => toggleDropdown("PatientProgress")}
-               className="flex items-center px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
-             >
-               <FaBarsProgress className="mr-3" /> Patient Progress <GoChevronDown className="ml-1" />
-             </a>
-             {openDropdown === "PatientProgress" && (
-               <div className="ml-6">
-                 <a
-                   onClick={() => setActiveComponent("patientChat")}
-                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
-                 >
-                   <p className="flex"><BiCircle className="m-1" />Patient Chart</p>
-                 </a>
-                 <a
-                   onClick={() => setActiveComponent("appointment")}
-                   className="block px-6 py-3 text-gray-700 hover:bg-purple-100 transition duration-200 cursor-pointer"
-                 >
-                   <p className="flex"><BiCircle className="m-1 text-sm" /> Report</p>
-                 </a>
-               </div>
-             )}
-           </div> */}
+          
            <a onClick={() => setActiveComponent('settings')} className="flex items-center font-semibold text-2xl my-2 ml-4 text-gray-700 hover:bg-white p-2 rounded-sm transition duration-200 cursor-pointer">
              <MdOutlineSettings className="mr-3" /> Setting
            </a>
@@ -263,13 +240,13 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
           <FaHome className="mr-3 text-3xl" /> Home
           </a>
             <a onClick={() => setActiveComponent('therapiest')} className="flex items-center text-2xl font-semibold ml-4 my-5 text-gray-700 hover:bg-gray-50 transition p-2 duration-200 cursor-pointer">
-              <FaUserMd className="mr-3 text-3xl" /> View Therapists
+              <FaUserMd className="mr-3 text-3xl" />  Therapists
             </a>
        
            
             <div className="relative">
               <a onClick={() => toggleDropdown("userManagement")} className="flex items-center text-2xl font-semibold ml-4 my-5 text-gray-700 hover:bg-gray-50  p-2 transition duration-200 cursor-pointer">
-                <BiUser className="mr-3 text-3xl" /> User Management <GoChevronDown className="m-1"/>
+                <BiUser className="mr-3 text-3xl" /> Users<GoChevronDown className="m-1"/>
               </a>
               {openDropdown === "userManagement" && (
                 <div className="ml-6">
@@ -281,7 +258,7 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
             </div>
             <div className="relative">
               <a onClick={() => toggleDropdown("patientManagement")} className="flex items-center text-2xl font-semibold ml-4 my-5 text-gray-700 hover:bg-gray-50  p-2 transition duration-200 cursor-pointer">
-                <IoPeople className="mr-3 text-3xl" /> Patient Management <GoChevronDown className="ml-1" />
+                <IoPeople className="mr-3 text-3xl" /> Patients <GoChevronDown className="ml-1" />
               </a>
               {openDropdown === "patientManagement" && (
                 <div className="ml-6">
@@ -296,12 +273,12 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
             </div>
       
             <a onClick={() => setActiveComponent("Community Management")} className="flex items-center text-2xl font-semibold ml-4 my-6 text-gray-700 hover:bg-gray-50 p-2  transition duration-200 cursor-pointer">
-              <BsMegaphone className="mr-3 text-3xl" /> Community Management
+              <BsMegaphone className="mr-3 text-3xl" /> Communities
             </a>
 
             <div className="relative">
               <a onClick={() => toggleDropdown("CourseManagement")} className="flex items-center text-2xl font-semibold ml-4 my-6 text-gray-700 hover:bg-gray-50 p-2 transition duration-200 cursor-pointer">
-                <BookAIcon className="mr-3 text-3xl" />Courses Management <GoChevronDown className="ml-1" />
+                <BookAIcon className="mr-3 text-3xl" />Courses <GoChevronDown className="ml-1" />
               </a>
             {
               openDropdown ==='CourseManagement' &&(
@@ -315,7 +292,7 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
             </div>
             <div className="relative">
               <a onClick={() => toggleDropdown("systemManagement")} className="flex items-center text-2xl font-semibold ml-4 my-6 text-gray-700 hover:bg-gray-50 p-2  transition duration-200 cursor-pointer">
-                <SiArkecosystem className="mr-3" /> Content Management <GoChevronDown className="ml-1" />
+                <SiArkecosystem className="mr-3" /> Contents <GoChevronDown className="ml-1" />
               </a>
               {openDropdown === "systemManagement" && (
                 <div className="ml-6">
@@ -332,26 +309,16 @@ const previewImage =(e:React.ChangeEvent<HTMLInputElement>)=>{
             </div>
             <div className="relative">
               <a onClick={() => toggleDropdown("dataManagement")} className="flex items-center text-2xl font-semibold ml-4 my-6 text-gray-700 hover:bg-gray-50 p-2 transition duration-200 cursor-pointer">
-                <ClipboardList className="mr-3 text-3xl" /> Report Management <GoChevronDown className="ml-1" />
+                <ClipboardList className="mr-3 text-3xl" /> Report <GoChevronDown className="ml-1" />
               </a>
               {openDropdown === "dataManagement" && (
                 <div className="ml-6">
                   <a onClick={() => setActiveComponent("BillingReports")} className="block text-lg ml-4 my-6 text-gray-700 hover:bg-gray-50 p-2 transition duration-200 cursor-pointer">
                     <p className="flex text-xl"><BiCircle className="m-1" /> Billing Reports</p>
                   </a>
-             
-                  {/* <a onClick={() => setActiveComponent("Data backup")} className="block text-xl ml-4 my-6 text-gray-700 hover:bg-gray-50 transition duration-200 cursor-pointer">
-                    <p className="flex"><BiCircle className="m-1 text-sm" /> Backup and Recovery</p>
-                  </a> */}
                 </div>
               )}
             </div>
-            {/* <a onClick={() => setActiveComponent("Financial Management")} className="flex items-center text-xl ml-4 my-5 text-gray-700 hover:bg-gray-50 transition duration-200 cursor-pointer">
-              <FaMoneyBillWave className="mr-3 text-2xl" /> Financial and Billing Management
-            </a> */}
-            {/* <a onClick={() => setActiveComponent("Legal and Complaints")} className="block text-2xl font-semibold ml-4 my-5 text-gray-700 hover:bg-gray-50 p-2 transition duration-200 cursor-pointer">
-              <p className="flex"><MdOutlineDocumentScanner className="m-1 text-xl" /> Legal and Compliance</p>
-            </a> */}
             <a onClick={() => setActiveComponent("settings")} className="flex items-center text-2xl font-semibold ml-4 my-5 text-gray-700 hover:bg-gray-50 p-2 transition duration-200 cursor-pointer">
               <FaCog className="mr-3" /> Settings
             </a>

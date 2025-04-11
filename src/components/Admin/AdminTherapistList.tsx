@@ -1,4 +1,4 @@
-import { FiDownload, FiSearch } from "react-icons/fi";
+import { FiDownload, FiEdit, FiEye, FiSearch, FiTrash2 } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
@@ -19,7 +19,6 @@ import {
   getAllTherapists,
   updateTherapy,
 } from "../../Redux/Adminslice/ThearpySlice";
-import { changePass } from "../../Redux/Adminslice/authSlice";
 import { getAllAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
 
 
@@ -146,40 +145,6 @@ export default function AdminTherapistList() {
     setShowModal(true);
   };
 
-
-
-  // const handleUpdate = async (therapist:any) => {
-  //   const comfirm = window.confirm("Are you sure you want to update");
-  //   if (comfirm) {
-  //     try {
-  //       await dispatch(
-  //         updateTherapy({
-  //           id: therapist.id,
-  //           credentials: {
-  //             personalInformation: {
-  //               email: therapist.personalInformation.email,
-  //               phone: therapist.personalInformation.phone,
-  //               gender: therapist.personalInformation.gender,
-  //               address: therapist.personalInformation.address,
-  //               lastName: therapist.personalInformation.lastName,
-  //               firstName: therapist.personalInformation.firstName,
-  //               dateOfBirth: therapist.personalInformation.dateOfBirth
-  //             },
-  //             diploma: therapist.diploma,
-  //             license: therapist.license
-  //           }
-  //         })
-  //       );
-  //       message.success("Updated Successfully");
-  //       dispatch(getAllTherapists()); // Fetch the updated list
-  //       setShowModal(false);
-  //     } catch (error) {
-  //       const errorMessage = (error as Error).message;
-  //       message.error(`Failed to update therapist: ${errorMessage}`);
-  //     }
-  //   }
-  // };
-// Suggested Modification
 const handleUpdate = async (therapist:any) => {
   const confirm = window.confirm("Are you sure you want to update");
   if (confirm) {
@@ -223,7 +188,7 @@ const handleUpdate = async (therapist:any) => {
         "PNG",
         10,
         10,
-        canvas.width / 12,
+        canvas.width / 13,
         canvas.height / 12
       );
       pdf.save("therapist_list.pdf");
@@ -238,9 +203,10 @@ const handleUpdate = async (therapist:any) => {
             (therapist) =>
               new Paragraph({
                 children: [
-                  new TextRun(`Name: ${therapist.name}`),
+
+                  new TextRun({text:`Name: ${therapist.user.firstName} ${therapist.user.lastName}`,break: 2}),
                   new TextRun({
-                    text: `\nSpecialty: ${therapist.specialty}`,
+                    text: `\nEmail: ${therapist.user.email}`,
                     break: 1,
                   }),
                   new TextRun({
@@ -264,23 +230,19 @@ const handleUpdate = async (therapist:any) => {
   };
 
   const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredtherapists);
+    const simplifiedData = filteredtherapists.map(therapist => ({
+      Name: `${therapist.user.firstName} ${therapist.user.lastName}`,
+      Email: therapist.user.email,
+      Address: therapist.personalInformation.address,
+      Gender: therapist.personalInformation.gender
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(simplifiedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Therapists");
     XLSX.writeFile(workbook, "therapist_list.xlsx");
   };
 
-  const handleCopy = () => {
-    const text = filteredtherapists
-      .map(
-        (therapist) =>
-          `Name: ${therapist.name}, Specialty: ${therapist.specialty}, Patients: ${therapist.patients}`
-      )
-      .join("\n");
-    navigator.clipboard.writeText(text).then(() => {
-      message.success("Data copied to clipboard!");
-    });
-  };
+
   const handleDiploma = (diplomaUrl:any) => {
     const link = document.createElement("a");
     link.href = diplomaUrl;
@@ -315,7 +277,14 @@ const handleUpdate = async (therapist:any) => {
         <h2 className="text-2xl font-semibold mb-4 text-purple-600">
           Therapists
         </h2>
-        <div className="items-center border rounded bg-white flex float-right">
+    
+      </div>
+      {loading? ( <div className="flex justify-center items-center min-h-screen">
+      <Spin size="large" />
+      </div>
+       ) : (<>
+      <div className="flex gap-4 mb-8">
+      <div className="items-center border rounded bg-white flex float-right">
           <input
             type="text"
             name="query"
@@ -331,49 +300,26 @@ const handleUpdate = async (therapist:any) => {
             <FiSearch />
           </button>
         </div>
-      </div>
-      {loading? ( <div className="flex justify-center items-center min-h-screen">
-      <Spin size="large" />
-      </div>
-       ) : (<>
-      <div className="flex gap-4 mb-8">
-        <div className="flex float-left border-2 border-slate-300 rounded-md mt-4">
-          <a
-            onClick={showModal}
-            className="text-white font-bold p-2 px-2 cursor-pointer bg-purple-600 rounded-md "
-          >
-            + Add New
-          </a>
-        </div>
         <div className="flex ml-auto gap-3 rounded-md mt-4 ">
-          <button
-            className="text-white font-bold border-2 border-slate-300 p-2 px-2 cursor-pointer bg-purple-600 rounded-md flex"
+        <button className="flex items-center space-x-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
             onClick={handleExportPDF}
           >
             <MdPictureAsPdf size={20} />
             Pdf
           </button>
-          <button
-            className="text-white font-bold border-2 border-slate-300 p-2 px-2 cursor-pointer bg-purple-600 rounded-md flex"
+            <button className="flex items-center space-x-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
             onClick={handleExportExcel}
           >
             <FaFileExcel size={20} />
             excel
           </button>
-          <button
-            className="text-white font-bold border-2 border-slate-300 p-2 px-2 cursor-pointer bg-purple-600 rounded-md flex"
+        <button className="flex items-center space-x-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             onClick={handleExportWord}
           >
             <FaFileWord size={20} />
             Word
           </button>
-          <button
-            className="text-white font-bold border-2 border-slate-300 p-2 px-2 cursor-pointer bg-purple-600 rounded-md flex"
-            onClick={handleCopy}
-          >
-            <MdFileCopy size={20} />
-            copy
-          </button>
+        
         </div>
       </div>
      <div>
@@ -382,65 +328,72 @@ const handleUpdate = async (therapist:any) => {
           <table id="therapist-table" className="min-w-full">
         <thead>
           <tr>
-          <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-            Profile Image
+          <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            no
             </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
             Name
             </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Address
             </th>
 
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Phone Number
             </th>
-            <th className="px-6 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Diploma
             </th>
-            <th className="px-6 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               license
             </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Gender
             </th>
-            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
-        <tbody>
-          {currentTherapy.map((therapist) => (
+        <tbody  className="bg-white divide-y divide-gray-200">
+          {currentTherapy.map((therapist,index) => (
             <tr key={therapist.id}>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 font-medium text-gray-900">
-                  {therapist.user.profileImage ?(
-                 <img src= {therapist.user.profileImage|| "https://via.placeholder.com/40"}
-                 alt="profile"
-                 width="50"
-                 height="50"
-                 className="object-cover rounded-full m-2"
-                 />):(
-                  <img src= "https://via.placeholder.com/40"/>
-                 )}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {therapist.user.firstName} {therapist.user.lastName}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {(currentPage - 1) * itemsPerPage + index + 1}
+                </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="h-10 w-10 flex-shrink-0">
+                      {therapist.user.profileImage ? (
+                        <img
+                          className="h-10 w-10 rounded-full object-cover"
+                          src={therapist.user.profileImage}
+                          alt=""
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500">{therapist.user.firstName?.charAt(0)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {therapist.user.firstName} {therapist.user.lastName}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
                   {therapist.user.email}
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+              <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
                   {therapist.user.phoneNumber}
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+              <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
                 <div className="text-sm w-40 leading-5 text-gray-900">
                   <button className="bg-transparent text-black flex flex-row gap-2 border-purple-600 border rounded p-2" 
                   onClick={()=>handleDiploma(therapist.diploma)}>
@@ -449,7 +402,7 @@ const handleUpdate = async (therapist:any) => {
                 
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+              <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
                 <div className="text-sm w-40 leading-5 text-gray-900">
                 <button className="bg-transparent text-black flex flex-row gap-2 border-purple-600 border rounded p-2"
                 onClick={()=>handleLicense(therapist.license)}
@@ -459,33 +412,35 @@ const handleUpdate = async (therapist:any) => {
                 
                 </div>
               </td> 
-               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {therapist.personalInformation.gender}
-                </div>
-              </td>
-           
-              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div className="flex text-sm leading-5 text-gray-900">
-                  <button
-                    className="flex mr-2 bg-transparent p-2 border-2 rounded-md font-semibold border-slate-300 text-black"
-                    onClick={() => handleView(therapist)}
-                  >
-                    <BiShow size={25} />
-                  </button>
-                  <button
-                    className="flex mr-2 text-blue-700 p-1 bg-transparent border-2 font-semibold border-slate-300 rounded-md"
-                    onClick={() => handleEdit(therapist)}
-                  >
-                    <BiEditAlt size={25} />
-                  </button>
-                  <button
-                    className="flex mr-2 text-red-500  p-1 bg-transparent border-2 border-slate-300 rounded-md font-semibold"
-                    onClick={() => handleDelete(therapist.id)}
-                  >
-                    <MdDelete size={25} />
-                  </button>
-                </div>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold 
+                    ${therapist.personalInformation.gender === 'female' ? 'bg-pink-100 text-pink-800' : 
+                      therapist.personalInformation.gender === 'male' ? 'bg-blue-100 text-blue-800' : 
+                      'bg-purple-100 text-purple-800'}`}>
+                    {therapist.personalInformation.gender}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={() => handleView(therapist)} 
+                      className="p-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                    >
+                      <FiEye className="w-5 h-5" />
+                    </button>
+                    <button 
+                      onClick={() => handleEdit(therapist)} 
+                      className="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition-colors"
+                    >
+                      <FiEdit className="w-5 h-5" />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(therapist.id)} 
+                      className="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
+                    >
+                      <FiTrash2 className="w-5 h-5" />
+                    </button>
+                  </div>
               </td>
             </tr>
           ))}
@@ -494,24 +449,43 @@ const handleUpdate = async (therapist:any) => {
           
       </div>
       {/* Pagination Controls */}
-      <div className="flex justify-end mt-4">
-        {Array.from(
-          { length: Math.ceil(filteredtherapists.length / itemsPerPage) },
-          (_, i) => i + 1
-        ).map((pageNumber) => (
-          <button
-            key={pageNumber}
-            onClick={() => paginate(pageNumber)}
-            className={`px-3 py-1 border ${
-              pageNumber === currentPage
-                ? "bg-purple-600 text-white"
-                : "bg-white text-purple-600"
-            } mx-1 rounded`}
-          >
-            {pageNumber}
-          </button>
-        ))}
-      </div>
+      {/* Pagination section with page numbers */}
+<div className="flex justify-between items-center mt-4 px-6">
+  <div className="text-sm text-gray-700">
+    Showing {filteredtherapists.length > 0 ? ((currentPage - 1) * itemsPerPage + 1) : 0} to {Math.min(currentPage * itemsPerPage, filteredtherapists.length)} of {filteredtherapists.length} therapists
+  </div>
+  <div className="flex items-center space-x-1">
+    <button 
+      onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+      disabled={currentPage === 1}
+      className="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+    >
+      Previous
+    </button>
+    
+    {Array.from({ length: Math.ceil(filteredtherapists.length / itemsPerPage) }, (_, i) => i + 1).map(
+      (pageNumber) => (
+        <button
+          key={pageNumber}
+          onClick={() => paginate(pageNumber)}
+          className={`px-3 py-1 border ${
+            pageNumber === currentPage ? "bg-purple-600 text-white" : "bg-white text-purple-600"
+          } mx-1 rounded hover:bg-purple-100`}
+        >
+          {pageNumber}
+        </button>
+      )
+    )}
+    
+    <button 
+      onClick={() => currentPage < Math.ceil(filteredtherapists.length / itemsPerPage) && paginate(currentPage + 1)}
+      disabled={currentPage === Math.ceil(filteredtherapists.length / itemsPerPage)}
+      className="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+    >
+      Next
+    </button>
+  </div>
+</div>
 
 
 

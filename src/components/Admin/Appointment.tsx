@@ -164,65 +164,108 @@ const formatTime = (isoString) => {
 </div>
 </>)}
 {setSelectedApp &&(
-<Modal open={AppViewModal} onCancel={CancelAppModal} footer={null} title="MORE APPOINTMENT DETAILS">
-<Form
-form={form}
-layout="vertical"
-><hr />
-  <div className="flex justify-between my-3">
-   <strong className="text-lg">Names: <strong >
-    {`${selectedApp.patient?.user?.firstName || ''} ${selectedApp.patient?.user?.lastName || ''}`}</strong>
- </strong>
-
- <td   className={`italic  p-2 ${selectedApp?.status === "Scheduled"? "text-blue-600": selectedApp?.status === "Rescheduled"? "text-green-500": selectedApp?.status === "Canceled"? "text-red-700": ""}`}>{selectedApp.status}</td>
-  </div>
-  <p className="text-xl">Therapy Name: <strong className=" text-xl">
-   {selectedApp.therapist?.personalInformation?.name}</strong></p>
-<div className="grid grid-cols-2 my-3 gap-3 ">
- <div className="flex gap-3 mt-3 ">
-  <Calendar size={30}  color="blue" className="mt-2"/>
-  <div>
-  <strong className="text-lg">Date</strong> <br />
-    <p className="text-lg">{formatDate(selectedApp.startTime)}</p>
-  </div>
-</div>
-<div className="flex gap-2 mt-3 justify-end">
-  <BiTime size={30} color="blue" className="mt-2"/>
-  <div>
-  <strong className="text-lg">Time</strong><br />
-    <p className="text-lg">{formatTime(selectedApp.endTime)}</p>
-  </div>
-</div>
-<div className="flex gap-2 mt-3">
-  <FaUser size={30} color="blue" className="mt-2"/>
-  <div>
-  <strong className="text-lg">User</strong> <br />
-    <p className="text-lg">{selectedApp.therapist?.personalInformation?.name}</p>
-  </div>
-</div>
-<div className="flex mt-3 gap-2 justify-end mr-3">
-  <FaFile size={30} color="blue" className="mt-2"/>
-  <div>
-  <strong className="text-lg">Specials</strong><br />
-  <p className="text-lg">{selectedApp.appointmentType}</p>
-  </div>
-</div>
-<div className="flex mt-3 gap-2 ">
-  <FaMapMarkerAlt  size={30} color="blue" className="mt-2"/>
-  <div>
-  <strong className="text-lg">Location</strong><br />
-    <p className="text-lg">{selectedApp.location}</p>
-  </div>
-</div>
-</div>
-<strong className="text-lg">Notes:</strong>
-<Form.Item>
-  <TextArea className="w-full text-black text-xl capitalize" readOnly value={selectedApp.notes} />
-</Form.Item>
-
-
-</Form>
-  
+  <Modal 
+  open={AppViewModal} 
+  onCancel={CancelAppModal} 
+  footer={null} 
+  title={<h3 className="text-2xl font-semibold text-purple-600">APPOINTMENT DETAILS</h3>}
+  width={700}
+  className="appointment-detail-modal"
+>
+  <Form form={form} layout="vertical">
+    <div className="border-b pb-4 mb-4">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center">
+          <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+            <FaUser size={24} className="text-purple-600" />
+          </div>
+          <div>
+            <p className="text-gray-500 text-sm">Patient</p>
+            <strong className="text-lg">
+              {`${selectedApp.patient?.user?.firstName || ''} ${selectedApp.patient?.user?.lastName || ''}`}
+            </strong>
+          </div>
+        </div>
+        <span className={`px-4 py-1 rounded-full text-sm font-medium ${
+          selectedApp?.status === "Scheduled" ? "bg-blue-100 text-blue-700" : 
+          selectedApp?.status === "Rescheduled" ? "bg-green-100 text-green-600" : 
+          selectedApp?.status === "Canceled" ? "bg-red-100 text-red-700" : ""
+        }`}>
+          {selectedApp.status}
+        </span>
+      </div>
+    </div>
+    
+    <div className="border-b pb-4 mb-4">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+          <FaUser size={20} className="text-blue-600" />
+        </div>
+        <div>
+          <p className="text-gray-500 text-sm">Therapist</p>
+          <strong className="text-md">{selectedApp.therapist?.personalInformation?.name}</strong>
+        </div>
+      </div>
+    </div>
+    
+    <div className="grid grid-cols-2 gap-4 mb-4 border-b pb-4">
+      <div className="flex items-start">
+        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3 mt-1">
+          <Calendar size={20} className="text-purple-600" />
+        </div>
+        <div>
+          <p className="text-gray-500 text-sm">Date</p>
+          <strong className="text-md">{formatDate(selectedApp.startTime)}</strong>
+        </div>
+      </div>
+      
+      <div className="flex items-start">
+        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3 mt-1">
+          <BiTime size={20} className="text-purple-600" />
+        </div>
+        <div>
+          <p className="text-gray-500 text-sm">Time</p>
+          <strong className="text-md">{formatTime(selectedApp.endTime)}</strong>
+        </div>
+      </div>
+      
+      <div className="flex items-start">
+        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3 mt-1">
+          <FaMapMarkerAlt size={20} className="text-purple-600" />
+        </div>
+        <div>
+          <p className="text-gray-500 text-sm">Location</p>
+          <strong className="text-md">{selectedApp.location}</strong>
+        </div>
+      </div>
+      
+      <div className="flex items-start">
+        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3 mt-1">
+          <FaFile size={20} className="text-purple-600" />
+        </div>
+        <div>
+          <p className="text-gray-500 text-sm">Appointment Type</p>
+          <strong className="text-md">{selectedApp.appointmentType}</strong>
+        </div>
+      </div>
+    </div>
+    
+    <div className="mb-3">
+      <p className="text-gray-500 text-sm mb-2">Notes</p>
+      <div className="bg-gray-50 p-3 rounded-md border min-h-[100px]">
+        {selectedApp.notes || "No notes available."}
+      </div>
+    </div>
+    
+    <div className="flex justify-end mt-4">
+      <Button type="default" onClick={CancelAppModal} className="mr-2">Close</Button>
+      {selectedApp.status !== "Canceled" && (
+        <Button type="primary" className="bg-purple-600 text-white">
+          Manage Appointment
+        </Button>
+      )}
+    </div>
+  </Form>
 </Modal>
 )}
 </div>

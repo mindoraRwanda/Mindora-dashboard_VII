@@ -302,7 +302,8 @@ finally{
             <FaFileExcel size={20} />
             excel
           </button>
-           <button className="flex items-center space-x-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          <button
+            className="text-white font-bold border-2 border-slate-300 p-2 px-2 cursor-pointer bg-purple-600 rounded-md flex"
             onClick={handleExportWord}
           >
             <FaFileWord size={20} />

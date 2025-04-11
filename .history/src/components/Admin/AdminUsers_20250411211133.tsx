@@ -290,19 +290,22 @@ finally{
           </button>
         </div>
         <div className="flex ml-auto gap-3 rounded-md mt-4 ">
-          <button className="flex items-center space-x-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          <button
+            className="text-white font-bold border-2 border-slate-300 p-2 cursor-pointer bg-purple-600 rounded-md flex"
             onClick={handleExportPDF}
           >
             <MdPictureAsPdf size={20} />
             Pdf
           </button>
-           <button className="flex items-center space-x-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          <button
+            className="text-white font-bold border-2 border-slate-300 p-2 cursor-pointer bg-purple-600 rounded-md flex"
             onClick={handleExportExcel}
           >
             <FaFileExcel size={20} />
             excel
           </button>
-           <button className="flex items-center space-x-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          <button
+            className="text-white font-bold border-2 border-slate-300 p-2 px-2 cursor-pointer bg-purple-600 rounded-md flex"
             onClick={handleExportWord}
           >
             <FaFileWord size={20} />
@@ -423,7 +426,7 @@ finally{
                                     <FiEdit className="w-5 h-5" />
                                   </button>
                                   <button 
-                                    onClick={() => handleDelete(user.id)} 
+                                    onClick={() => handleDelete(therapist.id)} 
                                     className="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
                                   >
                                     <FiTrash2 className="w-5 h-5" />
@@ -438,43 +441,25 @@ finally{
       </table>
   
 
-      {/* Pagination section with page numbers */}
-<div className="flex justify-between items-center mt-4 px-6">
-  <div className="text-sm text-gray-700">
-    Showing {filteredUsers.length > 0 ? ((currentPage - 1) * itemsPerPage + 1) : 0} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users
-  </div>
-  <div className="flex items-center space-x-1">
-    <button 
-      onClick={() => currentPage > 1 && paginate(currentPage - 1)}
-      disabled={currentPage === 1}
-      className="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-    >
-      Previous
-    </button>
-    
-    {Array.from({ length: Math.ceil(filteredUsers.length / itemsPerPage) }, (_, i) => i + 1).map(
-      (pageNumber) => (
-        <button
-          key={pageNumber}
-          onClick={() => paginate(pageNumber)}
-          className={`px-3 py-1 border ${
-            pageNumber === currentPage ? "bg-purple-600 text-white" : "bg-white text-purple-600"
-          } mx-1 rounded hover:bg-purple-100`}
-        >
-          {pageNumber}
-        </button>
-      )
-    )}
-    
-    <button 
-      onClick={() => currentPage < Math.ceil(filteredUsers.length / itemsPerPage) && paginate(currentPage + 1)}
-      disabled={currentPage === Math.ceil(filteredUsers.length / itemsPerPage)}
-      className="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-    >
-      Next
-    </button>
-    </div>
-    </div>
+      {/* Pagination Controls */}
+      <div className="flex justify-end mt-4">
+        {Array.from(
+          { length: Math.ceil(filteredUsers.length / itemsPerPage) },
+          (_, i) => i + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            onClick={() => paginate(pageNumber)}
+            className={`px-3 py-1 border ${
+              pageNumber === currentPage
+                ? "bg-purple-600 text-white"
+                : "bg-white text-purple-600"
+            } mx-1 rounded`}
+          >
+            {pageNumber}
+          </button>
+        ))}
+      </div>
 
       <Modal open={isModalVisible} onCancel={handleCancel} footer={null}>
         {selectedUser ? (

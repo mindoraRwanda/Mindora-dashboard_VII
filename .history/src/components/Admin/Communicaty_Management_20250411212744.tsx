@@ -42,7 +42,7 @@ export default function Communication() {
   const [commentsValue, setCommentsValue] = useState<comments[]>([]);
   const [showCommentEdit, setShowCommentEdit] = useState(false);
   const [selectedComment, setSelectedComment] = useState(null);
-  const [showReport,setShowReported]=useState(false);
+  cons
   const dispatch = useDispatch();
 
   // This is for getting User id stored on Local storage
@@ -748,15 +748,6 @@ export default function Communication() {
             </Button>
           </FormItem>
         </Form>
-      </Modal>
-      <Modal open={showReport} onCancel={()=>{setShowReported(false);form.resetFields()}} footer={null} title="Reported Reason" width={500}  >
-        <div>
-          <Text className="my-2"> Reported Name</Text>
-          <Input readOnly className="my-2"/>
-          <Text className="my-2">Reported Message</Text>
-          <TextArea rows={3} readOnly/>
-        </div>
-
       </Modal>
     </div>
   );

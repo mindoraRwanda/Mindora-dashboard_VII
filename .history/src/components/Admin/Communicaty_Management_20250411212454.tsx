@@ -42,7 +42,6 @@ export default function Communication() {
   const [commentsValue, setCommentsValue] = useState<comments[]>([]);
   const [showCommentEdit, setShowCommentEdit] = useState(false);
   const [selectedComment, setSelectedComment] = useState(null);
-  const [showReport,setShowReported]=useState(false);
   const dispatch = useDispatch();
 
   // This is for getting User id stored on Local storage
@@ -443,7 +442,7 @@ export default function Communication() {
                 
                 <div className="mt-4">
                   <Button 
-                    onClick={()=>setShowReported(true)}
+                    
                     style={{ backgroundColor: '#52c41a' , color: '#fff' }}
                     className="mr-2"
                   >
@@ -643,7 +642,7 @@ export default function Communication() {
       {/* Update Community Modal */}
       <Modal
         open={updateModal}
-        onCancel={() => {setUpdateModal(false); form.resetFields()}}
+        onCancel={() => {setUpdateModal(false), form.resetFields()}
         footer={null}
         title={<Title level={4}>UPDATE COMMUNITY</Title>}
       >
@@ -748,15 +747,6 @@ export default function Communication() {
             </Button>
           </FormItem>
         </Form>
-      </Modal>
-      <Modal open={showReport} onCancel={()=>{setShowReported(false);form.resetFields()}} footer={null} title="Reported Reason" width={500}  >
-        <div>
-          <Text className="my-2"> Reported Name</Text>
-          <Input readOnly className="my-2"/>
-          <Text className="my-2">Reported Message</Text>
-          <TextArea rows={3} readOnly/>
-        </div>
-
       </Modal>
     </div>
   );

@@ -749,12 +749,9 @@ export default function Communication() {
           </FormItem>
         </Form>
       </Modal>
-      <Modal open={showReport} onCancel={()=>{setShowReported(false);form.resetFields()}} footer={null} title="Reported Reason" width={500}  >
+      <Modal open={showReport} onCancel={()=>{setShowReported(false);form.resetFields()}} footer={null}>
         <div>
-          <Text className="my-2"> Reported Name</Text>
-          <Input readOnly className="my-2"/>
-          <Text className="my-2">Reported Message</Text>
-          <TextArea rows={3} readOnly/>
+          Text
         </div>
 
       </Modal>

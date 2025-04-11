@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
-import { FiEdit, FiEye, FiSearch, FiTrash2 } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import { BiShow, BiEditAlt } from "react-icons/bi";
 import { MdDelete, MdPictureAsPdf, MdFileCopy } from "react-icons/md";
 import { FaFileExcel, FaFileWord } from "react-icons/fa";
@@ -290,19 +290,22 @@ finally{
           </button>
         </div>
         <div className="flex ml-auto gap-3 rounded-md mt-4 ">
-          <button className="flex items-center space-x-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          <button
+            className="text-white font-bold border-2 border-slate-300 p-2 cursor-pointer bg-purple-600 rounded-md flex"
             onClick={handleExportPDF}
           >
             <MdPictureAsPdf size={20} />
             Pdf
           </button>
-           <button className="flex items-center space-x-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          <button
+            className="text-white font-bold border-2 border-slate-300 p-2 cursor-pointer bg-purple-600 rounded-md flex"
             onClick={handleExportExcel}
           >
             <FaFileExcel size={20} />
             excel
           </button>
-           <button className="flex items-center space-x-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          <button
+            className="text-white font-bold border-2 border-slate-300 p-2 px-2 cursor-pointer bg-purple-600 rounded-md flex"
             onClick={handleExportWord}
           >
             <FaFileWord size={20} />
@@ -321,9 +324,11 @@ finally{
               no
             </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Name
+              FirstName
             </th>
-         
+            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              LastName
+            </th>
             <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Email
             </th>
@@ -347,37 +352,27 @@ finally{
         <tbody className="bg-white divide-y divide-gray-200">
           {currentUsers.map((user,index) => (
             <tr key={user.id}>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {(currentPage - 1) * itemsPerPage + index + 1}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="h-10 w-10 flex-shrink-0">
-                      {user.profileImage ? (
-                        <img
-                          className="h-10 w-10 rounded-full object-cover"
-                          src={user.profileImage}
-                          alt=""
-                        />
-                      ) : (
-                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-500">{user.firstName?.charAt(0)}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {user.firstName} {user.lastName}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              <td className="px-6 py-4 whitespace-no-wrap  border-gray-500">
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 font-medium text-gray-900">
+                  {user.firstName}
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="text-sm leading-5 text-gray-900">
+                  {user.lastName}
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900">
                   {user.email}
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-no-wrap  border-gray-500">
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <button onClick={() => handleChangeRole(user)}>
                   <div className="text-sm leading-5 text-white bg-purple-600 p-1 rounded-md ">
                     {/* // we need to display roles here */}
@@ -386,7 +381,7 @@ finally{
                 </button>
               </td>
                
-              <td className="px-6 py-4 whitespace-no-wrap  border-gray-500">
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <select
                   className="border text-black w-30 my-2 rounded-md p-2 "
                   onChange={(e) => handleTherapyRole(e, user)}
@@ -398,7 +393,7 @@ finally{
                   <option value="therapy">Therapy</option>
                 </select>
               </td>
-              <td className="py-5 whitespace-no-wrap  border-gray-500">
+              <td className="py-5 whitespace-no-wrap border-b border-gray-500">
                 <div className="text-sm leading-5 text-gray-900 ml-5">
                   <button
                     className="border-2 border-gray-300 p-2 px-6 rounded-md font-semibold"
@@ -408,28 +403,28 @@ finally{
                   </button>
                 </div>
               </td>
-                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <div className="flex space-x-2">
-                                  <button 
-                                    onClick={() => handleView(user)} 
-                                    className="p-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                                  >
-                                    <FiEye className="w-5 h-5" />
-                                  </button>
-                                  <button 
-                                    onClick={() => handleEdit(user)} 
-                                    className="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition-colors"
-                                  >
-                                    <FiEdit className="w-5 h-5" />
-                                  </button>
-                                  <button 
-                                    onClick={() => handleDelete(user.id)} 
-                                    className="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
-                                  >
-                                    <FiTrash2 className="w-5 h-5" />
-                                  </button>
-                                </div>
-                            </td>
+              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                <div className="flex text-sm leading-5 text-gray-900">
+                  <button
+                    className="flex mr-2 bg-transparent rounded border-2 border-slate-300 font-semibold p-1 text-black"
+                    onClick={() => handleView(user)}
+                  >
+                    <BiShow size={25} />
+                  </button>
+                  <button
+                    className="flex mr-2 text-blue-700 border-2 border-slate-300 p-1 rounded font-semibold"
+                    onClick={() => handleEdit(user)}
+                  >
+                    <BiEditAlt size={25} />
+                  </button>
+                  <button
+                    className="flex mr-2 text-red-500 rounded p-1 border-2 border-slate-300 font-semibold"
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    <MdDelete size={25} />
+                  </button>
+                </div>
+              </td>
            
             </tr>
           ))}
@@ -438,43 +433,25 @@ finally{
       </table>
   
 
-      {/* Pagination section with page numbers */}
-<div className="flex justify-between items-center mt-4 px-6">
-  <div className="text-sm text-gray-700">
-    Showing {filteredUsers.length > 0 ? ((currentPage - 1) * itemsPerPage + 1) : 0} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users
-  </div>
-  <div className="flex items-center space-x-1">
-    <button 
-      onClick={() => currentPage > 1 && paginate(currentPage - 1)}
-      disabled={currentPage === 1}
-      className="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-    >
-      Previous
-    </button>
-    
-    {Array.from({ length: Math.ceil(filteredUsers.length / itemsPerPage) }, (_, i) => i + 1).map(
-      (pageNumber) => (
-        <button
-          key={pageNumber}
-          onClick={() => paginate(pageNumber)}
-          className={`px-3 py-1 border ${
-            pageNumber === currentPage ? "bg-purple-600 text-white" : "bg-white text-purple-600"
-          } mx-1 rounded hover:bg-purple-100`}
-        >
-          {pageNumber}
-        </button>
-      )
-    )}
-    
-    <button 
-      onClick={() => currentPage < Math.ceil(filteredUsers.length / itemsPerPage) && paginate(currentPage + 1)}
-      disabled={currentPage === Math.ceil(filteredUsers.length / itemsPerPage)}
-      className="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-    >
-      Next
-    </button>
-    </div>
-    </div>
+      {/* Pagination Controls */}
+      <div className="flex justify-end mt-4">
+        {Array.from(
+          { length: Math.ceil(filteredUsers.length / itemsPerPage) },
+          (_, i) => i + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            onClick={() => paginate(pageNumber)}
+            className={`px-3 py-1 border ${
+              pageNumber === currentPage
+                ? "bg-purple-600 text-white"
+                : "bg-white text-purple-600"
+            } mx-1 rounded`}
+          >
+            {pageNumber}
+          </button>
+        ))}
+      </div>
 
       <Modal open={isModalVisible} onCancel={handleCancel} footer={null}>
         {selectedUser ? (

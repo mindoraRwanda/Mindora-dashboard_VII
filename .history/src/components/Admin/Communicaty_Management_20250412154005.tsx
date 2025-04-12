@@ -785,7 +785,7 @@ useEffect(() => {
           <Text > Reporter</Text>
           <Input readOnly />
           <div className="text-right">
-            <Text type="secondary" className="text-sm">
+            <Text type="secondary">
               Reported on: {new Date(report.createdAt).toLocaleDateString()}
             </Text>
           </div>

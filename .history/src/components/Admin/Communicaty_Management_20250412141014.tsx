@@ -18,7 +18,6 @@ import CommunityDetails from "./CommunityDetails";
 import { deletePots, getAllCommunityPost, UpdatePost } from "../../Redux/Adminslice/CommunityPost";
 import { deleteComment, fetchPostCommnet, updateComment } from "../../Redux/Adminslice/Comment";
 import { UploadOutlined, PlusOutlined } from "@ant-design/icons";
-import { getPostReport } from "../../Redux/Adminslice/report_Slice";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -27,7 +26,6 @@ export default function Communication() {
   const PostStatus = useSelector((state: RootState) => state.Postcomment.status);
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
   const [Posts, setPosts] = useState([]);
-  const [repots,setReports]=useState([]);
   const [AllPost, setAllPost] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showUpdatePostModal, setShowUpdatePostModal] = useState(false);
@@ -308,31 +306,7 @@ export default function Communication() {
       setLoading(false);
     }
   };
-
-// the Following is for Community Post Reports
-useEffect(() => {
-  const fetchPosts = async () => {
-    if(!selectedTopic?.id) return;
-    setLoading(true);
-    try {
-      const result=await dispatch(getPostReport(selectedTopic?.id));
-    if (getPostReport.fulfilled.match(result)) {
-      setReports(result.payload);
-    }
-    else{
-      setReports([]);
-    }
-  }
-    catch (error) {
-      message.error(`Error fetching posts: ${error.message}`);
-      setReports([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchPosts();
-}, [dispatch, selectedTopic?.id]);
-
+// the 
   return (
     <div className="p-6 bg-gray-50">
       <div className="flex justify-between items-center mb-6">
@@ -472,8 +446,8 @@ useEffect(() => {
                     style={{ backgroundColor: '#52c41a' , color: '#fff' }}
                     className="mr-2"
                   >
-                   {repots.length} Reports
-                  
+
+                    N0 reports
                     </Button>
                 </div>
               </div>
@@ -777,27 +751,10 @@ useEffect(() => {
       </Modal>
       <Modal open={showReport} onCancel={()=>{setShowReported(false);form.resetFields()}} footer={null} title="Reported Reason" width={500}  >
         <div>
-         {repots&&repots.length>0?(
-          repots.map((report)=>(
-            <Card
-              key={report.id}
-              className="shadow-sm mb-4">
-          <Text > Reporter</Text>
-          <Input readOnly />
-          <div className="text-right">
-            <Text type="secondary" className="text-sm">
-              Reported on: {new Date(report.createdAt).toLocaleDateString()}
-            </Text>
-          </div>
-          <Text >Reported Message</Text>
-          <TextArea  readOnly className="text-black" value={report.reason|| "No reason Provide"} ></TextArea>
-          </Card>
-          ))):(
-            <div className="text-center py-8">
-            <Text type="secondary">No reports found on this Topic</Text>
-            </div>
-          )}
-         
+          <Text className="my-2"> Reported Name</Text>
+          <Input readOnly className="my-2"/>
+          <Text className="my-2">Reported Message</Text>
+          <TextArea rows={3} readOnly/>
         </div>
 
       </Modal>

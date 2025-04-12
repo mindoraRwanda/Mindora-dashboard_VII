@@ -320,12 +320,11 @@ useEffect(() => {
       setReports(result.payload);
     }
     else{
-      setReports([]);
+      message.error("Failed to fetch posts");
     }
   }
     catch (error) {
       message.error(`Error fetching posts: ${error.message}`);
-      setReports([]);
     } finally {
       setLoading(false);
     }
@@ -472,7 +471,7 @@ useEffect(() => {
                     style={{ backgroundColor: '#52c41a' , color: '#fff' }}
                     className="mr-2"
                   >
-                   {repots.length} Reports
+{repots.length} {repots.length===1? "Reports":"No Reported"} 
                   
                     </Button>
                 </div>
@@ -777,26 +776,16 @@ useEffect(() => {
       </Modal>
       <Modal open={showReport} onCancel={()=>{setShowReported(false);form.resetFields()}} footer={null} title="Reported Reason" width={500}  >
         <div>
-         {repots&&repots.length>0?(
-          repots.map((report)=>(
+          {repots.map((report)=>(
             <Card
               key={report.id}
               className="shadow-sm mb-4">
-          <Text > Reporter</Text>
-          <Input readOnly />
-          <div className="text-right">
-            <Text type="secondary" className="text-sm">
-              Reported on: {new Date(report.createdAt).toLocaleDateString()}
-            </Text>
-          </div>
-          <Text >Reported Message</Text>
-          <TextArea  readOnly className="text-black" value={report.reason|| "No reason Provide"} ></TextArea>
+          <Text className="my-2"> Reported Name</Text>
+          <Input readOnly className="my-2"/>
+          <Text className="my-2">Reported Message</Text>
+          <TextArea rows={3} readOnly value=/>
           </Card>
-          ))):(
-            <div className="text-center py-8">
-            <Text type="secondary">No reports found on this Topic</Text>
-            </div>
-          )}
+          ))}
          
         </div>
 

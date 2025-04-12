@@ -472,7 +472,7 @@ useEffect(() => {
                     style={{ backgroundColor: '#52c41a' , color: '#fff' }}
                     className="mr-2"
                   >
-                   {repots.length} Reports
+                   {repots.length} Repor
                   
                     </Button>
                 </div>
@@ -785,12 +785,12 @@ useEffect(() => {
           <Text > Reporter</Text>
           <Input readOnly />
           <div className="text-right">
-            <Text type="secondary" className="text-sm">
+            <Text type="secondary">
               Reported on: {new Date(report.createdAt).toLocaleDateString()}
             </Text>
           </div>
           <Text >Reported Message</Text>
-          <TextArea  readOnly className="text-black" value={report.reason|| "No reason Provide"} ></TextArea>
+          <TextArea rows={3} readOnly className="text-black" value={report.reason|| "No reason Provide"} ></TextArea>
           </Card>
           ))):(
             <div className="text-center py-8">

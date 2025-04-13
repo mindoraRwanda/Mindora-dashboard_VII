@@ -15,7 +15,7 @@ import { Appointment } from "../../Redux/TherapistSlice/Appointment";
 import {getAllAppointmentChanges,Reschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import { createReschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import AppointmentChange from "./Appointment Change";
-import { BriefcaseMedicalIcon, CalendarIcon, ClockIcon, EditIcon, TrashIcon, UserIcon } from "lucide-react";
+import { BriefcaseMedicalIcon, ClockIcon } from "lucide-react";
 
 function Appointments() {
   const [filterStatus, setFilterStatus] = useState("all");
@@ -472,7 +472,7 @@ const handleReschedule=async(values:any)=>{
                   
                   <div className="flex items-start gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg">
-                      <ClockIcon className="w-5 h-5 text-blue-600" />
+                      <ClockEndIcon className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">End Time</p>

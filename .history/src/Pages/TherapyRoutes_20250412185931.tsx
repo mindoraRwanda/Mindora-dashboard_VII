@@ -16,7 +16,23 @@ import Settings from '../components/settings';
 const UserRole = {
   THERAPIST: "therapist",
 };
-
+<div className="px-5 pt-5">
+<div className="inline-flex p-1 rounded-lg bg-gray-100 mb-4">
+  {["Available Slots", "Notifications"].map((buttonName) => (
+    <button
+      key={buttonName}
+      className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
+        activeButton === buttonName
+          ? "bg-indigo-600 text-white shadow-sm"
+          : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+      }`}
+      onClick={() => handleActive(buttonName)}
+    >
+      {buttonName}
+    </button>
+  ))}
+</div>
+</div>
 export default function DashboardPage() {
   const [userRole, setUserRole] = useState(UserRole.THERAPIST);
   const [activeComponent, setActiveComponent] = useState("Home");

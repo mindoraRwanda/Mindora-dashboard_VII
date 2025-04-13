@@ -1,7 +1,7 @@
 import {  useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BiTime } from "react-icons/bi";
-import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid } from "react-icons/fa";
+import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid, FaBriefcase, FaBriefcaseMedical } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import {
   deleteAppointment,
@@ -15,7 +15,7 @@ import { Appointment } from "../../Redux/TherapistSlice/Appointment";
 import {getAllAppointmentChanges,Reschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import { createReschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import AppointmentChange from "./Appointment Change";
-import { BriefcaseMedicalIcon, CalendarIcon, ClockIcon, EditIcon, TrashIcon, UserIcon } from "lucide-react";
+import { BriefcaseMedicalIcon } from "lucide-react";
 
 function Appointments() {
   const [filterStatus, setFilterStatus] = useState("all");
@@ -452,7 +452,7 @@ const handleReschedule=async(values:any)=>{
                   
                   <div className="flex items-start gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg">
-                      <MdLocationOn className="w-5 h-5 text-blue-600" />
+                      <LocationIcon className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Location</p>
@@ -472,7 +472,7 @@ const handleReschedule=async(values:any)=>{
                   
                   <div className="flex items-start gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg">
-                      <ClockIcon className="w-5 h-5 text-blue-600" />
+                      <ClockEndIcon className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">End Time</p>

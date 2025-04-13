@@ -11,7 +11,6 @@ import Medication from '../components/Therapist/Medication';
 import Appointmets from '../components/Therapist/Appointmets';
 import { useNavigate } from 'react-router-dom';
 import Prescription from '../components/Therapist/Prescrition';
-import Settings from '../components/settings';
 
 const UserRole = {
   THERAPIST: "therapist",
@@ -46,8 +45,7 @@ export default function DashboardPage() {
             return <Appointmets/>;
               case'Prescription':
               return <Prescription/>
-              case 'Settings':
-                return <Settings/>
+              case
       default:
        return (
         <div><h1 className='text-black text-2xl flex justify-center mt-10'>No Content</h1></div>

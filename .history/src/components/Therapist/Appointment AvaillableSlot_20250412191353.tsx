@@ -265,13 +265,13 @@ const formatTime = (isoString) => {
                 className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow p-5"
               >
                 <div className="flex justify-between items-start mb-3">
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium bg-purple-500 text-white ${slot.availableDay}`}>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium bg-pur ${slot.availableDay}`}>
                     {slot.availableDay}
                   </div>
                   <div className="flex gap-2">
                     <button
                       className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-                      onClick={() =>ShowEditModal (slot)}
+                      onClick={() => showEditModal(slot)}
                       aria-label="Edit"
                     >
                       <Edit2 size={16} />

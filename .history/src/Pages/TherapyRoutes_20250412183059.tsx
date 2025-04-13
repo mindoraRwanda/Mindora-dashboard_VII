@@ -47,7 +47,7 @@ export default function DashboardPage() {
               case'Prescription':
               return <Prescription/>
               case 'Settings':
-                return <Settings/>
+                return <Settings
       default:
        return (
         <div><h1 className='text-black text-2xl flex justify-center mt-10'>No Content</h1></div>

@@ -1,7 +1,7 @@
 import {  useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BiTime } from "react-icons/bi";
-import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid } from "react-icons/fa";
+import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid, FaBriefcase, FaBriefcaseMedical } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import {
   deleteAppointment,
@@ -15,7 +15,6 @@ import { Appointment } from "../../Redux/TherapistSlice/Appointment";
 import {getAllAppointmentChanges,Reschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import { createReschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import AppointmentChange from "./Appointment Change";
-import { BriefcaseMedicalIcon, CalendarIcon, ClockIcon, EditIcon, TrashIcon, UserIcon } from "lucide-react";
 
 function Appointments() {
   const [filterStatus, setFilterStatus] = useState("all");
@@ -371,168 +370,115 @@ const handleReschedule=async(values:any)=>{
       </div>
 
       {loading ? (
-  <div className="flex items-center justify-center h-64">
-    <Spin size="large" className="text-indigo-600" />
-  </div>
-) : (
-  <div className="bg-white rounded-lg shadow-sm p-6">
-    <h2 className="text-xl font-semibold mb-6 text-gray-800 border-b pb-3">
-      {activeView === 'all' && 'All Appointments'}
-      {activeView === 'requests' && 'Appointment Requests'}
-      {activeView === 'changed' && 'Modified Appointments'}
-      {activeView === 'patients' && 'Patient List'}
-    </h2>
-    
-    {getDisplayedAppointments().length === 0 ? (
-      <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <CalendarIcon size={40} className="mx-auto text-gray-400 mb-3" />
-        <h3 className="text-lg font-medium text-gray-500 mb-2">No Appointments Found</h3>
-        <p className="text-gray-400">There are no appointments matching your current view</p>
-      </div>
-    ) : (
-      <div className="space-y-4">
-        {getDisplayedAppointments().map((appointment) => (
-          appointment.component ? (
-            <div key="appointment-change" className="w-full">
+        <div className="flex items-center justify-center text-red-600 min-h-screen">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <div className="bg-white px-6">
+           <h2 className="text-xl font-semibold mb-4">
+            {activeView === 'all' && 'All Appointments'}
+            {activeView === 'requests' && 'Appointment Requests'}
+            {activeView === 'changed'&&'Appointment changed'}
+            {activeView === 'patients' && 'Patient List'}
+          </h2>
+          {getDisplayedAppointments().map((appointment) => (
+            appointment.component ?(
+              <div key="appointment-change" className="w-full">
               {appointment.component}
             </div>
-          ) : (
+            ):(
             <div
               key={appointment.id}
-              className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow overflow-hidden"
+              className="bg-white rounded-lg flex flex-row justify-between border-2 p-6 mt-3"
             >
-              {/* Header with status badge */}
-              <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="bg-gray-100 p-2 rounded-full">
-                    <img
-                      src={appointment.therapist.user.profileImage}
-                      alt="Patient"
-                      className="object-cover w-10 h-10 rounded-full"
-                      width={40}
-                      height={40}
-                    />
-                  </div>
+              <div className=" items-start space-x-4">
+                <div className="flex gap-2">
                   <div>
-                    <h3 className="font-semibold text-gray-800">
-                      {`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
-                    </h3>
-                    <p className="text-sm text-gray-500 capitalize">
-                      {appointment.patient.personalInformation.gender}
-                    </p>
-                  </div>
+                <div className="bg-gray-100 p-3 rounded-full">
+                  <img src={appointment.therapist.user.profileImage}
+                  alt="UserProfile"
+                  className="object-cover w-12 h-12 rounded-full" 
+                  width={120}
+                  height={120} 
+                  />
                 </div>
-                <div 
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    appointment?.status === "Scheduled" 
-                      ? "bg-blue-100 text-blue-700" 
-                      : appointment?.status === "Rescheduled" 
-                      ? "bg-green-100 text-green-700" 
-                      : appointment?.status === "canceled" 
-                      ? "bg-red-100 text-red-700" 
-                      : "bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  {appointment?.status}
-                </div>
-              </div>
-              
-              {/* Appointment details */}
-              <div className="px-6 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <BriefcaseMedicalIcon className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Condition</p>
-                      <p className="font-medium text-gray-800">{appointment.appointmentType}</p>
-                    </div>
+                <div>
+                  <h3 className="text-black mb-2 mt-2 font-semibold">
+                  {`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
+                  </h3>
+                  <p className="text-black capitalize">{appointment.patient.personalInformation.gender}</p>
                   </div>
+                  </div>
+
+                  </div>
+                  <hr className="text-black w-full m-4" />
+                  <div>
                   
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <MdLocationOn className="w-5 h-5 text-blue-600" />
+                  <div className="space-x-2 mt-1 grid grid-cols-2">
+                  <p className="text-md ml-2 text-gray-700 flex gap-2">
+                    <FaBriefcaseMedical size={24} color="blue" className="mt-4"/>
+                    <div className="text-md">
+                    <p className="text-lg">condition</p>
+                    <strong>{appointment.appointmentType}</strong>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Location</p>
-                      <p className="font-medium text-gray-800">{appointment.location}</p>
-                    </div>
+                  </p>
+                    <span className="flex gap-1 text-md my-3 text-gray-700">
+                      <MdLocationOn size={25} color="blue" className="mt-4" />
+                      <div className="text-md">
+                      <p className="text-lg">Location</p>
+                     <strong>{appointment.location}</strong> </div>
+                    </span>
+                    <span className="flex gap-1 text-md text-gray-700">
+                      <BiTime size={25} color="blue" className="mt-3" />
+                      <div className="text-md">
+                      <p className="text-lg">Start Time</p>
+                      <strong>{formatTime(appointment.startTime)}</strong></div>
+                    </span>
+                    <span className="flex gap-1 text-md text-gray-700">
+                      <BiTime size={25} color="blue" className="mt-3" />
+                      <div className="text-md">
+                      <p className="text-lg">End Time</p>
+                      <strong>{formatTime(appointment.endTime)}</strong></div>
+                    </span>
                   </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <ClockIcon className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Start Time</p>
-                      <p className="font-medium text-gray-800">{formatTime(appointment.startTime)}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <ClockIcon className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">End Time</p>
-                      <p className="font-medium text-gray-800">{formatTime(appointment.endTime)}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                {appointment.notes && (
-                  <div className="mb-5 p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">Notes</p>
-                    <p className="text-gray-700">{appointment.notes}</p>
-                  </div>
-                )}
-                
-                {/* Action buttons */}
-                <div className="flex flex-wrap gap-2 mt-4">
+                  <p className="text-2xl my-5 mx-3 capitalize text-gray-800">
+                    Notes: {appointment.notes}
+                  </p>
                   <Button
-                    className="px-4 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-md font-medium text-sm flex items-center gap-1"
+                    className="p-3 bg-purple-600 my-2 text-white hover:bg-purple-800 text-lg"
                     onClick={() => showEditModal(appointment)}
                     disabled={loading}
                   >
-                    <EditIcon className="w-4 h-4" />
                     {loading ? "Updating..." : "Update"}
                   </Button>
-                  
                   <Button
-                    className="px-4 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-md font-medium text-sm flex items-center gap-1"
-                    onClick={() => handleChangeModal(appointment)}
+                    className="p-3 bg-purple-600 my-2 mx-2 text-white hover:bg-purple-800 text-lg"
+                    onClick={()=>handleChangeModal(appointment)}
                     disabled={loading}
                   >
-                    <CalendarIcon className="w-4 h-4" />
                     {loading ? "Reschedule..." : "Reschedule"}
                   </Button>
-                  
+                
                   <Button
-                    className="px-4 py-1.5 bg-red-600 text-white hover:bg-red-700 rounded-md font-medium text-sm flex items-center gap-1"
-                    onClick={() => handleDelete(appointment.id)}
+                    className="p-3 bg-red-600 text-white hover:bg-red-800 text-lg mr-1  "
+                    onClick={()=>handleDelete(appointment.id)}
                   >
-                    <TrashIcon className="w-4 h-4" />
                     Delete
                   </Button>
-                  
-                  <Button
-                    className="px-4 py-1.5 bg-blue-600 text-white hover:bg-blue-700 rounded-md font-medium text-sm flex items-center gap-1"
-                    onClick={() => handleProfileModal(appointment)}
-                    disabled={loading}
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    {loading ? "Loading..." : "View Profile"}
+                  <Button type="primary"
+                  onClick={()=>handleProfileModal(appointment)}
+                  disabled={loading}>
+                  {loading?"Loading...":"View Profile"}
                   </Button>
                 </div>
               </div>
+             
             </div>
-          )
-        ))}
-      </div>
-    )}
-  </div>
-)}
+            )
+          ))}
+        </div>
+      )}
+
       <Modal
         open={modal}
         onCancel={handleCancelModal}

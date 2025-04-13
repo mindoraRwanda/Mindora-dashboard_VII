@@ -271,7 +271,7 @@ const formatTime = (isoString) => {
                   <div className="flex gap-2">
                     <button
                       className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-                      onClick={() =>ShowEditModal (slot)}
+                      onClick={() => showEditModal(slot)}
                       aria-label="Edit"
                     >
                       <Edit2 size={16} />

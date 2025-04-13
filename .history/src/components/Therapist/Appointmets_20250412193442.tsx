@@ -1,7 +1,7 @@
 import {  useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BiTime } from "react-icons/bi";
-import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid } from "react-icons/fa";
+import { FaRegCalendarAlt, FaUser,FaPhone,FaEnvelope,FaMapMarkerAlt,FaFirstAid, FaBriefcase, FaBriefcaseMedical } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import {
   deleteAppointment,
@@ -15,7 +15,6 @@ import { Appointment } from "../../Redux/TherapistSlice/Appointment";
 import {getAllAppointmentChanges,Reschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import { createReschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import AppointmentChange from "./Appointment Change";
-import { BriefcaseMedicalIcon, CalendarIcon, ClockIcon, EditIcon, TrashIcon, UserIcon } from "lucide-react";
 
 function Appointments() {
   const [filterStatus, setFilterStatus] = useState("all");
@@ -383,7 +382,7 @@ const handleReschedule=async(values:any)=>{
       {activeView === 'patients' && 'Patient List'}
     </h2>
     
-    {getDisplayedAppointments().length === 0 ? (
+    {get().length === 0 ? (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
         <CalendarIcon size={40} className="mx-auto text-gray-400 mb-3" />
         <h3 className="text-lg font-medium text-gray-500 mb-2">No Appointments Found</h3>
@@ -391,7 +390,7 @@ const handleReschedule=async(values:any)=>{
       </div>
     ) : (
       <div className="space-y-4">
-        {getDisplayedAppointments().map((appointment) => (
+        {appointments().map((appointment) => (
           appointment.component ? (
             <div key="appointment-change" className="w-full">
               {appointment.component}
@@ -452,7 +451,7 @@ const handleReschedule=async(values:any)=>{
                   
                   <div className="flex items-start gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg">
-                      <MdLocationOn className="w-5 h-5 text-blue-600" />
+                      <LocationIcon className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Location</p>
@@ -472,7 +471,7 @@ const handleReschedule=async(values:any)=>{
                   
                   <div className="flex items-start gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg">
-                      <ClockIcon className="w-5 h-5 text-blue-600" />
+                      <ClockEndIcon className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">End Time</p>

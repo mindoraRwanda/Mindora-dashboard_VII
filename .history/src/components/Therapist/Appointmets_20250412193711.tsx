@@ -15,7 +15,7 @@ import { Appointment } from "../../Redux/TherapistSlice/Appointment";
 import {getAllAppointmentChanges,Reschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import { createReschedule } from "../../Redux/TherapistSlice/AppointmentChange";
 import AppointmentChange from "./Appointment Change";
-import { BriefcaseMedicalIcon, CalendarIcon, ClockIcon, EditIcon, TrashIcon, UserIcon } from "lucide-react";
+import { BriefcaseMedicalIcon, CalendarIcon, ClockIcon, EditIcon, TrashIcon } from "lucide-react";
 
 function Appointments() {
   const [filterStatus, setFilterStatus] = useState("all");

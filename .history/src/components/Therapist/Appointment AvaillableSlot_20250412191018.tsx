@@ -13,7 +13,7 @@ import {
   updateAvailableSlot,
 } from "../../Redux/TherapistSlice/Appointment_Slot";
 import { createAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
-import { CalendarIcon, ClockIcon, Edit2, Globe, GlobeIcon, PlusCircle, Trash2 } from "lucide-react";
+import { Edit2, Globe, PlusCircle } from "lucide-react";
 
 interface SlotData {
   id: string;
@@ -249,7 +249,7 @@ const formatTime = (isoString) => {
         </div>
 
       {/* All Availlable Slot for the specific Therapist */}
-      {SlotData.length === 0 ? (
+      {slotData.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
             <div className="mb-3">
               <CalendarIcon size={40} className="mx-auto text-gray-400" />
@@ -259,19 +259,19 @@ const formatTime = (isoString) => {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {SlotData.map((slot, index) => (
+            {slotData.map((slot, index) => (
               <div
                 key={index}
                 className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow p-5"
               >
                 <div className="flex justify-between items-start mb-3">
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium bg-purple-500 text-white ${slot.availableDay}`}>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${getDayColor(slot.availableDay)}`}>
                     {slot.availableDay}
                   </div>
                   <div className="flex gap-2">
                     <button
                       className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-                      onClick={() =>ShowEditModal (slot)}
+                      onClick={() => showEditModal(slot)}
                       aria-label="Edit"
                     >
                       <Edit2 size={16} />
@@ -325,6 +325,7 @@ const formatTime = (isoString) => {
             ))}
           </div>
         )}
+    
     </div>
   ));
 

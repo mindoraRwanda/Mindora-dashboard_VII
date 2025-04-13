@@ -249,82 +249,8 @@ const formatTime = (isoString) => {
         </div>
 
       {/* All Availlable Slot for the specific Therapist */}
-      {SlotData.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <div className="mb-3">
-              <CalendarIcon size={40} className="mx-auto text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-500 mb-2">No Appointment Slots</h3>
-            <p className="text-gray-400">Click "Add New Slot" to create your first appointment slot</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">
-            {SlotData.map((slot, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow p-5"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium bg-purple-500 text-white ${slot.availableDay}`}>
-                    {slot.availableDay}
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-                      onClick={() =>ShowEditModal (slot)}
-                      aria-label="Edit"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                      onClick={() => handleDeleteSlot(slot.id)}
-                      aria-label="Delete"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="space-y-3 mt-4">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <CalendarIcon size={18} className="text-indigo-500" />
-                    <div>
-                      <span className="text-gray-500 text-sm">Date:</span> 
-                      <span className="ml-1 font-medium">{slot.date}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <ClockIcon size={18} className="text-indigo-500" />
-                    <div>
-                      <span className="text-gray-500 text-sm">Time:</span> 
-                      <span className="ml-1 font-medium">
-                        {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <GlobeIcon size={18} className="text-indigo-500" />
-                    <div>
-                      <span className="text-gray-500 text-sm">Timezone:</span> 
-                      <span className="ml-1 font-medium">{slot.timeZone}</span>
-                    </div>
-                  </div>
-                  
-                  {slot.recurring && (
-                    <div className="mt-2 flex items-center">
-                      <span className="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full">
-                        Recurring
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+     
+    
     </div>
   ));
 

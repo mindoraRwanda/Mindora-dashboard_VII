@@ -13,7 +13,7 @@ import {
   updateAvailableSlot,
 } from "../../Redux/TherapistSlice/Appointment_Slot";
 import { createAvailableSlot } from "../../Redux/TherapistSlice/Appointment_Slot";
-import { CalendarIcon, ClockIcon, Edit2, Globe, GlobeIcon, PlusCircle, Trash2 } from "lucide-react";
+import { Globe } from "lucide-react";
 
 interface SlotData {
   id: string;
@@ -232,109 +232,86 @@ const formatTime = (isoString) => {
       <Spin size="large" />
     </div>
              ):(
-    <div className="bg-white rounded-lg shadow-xl p-6 mt-1">
-    <div className="bg-white rounded-lg shadow-sm px-6 mt-1">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">
-            Available Appointment Slots
-          </h2>
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors"
-            onClick={showModal}
-          >
-            <PlusCircle size={18} />
-            <span>Add New Slot</span>
-          </button>
-        </div>
-        </div>
+    <div className="bg-white rounded-lg shadow-xl border p-6 mt-3">
+      <div className="flex flex-row justify-between">
+        <h1 className="text-2xl capitalize text-black font-semibold">
+          Appointment Availlable Slots{" "}
+        </h1>
+        <button
+          className="bg-purple-600 text-white p-2 rounded font-semibold flex flex-row gap-2"
+          onClick={showModal}
+        >
+          <FaPlus size={20} />
+          Add New Slot
+        </button>
+      </div>
 
       {/* All Availlable Slot for the specific Therapist */}
-      {SlotData.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <div className="mb-3">
-              <CalendarIcon size={40} className="mx-auto text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-500 mb-2">No Appointment Slots</h3>
-            <p className="text-gray-400">Click "Add New Slot" to create your first appointment slot</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">
-            {SlotData.map((slot, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow p-5"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium bg-purple-500 text-white ${slot.availableDay}`}>
-                    {slot.availableDay}
+      {SlotData.map((item, index) => {
+        return (
+          <div
+            key={index}
+            className="bg-white rounded-md shadow-xl border p-6 my-2"
+          >
+   
+            <div className="flex justify-between">
+              <div>
+                <h1 className="text-purple-600 text-3xl font-semibold mb-5">
+                  {item.availableDay}
+                </h1>
+                <div className="text-black text-xl my-2 flex gap-2">
+                    <BiCalendar color="blue" size={24} className=""/>
+                   <span>Date: </span>
+                   <strong>{item.date}</strong> 
+                 
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-                      onClick={() =>ShowEditModal (slot)}
-                      aria-label="Edit"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                      onClick={() => handleDeleteSlot(slot.id)}
-                      aria-label="Delete"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+                <div className="text-black text-xl my-2 flex gap-2">
+                  <BiTime color="blue" size={24}/>
+                  Start Time:  <strong>{formatTime(item.startTime)}</strong>
                 </div>
-                
-                <div className="space-y-3 mt-4">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <CalendarIcon size={18} className="text-indigo-500" />
-                    <div>
-                      <span className="text-gray-500 text-sm">Date:</span> 
-                      <span className="ml-1 font-medium">{slot.date}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <ClockIcon size={18} className="text-indigo-500" />
-                    <div>
-                      <span className="text-gray-500 text-sm">Time:</span> 
-                      <span className="ml-1 font-medium">
-                        {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <GlobeIcon size={18} className="text-indigo-500" />
-                    <div>
-                      <span className="text-gray-500 text-sm">Timezone:</span> 
-                      <span className="ml-1 font-medium">{slot.timeZone}</span>
-                    </div>
-                  </div>
-                  
-                  {slot.recurring && (
-                    <div className="mt-2 flex items-center">
-                      <span className="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full">
-                        Recurring
-                      </span>
-                    </div>
-                  )}
+                <p className="text-black text-xl my-2 flex  gap-2">
+                <BiTime color="blue" size={24}/>
+                  End Time: <strong>{formatTime(item.endTime)}</strong>
+                </p>
+                <p className="text-black text-xl my-2 flex gap-2">
+                  <Globe color="blue" size={24}/>
+                  Time Zone: <strong>{item.timeZone}</strong> 
+                </p>
+              </div>
+              <div>
+                {/* logic for edit and delete */}
+                <div className="flex gap-8 mt-7">
+                  <button
+                    className="text-xl my-2 text-purple-600 flex gap-1"
+                    onClick={() => ShowEditModal(item)}
+                  >
+                    <BiEdit size={21} className="mt-1" />
+                    Edit
+                  </button>
+                  <button
+                    className="text-xl my-2 text-red-500 flex gap-1"
+                    onClick={() => handleDeleteSlot(item.id)}
+                  >
+                    <FaTrash size={21} className="mt-1" />
+                    Delete
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
+          
           </div>
-        )}
+      );
+      })}
     </div>
   ));
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
       {/* Button selection */}
-      <h1 className="text-black text-2xl p-2 bg-gray-100 flex justify-center font-semibold">
+      <h1 className="text-black text-2xl p-2  flex justify-center font-semibold">
          Availlable Slot
         </h1>
-      <div className="inline-flex p-1 mt-2 rounded-lg bg-gray-100 mb-4">
+      <div className="flex flex-row gap-9  mt-9">
         {["Availlable Slots", "Notifications"].map(
           (buttonName) => (
             <button

@@ -19,7 +19,7 @@ import Data_BackUp from '../components/Admin/Data_BackUp';
 import Financial_Management from '../components/Admin/Financial_Management';
 import Legal_Complaints from '../components/Admin/Legal_Complaints';
 import Course_Management from '../components/Admin/Course_Management';
-import Settings from '../components/settings';
+import Settings from '../componentssettings';
 
 
 

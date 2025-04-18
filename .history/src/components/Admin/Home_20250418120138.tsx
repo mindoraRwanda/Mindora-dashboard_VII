@@ -10,7 +10,9 @@ import {
 } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import { getAllTherapists } from "../../Redux/Adminslice/ThearpySlice";
+import { getAllTherapists, SelectedTotalTherapist } from "../../Redux/Adminslice/ThearpySlice";
+import { selectedTotalUser } from "../../Redux/Adminslice/UserSlice";
+import { SelectedTotalPatints } from "../../Redux/Adminslice/PatientSlice";
 import {
   UserOutlined,
   CalendarOutlined,

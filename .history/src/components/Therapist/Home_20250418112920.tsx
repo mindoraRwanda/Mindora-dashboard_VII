@@ -1,37 +1,82 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store";
-import { Appointment, getAppointmentById, summation_Appointment } from "../../Redux/TherapistSlice/Appointment";
+import { getAppointmentById, summation_Appointment } from "../../Redux/TherapistSlice/Appointment";
 import { Chart, registerables } from "chart.js";
-import { getAllPatientOfTherapy } from "../../Redux/Adminslice/PatientSlice";
 
 // Register all Chart.js components
 Chart.register(...registerables);
 
-
-interface UpcomingAppointment {
+type Appointment = {
   id: string;
-  patientName: string;
-  date: string;
-  time: string;
-  status: string;
-}
+  patientName?: string;
+  date?: string;
+  time?: string;
+  status?: string;
+  patient?: {
+    personalInformation?: {
+      gender?: string;
+      fullName?: string;
+    }
+  }
+};
+
+type Patient = {
+  id: string;
+  personalInformation: {
+    fullName: string;
+    gender: string;
+  };
+  condition?: string;
+  lastAppointment?: string;
+  nextAppointment?: string;
+  treatmentProgress?: number;
+};
 
 // Mock data for upcoming appointments
-const upcomingAppointments: UpcomingAppointment[] = [
+const upcomingAppointments: Appointment[] = [
   { id: "1", patientName: "John Doe", date: "2025-04-19", time: "10:00 AM", status: "Confirmed" },
   { id: "2", patientName: "Sarah Johnson", date: "2025-04-19", time: "2:30 PM", status: "Pending" },
   { id: "3", patientName: "Michael Smith", date: "2025-04-20", time: "9:15 AM", status: "Confirmed" }
-] ;
+];
 
+// Mock data for recent patients
+const recentPatients: Patient[] = [
+  { 
+    id: "1", 
+    personalInformation: { fullName: "Emma Davis", gender: "female" },
+    condition: "Anxiety",
+    lastAppointment: "2025-04-15",
+    nextAppointment: "2025-04-22",
+    treatmentProgress: 65
+  },
+  { 
+    id: "2", 
+    personalInformation: { fullName: "James Wilson", gender: "male" },
+    condition: "Depression",
+    lastAppointment: "2025-04-16",
+    nextAppointment: "2025-04-23",
+    treatmentProgress: 42
+  },
+  { 
+    id: "3", 
+    personalInformation: { fullName: "Olivia Brown", gender: "female" },
+    condition: "PTSD",
+    lastAppointment: "2025-04-17",
+    nextAppointment: "2025-04-24",
+    treatmentProgress: 78
+  }
+];
 
-
-export default function Home  ()  {
+const Home = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("week");
   const [notificationCount, setNotificationCount] = useState<number>(3);
+  
   const appointmentChartRef = useRef<HTMLCanvasElement | null>(null);
   const patientsChartRef = useRef<HTMLCanvasElement | null>(null);
   const treatmentGrowthChartRef = useRef<HTMLCanvasElement | null>(null);
   const sessionsChartRef = useRef<HTMLCanvasElement | null>(null);
+
   const appointmentChartInstance = useRef<Chart | null>(null);
   const patientsChartInstance = useRef<Chart | null>(null);
   const treatmentGrowthChartInstance = useRef<Chart | null>(null);
@@ -45,10 +90,6 @@ export default function Home  ()  {
       dispatch(getAppointmentById(therapistId));
     }
   }, [dispatch, therapistId]);
-
-  useEffect(()=>{
-    dispatch(getAllPatientOfTherapy(therapistId as string));
-  },[dispatch, therapistId])
   
   const appointmentStatus = useSelector((state: RootState) => state.appointment.status);
   const appointments = useSelector((state: RootState) => state.appointment.appointments) as Appointment[];
@@ -89,8 +130,7 @@ export default function Home  ()  {
             legend: {
               position: 'bottom'
             }
-          },
-          cutout: '65%',
+          }
         }
       });
     }
@@ -194,6 +234,19 @@ export default function Home  ()  {
       });
     }
   }, []);
+
+  // Format date to display in a readable format
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Handle period change for analytics
+  const handlePeriodChange = (period: string) => {
+    setSelectedPeriod(period);
+    // Here you would normally fetch new data based on the selected period
+  };
+
   // Clear all notifications
   const clearNotifications = () => {
     setNotificationCount(0);
@@ -202,24 +255,32 @@ export default function Home  ()  {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-semibold text-gray-700">Welcome back to <strong>Dashboard</strong></h1>    
+        <h1 className="text-3xl font-semibold text-gray-700">Welcome back to <strong>Dashboard</strong></h1>
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {notificationCount > 0 && (
+                <span className="absolute top-0 right-0 h-5 w-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {notificationCount}
+                </span>
+              )}
+            </button>
+          </div>
+          <button className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span>New Appointment</span>
+          </button>
+        </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-green-600 bg-opacity-75 text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <div className="ml-5">
-              <h4 className="text-2xl font-semibold text-gray-700">6</h4>
-              <div className="text-gray-500">All Patients</div>
-            </div>
-          </div>
-        </div>
+        {/* Appointments Card */}
         <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-indigo-600 bg-opacity-75 text-white">
@@ -267,30 +328,17 @@ export default function Home  ()  {
         </div>
 
         {/* Active Patients Card */}
-   
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Appointed Chart */}
-         <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
-          <h3 className="text-xl text-gray-500 font-semibold mb-4">Appointed</h3>
-          <div className="h-56">
-          <canvas ref={appointmentChartRef} className="flex justify-center ml-10" />
-          </div>
-        </div>
-
-        {/* Patients Chart */}
-         <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
-          <h3 className="text-xl text-gray-500 font-semibold mb-4">Patients</h3>
-          <div className="h-56">
-          <canvas ref={patientsChartRef}  className="ml-10"/>
-          </div>
-        </div>
-
-        {/* Treatment Growth Chart */}
-         <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
-          <h3 className="text-xl text-gray-500 font-semibold mb-4">Treatment Growth</h3>
-          <div className="h-56">
-          <canvas ref={treatmentGrowthChartRef} />
+        <div className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition duration-300">
+          <div className="flex items-center">
+            <div className="p-3 rounded-full bg-green-600 bg-opacity-75 text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div className="ml-5">
+              <h4 className="text-2xl font-semibold text-gray-700">10</h4>
+              <div className="text-gray-500">Active Patients</div>
+            </div>
           </div>
         </div>
       </div>
@@ -407,7 +455,103 @@ export default function Home  ()  {
         </div>
       </div>
 
-    
-    
+      {/* Analytics Section */}
+      <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
+        <div className="flex flex-wrap justify-between items-center mb-6">
+          <h3 className="text-xl text-gray-700 font-semibold">Analytics Overview</h3>
+          <div className="flex space-x-2 mt-2 sm:mt-0">
+            <button 
+              onClick={() => handlePeriodChange('week')}
+              className={`px-3 py-1 text-sm rounded-md ${
+                selectedPeriod === 'week' 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Week
+            </button>
+            <button 
+              onClick={() => handlePeriodChange('month')}
+              className={`px-3 py-1 text-sm rounded-md ${
+                selectedPeriod === 'month' 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Month
+            </button>
+            <button 
+              onClick={() => handlePeriodChange('year')}
+              className={`px-3 py-1 text-sm rounded-md ${
+                selectedPeriod === 'year' 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Year
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="text-sm text-gray-500 font-medium">Total Sessions</h4>
+            <div className="flex items-center mt-2">
+              <span className="text-2xl font-bold text-gray-700">124</span>
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">+12%</span>
+            </div>
+          </div>
+          
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="text-sm text-gray-500 font-medium">New Patients</h4>
+            <div className="flex items-center mt-2">
+              <span className="text-2xl font-bold text-gray-700">8</span>
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">+5%</span>
+            </div>
+          </div>
+          
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="text-sm text-gray-500 font-medium">Completion Rate</h4>
+            <div className="flex items-center mt-2">
+              <span className="text-2xl font-bold text-gray-700">92%</span>
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">+3%</span>
+            </div>
+          </div>
+          
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="text-sm text-gray-500 font-medium">Avg. Session Duration</h4>
+            <div className="flex items-center mt-2">
+              <span className="text-2xl font-bold text-gray-700">48 min</span>
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">-2%</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="h-72">
+          <canvas ref={sessionsChartRef} />
+        </div>
       </div>
-)}
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Appointed Chart */}
+        <div className="bg-white rounded-lg shadow-xl p-6">
+          <h3 className="text-xl text-gray-500 font-semibold mb-4">Appointed</h3>
+          <canvas ref={appointmentChartRef} />
+        </div>
+
+        {/* Patients Chart */}
+        <div className="bg-white rounded-lg shadow-xl p-6">
+          <h3 className="text-xl text-gray-500 font-semibold mb-4">Patients</h3>
+          <canvas ref={patientsChartRef} />
+        </div>
+
+        {/* Treatment Growth Chart */}
+        <div className="bg-white rounded-lg shadow-xl p-6">
+          <h3 className="text-xl text-gray-500 font-semibold mb-4">Treatment Growth</h3>
+          <canvas ref={treatmentGrowthChartRef} />
+        </div>
+      </div>
+
+      {/* Recent Patients */}
+      }

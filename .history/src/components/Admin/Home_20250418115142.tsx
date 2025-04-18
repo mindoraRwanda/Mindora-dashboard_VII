@@ -10,7 +10,9 @@ import {
 } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import { getAllTherapists } from "../../Redux/Adminslice/ThearpySlice";
+import { getAllTherapists, SelectedTotalTherapist } from "../../Redux/Adminslice/ThearpySlice";
+import { selectedTotalUser } from "../../Redux/Adminslice/UserSlice";
+import { SelectedTotalPatints } from "../../Redux/Adminslice/PatientSlice";
 import {
   UserOutlined,
   CalendarOutlined,
@@ -99,6 +101,7 @@ const Home = ({ userRole }: HomeProps) => {
 
   // Selectors
   const therapyStatus = useSelector((state: any) => state.Therapy.status);
+
   
   const therapists = useSelector((state: RootState) => state.Therapy.therapists);
   const patients = useSelector((state: RootState) => state.patients.patients);
@@ -264,7 +267,7 @@ const Home = ({ userRole }: HomeProps) => {
                 User's Gender Breakdown
               </h3>
               <div className="h-56">
-                <canvas ref={chartRefUser}/>
+                <canvas ref={chartRefUser}></canvas>
               </div>
             </div>
             

@@ -9,20 +9,14 @@ import { getAllPatientOfTherapy } from "../../Redux/Adminslice/PatientSlice";
 Chart.register(...registerables);
 
 
-interface UpcomingAppointment {
-  id: string;
-  patientName: string;
-  date: string;
-  time: string;
-  status: string;
-}
+
 
 // Mock data for upcoming appointments
-const upcomingAppointments: UpcomingAppointment[] = [
+const upcomingAppointments: Appointment[] = [
   { id: "1", patientName: "John Doe", date: "2025-04-19", time: "10:00 AM", status: "Confirmed" },
   { id: "2", patientName: "Sarah Johnson", date: "2025-04-19", time: "2:30 PM", status: "Pending" },
   { id: "3", patientName: "Michael Smith", date: "2025-04-20", time: "9:15 AM", status: "Confirmed" }
-] ;
+];
 
 
 

@@ -9,20 +9,14 @@ import { getAllPatientOfTherapy } from "../../Redux/Adminslice/PatientSlice";
 Chart.register(...registerables);
 
 
-interface UpcomingAppointment {
-  id: string;
-  patientName: string;
-  date: string;
-  time: string;
-  status: string;
-}
+
 
 // Mock data for upcoming appointments
-const upcomingAppointments: UpcomingAppointment[] = [
+const upcomingAppointments: Appointment[] = [
   { id: "1", patientName: "John Doe", date: "2025-04-19", time: "10:00 AM", status: "Confirmed" },
   { id: "2", patientName: "Sarah Johnson", date: "2025-04-19", time: "2:30 PM", status: "Pending" },
   { id: "3", patientName: "Michael Smith", date: "2025-04-20", time: "9:15 AM", status: "Confirmed" }
-] ;
+];
 
 
 
@@ -47,11 +41,13 @@ export default function Home  ()  {
   }, [dispatch, therapistId]);
 
   useEffect(()=>{
-    dispatch(getAllPatientOfTherapy(therapistId as string));
+    dispatch(getAllPatientOfTherapy(therapistId));
   },[dispatch, therapistId])
   
   const appointmentStatus = useSelector((state: RootState) => state.appointment.status);
   const appointments = useSelector((state: RootState) => state.appointment.appointments) as Appointment[];
+  const totalPatientData =useSelector((state:RootState)=>state.patients.data);
+  const totalPatientCount=
   const totalAppointments = useSelector(summation_Appointment);
   
   // Function to analyze gender data from appointments
@@ -215,8 +211,8 @@ export default function Home  ()  {
               </svg>
             </div>
             <div className="ml-5">
-              <h4 className="text-2xl font-semibold text-gray-700">6</h4>
-              <div className="text-gray-500">All Patients</div>
+              <h4 className="text-2xl font-semibold text-gray-700">{totalPatient}</h4>
+              <div className="text-gray-500">Active Patients</div>
             </div>
           </div>
         </div>

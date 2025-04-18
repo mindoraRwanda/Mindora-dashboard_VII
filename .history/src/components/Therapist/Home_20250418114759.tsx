@@ -1,28 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store";
-import { Appointment, getAppointmentById, summation_Appointment } from "../../Redux/TherapistSlice/Appointment";
+import { getAppointmentById, summation_Appointment } from "../../Redux/TherapistSlice/Appointment";
 import { Chart, registerables } from "chart.js";
-import { getAllPatientOfTherapy } from "../../Redux/Adminslice/PatientSlice";
 
 // Register all Chart.js components
 Chart.register(...registerables);
 
-
-interface UpcomingAppointment {
+type Appointment = {
   id: string;
-  patientName: string;
-  date: string;
-  time: string;
-  status: string;
-}
+  patientName?: string;
+  date?: string;
+  time?: string;
+  status?: string;
+  patient?: {
+    personalInformation?: {
+      gender?: string;
+      fullName?: string;
+    }
+  }
+};
+
 
 // Mock data for upcoming appointments
-const upcomingAppointments: UpcomingAppointment[] = [
+const upcomingAppointments: Appointment[] = [
   { id: "1", patientName: "John Doe", date: "2025-04-19", time: "10:00 AM", status: "Confirmed" },
   { id: "2", patientName: "Sarah Johnson", date: "2025-04-19", time: "2:30 PM", status: "Pending" },
   { id: "3", patientName: "Michael Smith", date: "2025-04-20", time: "9:15 AM", status: "Confirmed" }
-] ;
+];
 
 
 
@@ -45,10 +50,6 @@ export default function Home  ()  {
       dispatch(getAppointmentById(therapistId));
     }
   }, [dispatch, therapistId]);
-
-  useEffect(()=>{
-    dispatch(getAllPatientOfTherapy(therapistId as string));
-  },[dispatch, therapistId])
   
   const appointmentStatus = useSelector((state: RootState) => state.appointment.status);
   const appointments = useSelector((state: RootState) => state.appointment.appointments) as Appointment[];
@@ -89,8 +90,7 @@ export default function Home  ()  {
             legend: {
               position: 'bottom'
             }
-          },
-          cutout: '65%',
+          }
         }
       });
     }
@@ -215,8 +215,8 @@ export default function Home  ()  {
               </svg>
             </div>
             <div className="ml-5">
-              <h4 className="text-2xl font-semibold text-gray-700">6</h4>
-              <div className="text-gray-500">All Patients</div>
+              <h4 className="text-2xl font-semibold text-gray-700">10</h4>
+              <div className="text-gray-500">Active Patients</div>
             </div>
           </div>
         </div>
@@ -269,29 +269,23 @@ export default function Home  ()  {
         {/* Active Patients Card */}
    
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {/* Appointed Chart */}
-         <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
+        <div className="bg-white rounded-lg shadow-xl p-6">
           <h3 className="text-xl text-gray-500 font-semibold mb-4">Appointed</h3>
-          <div className="h-56">
-          <canvas ref={appointmentChartRef} className="flex justify-center ml-10" />
-          </div>
+          <canvas ref={appointmentChartRef} />
         </div>
 
         {/* Patients Chart */}
-         <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
+        <div className="bg-white rounded-lg shadow-xl p-6">
           <h3 className="text-xl text-gray-500 font-semibold mb-4">Patients</h3>
-          <div className="h-56">
-          <canvas ref={patientsChartRef}  className="ml-10"/>
-          </div>
+          <canvas ref={patientsChartRef} />
         </div>
 
         {/* Treatment Growth Chart */}
-         <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
+        <div className="bg-white rounded-lg shadow-xl p-6">
           <h3 className="text-xl text-gray-500 font-semibold mb-4">Treatment Growth</h3>
-          <div className="h-56">
           <canvas ref={treatmentGrowthChartRef} />
-          </div>
         </div>
       </div>
       

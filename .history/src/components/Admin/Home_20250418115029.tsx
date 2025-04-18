@@ -10,9 +10,15 @@ import {
 } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import { getAllTherapists } from "../../Redux/Adminslice/ThearpySlice";
+import { getAllTherapists, SelectedTotalTherapist } from "../../Redux/Adminslice/ThearpySlice";
+import { selectedTotalUser } from "../../Redux/Adminslice/UserSlice";
+import { SelectedTotalPatints } from "../../Redux/Adminslice/PatientSlice";
 import {
   UserOutlined,
+  VideoCameraOutlined,
+  BarChartOutlined,
+  MedicineBoxOutlined,
+  TeamOutlined,
   CalendarOutlined,
   PhoneOutlined,
   PlusCircleOutlined,
@@ -99,6 +105,12 @@ const Home = ({ userRole }: HomeProps) => {
 
   // Selectors
   const therapyStatus = useSelector((state: any) => state.Therapy.status);
+  const patientStatus = useSelector((state: any) => state.patients.status);
+  const userStatus = useSelector((state: any) => state.users.status);
+  
+  const totalTherapists = useSelector(SelectedTotalTherapist);
+  const totalUsers = useSelector(selectedTotalUser);
+  const totalPatients = useSelector(SelectedTotalPatints);
   
   const therapists = useSelector((state: RootState) => state.Therapy.therapists);
   const patients = useSelector((state: RootState) => state.patients.patients);
@@ -255,7 +267,7 @@ const Home = ({ userRole }: HomeProps) => {
       <div className="container mx-auto px-4 py-6">
         <h2 className="text-3xl font-bold ml-1 text-gray-800 mb-8">
           Welcome back, {userRole === "therapist" ? "Dr. Smith" : "Admin"}!
-        </h2>
+        </h2
         {/* Gender Breakdown Charts (Admin only) */}
         {userRole === "admin" && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -264,7 +276,7 @@ const Home = ({ userRole }: HomeProps) => {
                 User's Gender Breakdown
               </h3>
               <div className="h-56">
-                <canvas ref={chartRefUser}/>
+                <canvas ref={chartRefUser}></canvas>
               </div>
             </div>
             

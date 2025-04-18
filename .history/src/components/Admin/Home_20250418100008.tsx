@@ -10,9 +10,15 @@ import {
 } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import { getAllTherapists } from "../../Redux/Adminslice/ThearpySlice";
+import { getAllTherapists, SelectedTotalTherapist } from "../../Redux/Adminslice/ThearpySlice";
+import { selectedTotalUser } from "../../Redux/Adminslice/UserSlice";
+import { SelectedTotalPatints } from "../../Redux/Adminslice/PatientSlice";
 import {
   UserOutlined,
+  VideoCameraOutlined,
+  BarChartOutlined,
+  MedicineBoxOutlined,
+  TeamOutlined,
   CalendarOutlined,
   PhoneOutlined,
   PlusCircleOutlined,
@@ -99,6 +105,12 @@ const Home = ({ userRole }: HomeProps) => {
 
   // Selectors
   const therapyStatus = useSelector((state: any) => state.Therapy.status);
+  const patientStatus = useSelector((state: any) => state.patients.status);
+  const userStatus = useSelector((state: any) => state.users.status);
+  
+  const totalTherapists = useSelector(SelectedTotalTherapist);
+  const totalUsers = useSelector(selectedTotalUser);
+  const totalPatients = useSelector(SelectedTotalPatints);
   
   const therapists = useSelector((state: RootState) => state.Therapy.therapists);
   const patients = useSelector((state: RootState) => state.patients.patients);
@@ -253,9 +265,84 @@ const Home = ({ userRole }: HomeProps) => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 py-6">
-        <h2 className="text-3xl font-bold ml-1 text-gray-800 mb-8">
+        <h2 className="text-3xl font-bold text-gray-800 mb-8">
           Welcome back, {userRole === "therapist" ? "Dr. Smith" : "Admin"}!
         </h2>
+
+        {/* Stat Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {userRole === "therapist" ? (
+            <>
+              <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-indigo-100 text-indigo-600">
+                    <CalendarOutlined style={{ fontSize: 24 }} />
+                  </div>
+                  <div className="ml-5">
+                    <h4 className="text-2xl font-semibold text-gray-800">8</h4>
+                    <div className="text-gray-500">New Appointments</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-green-100 text-green-600">
+                    <VideoCameraOutlined style={{ fontSize: 24 }} />
+                  </div>
+                  <div className="ml-5">
+                    <h4 className="text-2xl font-semibold text-gray-800">3</h4>
+                    <div className="text-gray-500">Upcoming Video Calls</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-pink-100 text-pink-600">
+                    <BarChartOutlined style={{ fontSize: 24 }} />
+                  </div>
+                  <div className="ml-5">
+                    <h4 className="text-2xl font-semibold text-gray-800">5</h4>
+                    <div className="text-gray-500">New Reports</div>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-purple-100 text-purple-600">
+                    <MedicineBoxOutlined style={{ fontSize: 24 }} />
+                  </div>
+                  <div className="ml-5">
+                    <h4 className="text-2xl font-semibold text-gray-800">
+                      {therapyStatus === "loading" ? "..." : totalTherapists}
+                    </h4>
+                    <div className="text-gray-500">Total Therapists</div>
+                  </div>
+                </div>
+              </div>
+         
+              
+              <div className="bg-white rounded-xl shadow p-6 transition-all hover:shadow-lg">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <UserOutlined style={{ fontSize: 24 }} />
+                  </div>
+                  <div className="ml-5">
+                    <h4 className="text-2xl font-semibold text-gray-800">
+                      {patientStatus === "loading" ? "..." : totalPatients}
+                    </h4>
+                    <div className="text-gray-500">Total Patients</div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
         {/* Gender Breakdown Charts (Admin only) */}
         {userRole === "admin" && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -264,7 +351,7 @@ const Home = ({ userRole }: HomeProps) => {
                 User's Gender Breakdown
               </h3>
               <div className="h-56">
-                <canvas ref={chartRefUser}/>
+                <canvas ref={chartRefUser}></canvas>
               </div>
             </div>
             

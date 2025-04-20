@@ -38,10 +38,10 @@ const Login = () => {
             });
           };
           const role = resultAction.payload.user.role;
-          if (role === 'admin') {
+          if (role === 'Admin') {
             navigate('/dashboard');
           } else
-           if (role === 'therapist') {
+           if (role === 'Therapist') {
             navigate('/therapy');
           } else {
             alert('Unauthorized access');

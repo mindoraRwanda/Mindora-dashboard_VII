@@ -48,7 +48,7 @@ export type Patient = {
 };
 
 
-export default function PatientsList(goToPlan: any) {
+export default function PatientsList({ goToPlan }: { goToPlan: (patientId: string) => any })  {
 const patient = useSelector((state: RootState) => state.patients.patients);
 const status = useSelector((state: RootState) => state.patients.status);
 const invoiceStatus = useSelector((state: RootState) => state.invoice.status);

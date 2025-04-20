@@ -157,7 +157,7 @@ const previewImage = (file: File) => {
              {openDropdown === "appointments" && (
                <div className="ml-6">
                  <a
-                   onClick={() => setActiveComponent("ts")}
+                   onClick={() => setActiveComponent("AvaillableSlots")}
                    className="block text-xl ml-4 my-3  text-gray-700 hover:bg-white p-2 rounded-sm transition duration-200 cursor-pointer"
                  >
                    <p className="flex "><BiCircle className="m-1" /> Availlable slots</p>

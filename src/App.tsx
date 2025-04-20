@@ -5,9 +5,11 @@ import TherapyDashboard from './Pages/TherapyRoutes';
 import ForgotPassword from './Pages/forgot-password';
 import { ResetPassword } from './Pages/resertPassword';
 import ViewAppointment from './components/Therapist/Appointment AvaillableSlot';
+import { StrictMode } from 'react';
 
 function App() {
   return (
+    
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path='/forgot-password' element={<ForgotPassword />} />

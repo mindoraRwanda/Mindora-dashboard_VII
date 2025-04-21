@@ -282,7 +282,7 @@ export default function AdminTherapistList() {
 
   return (
    
-    <div className="bg-white rounded-lg shadow-xl p-6">
+    <div className="bg-white rounded-lg shadow-xl  mt-10 p-3">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-semibold mb-4 text-purple-600">
           Therapists
@@ -335,127 +335,117 @@ export default function AdminTherapistList() {
      <div>
       {/* logic gfor loading */}
 
-          <table id="therapist-table" className="min-w-full">
-        <thead>
-          <tr>
-          <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-            no
-            </th>
-            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-            Name
-            </th>
-            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Address
-            </th>
-
-            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Phone Number
-            </th>
-            <th className="px-4 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Diploma
-            </th>
-            <th className="px-4 py-3 w-40 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              license
-            </th>
-            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Gender
-            </th>
-            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody  className="bg-white divide-y divide-gray-200">
-          {currentTherapy.map((therapist,index) => (
-            <tr key={therapist.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {(currentPage - 1) * itemsPerPage + index + 1}
-                </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="h-10 w-10 flex-shrink-0">
-                      {therapist.user.profileImage ? (
-                        <img
-                          className="h-10 w-10 rounded-full object-cover"
-                          src={therapist.user.profileImage}
-                          alt=""
-                        />
-                      ) : (
-                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-500">{therapist.user.firstName?.charAt(0)}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {therapist.user.firstName} {therapist.user.lastName}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {therapist.user.email}
+      <table id="therapist-table" className="w-full table-auto">
+  <thead>
+    <tr>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        No
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Name
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Address
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Phone
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Diploma
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        License
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Gender
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Actions
+      </th>
+    </tr>
+  </thead>
+  <tbody className="bg-white divide-y divide-gray-200">
+    {currentTherapy.map((therapist, index) => (
+      <tr key={therapist.id}>
+        <td className="px-2 py-3 text-sm text-gray-900">
+          {(currentPage - 1) * itemsPerPage + index + 1}
+        </td>
+        <td className="px-2 py-3">
+          <div className="flex items-center">
+            <div className="h-8 w-8 flex-shrink-0">
+              {therapist.user.profileImage ? (
+                <img
+                  className="h-8 w-8 rounded-full object-cover"
+                  src={therapist.user.profileImage}
+                  alt=""
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">{therapist.user.firstName?.charAt(0)}</span>
                 </div>
-              </td>
-              <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
-                <div className="text-sm leading-5 text-gray-900">
-                  {therapist.user.phoneNumber}
-                </div>
-              </td>
-              <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
-                <div className="text-sm w-40 leading-5 text-gray-900">
-                  <button className="bg-transparent text-black flex flex-row gap-2 border-purple-600 border rounded p-2" 
-                  onClick={()=>handleDiploma(therapist.diploma)}>
-                    Get Diploma <FiDownload/>
-                  </button>
-                
-                </div>
-              </td>
-              <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
-                <div className="text-sm w-40 leading-5 text-gray-900">
-                <button className="bg-transparent text-black flex flex-row gap-2 border-purple-600 border rounded p-2"
-                onClick={()=>handleLicense(therapist.licence)}
-                >
-                    Get License <FiDownload/>
-                  </button>
-                
-                </div>
-              </td> 
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold 
-                    ${therapist.personalInformation.gender === 'female' ? 'bg-pink-100 text-pink-800' : 
-                      therapist.personalInformation.gender === 'male' ? 'bg-blue-100 text-blue-800' : 
-                      'bg-purple-100 text-purple-800'}`}>
-                    {therapist.personalInformation.gender}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={() => handleView(therapist)} 
-                      className="p-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                    >
-                      <FiEye className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => handleEdit(therapist)} 
-                      className="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition-colors"
-                    >
-                      <FiEdit className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(therapist.id)} 
-                      className="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
-                    >
-                      <FiTrash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              )}
+            </div>
+            <div className="ml-2">
+              <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                {therapist.user.firstName} {therapist.user.lastName}
+              </div>
+            </div>
+          </div>
+        </td>
+        <td className="px-2 py-3 text-sm text-gray-900">
+          <div className="truncate max-w-xs">
+            {therapist.user.email}
+          </div>
+        </td>
+        <td className="px-2 py-3 text-sm text-gray-900">
+          {therapist.user.phoneNumber}
+        </td>
+        <td className="px-2 py-3 text-sm text-gray-900">
+          <button className="bg-transparent text-black flex items-center gap-1 border-purple-600 border rounded p-1 text-xs" 
+            onClick={() => handleDiploma(therapist.diploma)}>
+            <span>Diploma</span> <FiDownload size={12} />
+          </button>
+        </td>
+        <td className="px-2 py-3 text-sm text-gray-900">
+          <button className="bg-transparent text-black flex items-center gap-1 border-purple-600 border rounded p-1 text-xs"
+            onClick={() => handleLicense(therapist.licence)}>
+            <span>License</span> <FiDownload size={12} />
+          </button>
+        </td> 
+        <td className="px-2 py-3 text-sm text-gray-500">
+          <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold 
+            ${therapist.personalInformation.gender === 'female' ? 'bg-pink-100 text-pink-800' : 
+            therapist.personalInformation.gender === 'male' ? 'bg-blue-100 text-blue-800' : 
+            'bg-purple-100 text-purple-800'}`}>
+            {therapist.personalInformation.gender}
+          </span>
+        </td>
+        <td className="px-2 py-3 text-sm text-gray-500">
+          <div className="flex space-x-1">
+            <button 
+              onClick={() => handleView(therapist)} 
+              className="p-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            >
+              <FiEye className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => handleEdit(therapist)} 
+              className="p-1 rounded-md text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition-colors"
+            >
+              <FiEdit className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => handleDelete(therapist.id)} 
+              className="p-1 rounded-md text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
+            >
+              <FiTrash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
           
       </div>
       {/* Pagination Controls */}

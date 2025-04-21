@@ -331,7 +331,7 @@ const formatTime = (isoString:any) => {
   ));
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-6">
+    <div className="bg-white rounded-lg shadow-xl p-3 mt-9">
       {/* Button selection */}
       <h1 className="text-black text-2xl p-2 bg-gray-100 flex justify-center font-semibold">
          Availlable Slot

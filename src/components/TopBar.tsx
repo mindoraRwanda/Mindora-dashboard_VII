@@ -127,14 +127,14 @@ export default function TopBar({ userRole, items = [] }: TopBarProps) {
   };
 
   return (
-    <header className="bg-white shadow-md w-full fixed z-10">
-      <div className="max-w-7xl mx-10 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <h1 className="lg:text-2xl font-semibold text-purple-600 sm:text-sm md:text-sm">
+    <header className="bg-white shadow-md w-full fixed z-50">
+      <div className="max-w-4xl mx-10 sm:px-6 lg:px-8 py-2 flex justify-between items-center">
+        <h1 className="lg:text-xl font-semibold text-purple-600 sm:text-sm md:text-sm">
           {userRole === "therapist" ? t('Therapist_dashboard') : t('Admin_dashboard')}
         </h1>
 
         <div className="flex gap-4 items-center">
-          <div className="text-gray-600 text-xl">
+          <div className="text-gray-600 text-lg">
             <select
               id="languageSelect"
               className="form-select p-1 rounded border-2 border-gray-100"
@@ -147,7 +147,7 @@ export default function TopBar({ userRole, items = [] }: TopBarProps) {
           </div>
 
           <button className="text-purple-600 mx-3" onClick={handleModal}>
-            <IoCalendarNumber size={32} />
+            <IoCalendarNumber size={20} />
           </button>
 
           <Dropdown
@@ -157,7 +157,7 @@ export default function TopBar({ userRole, items = [] }: TopBarProps) {
           >
             <div className="relative">
               <a className="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                <MdOutlineMessage className="text-3xl ml-5 text-purple-600" />
+                <MdOutlineMessage className="text-xl ml-5 text-purple-600" />
                 {messageCount > 0 && (
                   <span className="absolute -top-3 -right-1 italic rounded-full text-xl font-medium text-red-500">{messageCount}</span>
                 )}
@@ -166,10 +166,10 @@ export default function TopBar({ userRole, items = [] }: TopBarProps) {
           </Dropdown>
 
           <a href="#" data-bs-toggle="dropdown">
-            <MdNotificationsNone className="text-3xl ml-5 text-purple-600" />
+            <MdNotificationsNone className="text-xl ml-5 text-purple-600" />
           </a>
 
-          <div className="flex items-center gap-2 relative">
+          <div className="flex items-center gap-2 relative ml-5">
             <img
               onClick={() => setOpen(!open)}
               src={profilePhoto || "https://via.placeholder.com/40"}
@@ -177,7 +177,7 @@ export default function TopBar({ userRole, items = [] }: TopBarProps) {
               className="w-10 h-10 rounded-full cursor-pointer"
             />
             <span
-              className="text-gray-700 font-medium capitalize text-xl cursor-pointer"
+              className="text-gray-700 font-medium capitalize text-lg cursor-pointer"
               onClick={() => setOpen(!open)}
             >
               {name}

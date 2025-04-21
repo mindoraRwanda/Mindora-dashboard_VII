@@ -397,34 +397,34 @@ const handleUpdateInvoice = async (invoiceId: any) => {
         </div>
       </div>
     
-        <table id="Patient-table" className="min-w-full">
+        <table id="Patient-table" className="w-full table-auto">
           <thead>
             <tr>
-            <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+  <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           N0
             </th>
-              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Names
               </th>
-              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Email
               </th>
-              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 phone
               </th>
-              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Gender
               </th>
-              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Age
               </th>
-              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Last Visit
               </th>
-              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
-              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+    <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Select
               </th>
             </tr>
@@ -432,58 +432,58 @@ const handleUpdateInvoice = async (invoiceId: any) => {
           <tbody className="bg-white divide-y divide-gray-200">
             {currentPatients.map((patient,index) => (
               <tr key={patient.id} className="hover:bg-gray-100">
-                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                 <td className="px-2 py-3 whitespace-nowrap text-sm text-gray-900">
                   {(currentPage - 1) * itemsPerPage + index + 1}
                 </td>
-                <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
+                <td className="px-2 py-3 whitespace-no-wrap  border-gray-500">
                
                 <div className="flex items-center">
-                    <div className="h-10 w-10 flex-shrink-0">
+                    <div className="h-8 w-8 flex-shrink-0">
                       {patient.user.profileImage ? (
                         <img
-                          className="h-10 w-10 rounded-full object-cover"
+                          className="h-8 w-8 rounded-full object-cover"
                           src={patient.user.profileImage}
                           alt=""
                         />
                       ) : (
-                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
                           <span className="text-gray-500">{patient.user.firstName?.charAt(0)}</span>
                         </div>
                       )}
                     </div>
-                    <div className="ml-4">
+                    <div className="ml-2">
                       <div className="text-sm font-medium text-gray-900">
                         {patient.user.firstName} {patient.user.lastName}
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
+                <td className="px-2 py-3   border-gray-500">
                   <div className="text-sm leading-5 text-gray-900">
                     {patient.user.email}
                   </div>
                 </td>
-                <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
+                <td className="px-2 py-3   border-gray-500">
                   <div className="text-sm leading-5 text-gray-900">
                     {patient.user.phoneNumber}
                   </div>
                 </td>
-                <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
+                <td className="px-2 py-3 border-gray-500">
                   <div className="text-sm leading-5 text-gray-900">
                     {patient.personalInformation.gender}
                   </div>
                 </td>
-                <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
+                <td className="px-2 py-3   border-gray-500">
                   <div className="text-sm leading-5 text-gray-900">
                     {patient.personalInformation.age}
                   </div>
                 </td>
-                <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
+                <td className="px-2 py-3   border-gray-500">
                   <div className="text-sm leading-5 text-gray-900">
                     {patient.medicalProfile.lastVisit}
                   </div>
                 </td>
-                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                 <td className="px-2 py-3  text-sm text-gray-500">
                                           <div className="flex space-x-2">
                                             <button 
                                               onClick={() => handleView(patient)} 
@@ -505,10 +505,10 @@ const handleUpdateInvoice = async (invoiceId: any) => {
                                             </button>
                                           </div>
                                       </td>
-                <td className="px-4 py-3 whitespace-no-wrap  border-gray-500">
+                <td className="px-2 py-3   border-gray-500">
                   <div className="text-sm leading-5 text-gray-900">
                     <button
-                      className="bg-purple-600 text-white p-2 rounded font-semibold"
+                      className="bg-purple-600 text-white p-1 rounded font-semibold"
                       onClick={() => goToPlan(String(patient.id))}
                     >
                     Make Plan
@@ -520,7 +520,7 @@ const handleUpdateInvoice = async (invoiceId: any) => {
           </tbody>
         </table>
          {/* Pagination Controls */}
-         <div className="flex justify-between items-center mt-4 px-6">
+         <div className="flex justify-between items-center mt-5 px-6">
   <div className="text-sm text-gray-700">
     Showing {filteredPatient.length > 0 ? ((currentPage - 1) * itemsPerPage + 1) : 0} to {Math.min(currentPage * itemsPerPage, filteredPatient.length)} of {filteredPatient.length} Patients
   </div>

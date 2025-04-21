@@ -304,107 +304,104 @@ export default function AdminPatientsList() {
             </div>
           </div>
 
-          <table id="Patient-table" className="min-w-full">
-            <thead>
-              <tr>
-                <th className="px-4 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  N0
-                </th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  phone
-                </th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  Age
-                </th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  Emergency Info
-                </th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentPatients.map((patient: Patient, index) => (
-                <tr key={patient.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {(currentPage - 1) * itemsPerPage + index + 1}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 flex-shrink-0">
-                        {patient.user.profileImage ? (
-                          <img
-                            className="h-10 w-10 rounded-full object-cover"
-                            src={patient.user.profileImage}
-                            alt=""
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-gray-500">{patient.user.firstName?.charAt(0)}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {patient.user.firstName} {patient.user.lastName}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-no-wrap border-gray-500">
-                    <div className="text-sm leading-5 text-gray-900">
-                      {/* Access phoneNumber from emergencyContact instead */}
-                      {patient.emergencyContact.phoneNumber}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-no-wrap border-gray-500">
-                    <div className="text-sm leading-5 text-gray-900">
-                      {patient.user.email}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-no-wrap border-gray-500">
-                    <div className="text-sm leading-5 text-gray-900">
-                      {patient.personalInformation.age}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-no-wrap border-gray-500">
-                    <div className="text-sm leading-5 text-gray-900">
-                      {patient.emergencyContact.name} {patient.emergencyContact.phoneNumber}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={() => handleView(patient)} 
-                        className="p-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                      >
-                        <FiEye className="w-5 h-5" />
-                      </button>
-                      <button 
-                        onClick={() => handleEditClick(patient)} 
-                        className="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition-colors"
-                      >
-                        <FiEdit className="w-5 h-5" />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(patient.id)} 
-                        className="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
-                      >
-                        <FiTrash2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <table id="Patient-table" className="w-full table-auto">
+  <thead>
+    <tr>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        No
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Name
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Phone
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Email
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Age
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Emergency Info
+      </th>
+      <th className="px-2 py-2 border-b-2 border-gray-300 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        Actions
+      </th>
+    </tr>
+  </thead>
+  <tbody className="bg-white divide-y divide-gray-200">
+    {currentPatients.map((patient: Patient, index) => (
+      <tr key={patient.id}>
+        <td className="px-2 py-2 text-sm text-gray-900">
+          {(currentPage - 1) * itemsPerPage + index + 1}
+        </td>
+        <td className="px-2 py-2">
+          <div className="flex items-center">
+            <div className="h-8 w-8 flex-shrink-0">
+              {patient.user.profileImage ? (
+                <img
+                  className="h-8 w-8 rounded-full object-cover"
+                  src={patient.user.profileImage}
+                  alt=""
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">{patient.user.firstName?.charAt(0)}</span>
+                </div>
+              )}
+            </div>
+            <div className="ml-2">
+              <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                {patient.user.firstName} {patient.user.lastName}
+              </div>
+            </div>
+          </div>
+        </td>
+        <td className="px-2 py-2 text-sm text-gray-900">
+          <div className="truncate max-w-xs">
+            {patient.emergencyContact.phoneNumber}
+          </div>
+        </td>
+        <td className="px-2 py-2 text-sm text-gray-900">
+          <div className="truncate max-w-xs">
+            {patient.user.email}
+          </div>
+        </td>
+        <td className="px-2 py-2 text-sm text-gray-900">
+          {patient.personalInformation.age}
+        </td>
+        <td className="px-2 py-2 text-sm text-gray-900">
+          <div className="truncate max-w-xs">
+            {patient.emergencyContact.phoneNumber}
+          </div>
+        </td>
+        <td className="px-2 py-2 text-sm text-gray-500">
+          <div className="flex space-x-1">
+            <button 
+              onClick={() => handleView(patient)} 
+              className="p-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            >
+              <FiEye className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => handleEditClick(patient)} 
+              className="p-1 rounded-md text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition-colors"
+            >
+              <FiEdit className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => handleDelete(patient.id)} 
+              className="p-1 rounded-md text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
+            >
+              <FiTrash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
           
           {/* Pagination Controls */}
           <div className="flex justify-between items-center mt-4 px-6">

@@ -99,7 +99,7 @@ const formatTime = (isoString:any) => {
 
   return(
       <div className="p-2 ml-4 bg-white rounded">
-          <h4 className="text-purple-600 text-3xl font-semibold p-3">
+          <h4 className="text-black text-2xl mt-6 font-semibold p-3">
             Appointments Management Dashboard
           </h4>
           {loading|| status==='loading' ? (

@@ -657,11 +657,11 @@ const handleCancelProfile=()=>{
   return (
     <div className="bg-white rounded border p-6">
      
-        <h1 className="text-black flex justify-center  bg-gray-100   w-full p-2 text-3xl font-semibold">
+        <h1 className="text-black flex justify-center  bg-gray-100   w-full p-1 mt-5 text-3xl font-semibold">
            Treatment Plan
         </h1>
     
-      <div className="flex flex-row gap-1 mt-6 ">
+      <div className="flex flex-row gap-1 mt-2 ">
         {["All Patients", "Create Plan", "View Plans"].map((buttonName) => (
           <button
             key={buttonName}

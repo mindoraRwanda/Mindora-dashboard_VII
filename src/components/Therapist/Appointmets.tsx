@@ -297,7 +297,7 @@ const handleReschedule=async(values:any)=>{
 };
   return (
     <div className="bg-white rounded-lg shadow-xl p-6 mt-3">
-      <div className="w-full bg-gray-100 text-black font-semibold text-2xl p-3 rounded flex justify-between">
+      <div className="w-full bg-gray-100 text-black font-semibold text-2xl p-3 mt-3 rounded flex justify-between">
         <h1>Appointments Management - My Appointments</h1>
         <Select
           className="mr-7 rounded-lg bg-white"

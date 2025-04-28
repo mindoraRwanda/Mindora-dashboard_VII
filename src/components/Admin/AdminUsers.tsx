@@ -291,8 +291,8 @@ export default function AdminUserList() {
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-3">
-      <div className="flex justify-between mb-4">
-        <h2 className="text-3xl font-bold m-5 text-purple-600">Users</h2>
+      <div className="flex justify-between mb-4 mt-3">
+        <h2 className="text-2xl font-bold m-5 text-black">Users</h2>
       </div>
       {loading ? (
         <div className="flex justify-center items-center min-h-screen">
@@ -300,8 +300,8 @@ export default function AdminUserList() {
         </div>
       ) : (
         <>
-          <div className="flex gap-4 mb-8">
-          <div className="flex float-left border-2 border-slate-300 ml-4 rounded-md mt-4">
+          <div className="flex gap-4 mb-4">
+          <div className="flex float-left border-2 border-slate-300 ml-4 rounded-md ">
           <a
             onClick={showModal}
             className="text-white font-bold p-2 px-2 cursor-pointer bg-purple-600 rounded-md "

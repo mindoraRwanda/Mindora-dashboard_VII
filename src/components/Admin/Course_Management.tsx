@@ -131,8 +131,8 @@ function Course_Management() {
     switch (activeButton) {
       case "Courses":
         return (
-          <div className="text-2xl text-black m-4 mt-4 bg-white">
-            <Card className="mb-4 shadow-sm">
+          <div className="text-2xl text-black m-4 bg-white">
+            <Card className="mb-2  shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex">
                   <Input
@@ -307,12 +307,12 @@ function Course_Management() {
   return (
     <>
       <div className="bg-white rounded-lg border shadow-sm p-6">
-        <div className="mb-6">
-          <div className="flex flex-row gap-4 mx-4">
+        <div className="mb-2">
+          <div className="flex flex-row gap-4 mx-4 mt-7">
             {["Courses", "Course Articles"].map((buttonName) => (
               <button
                 key={buttonName}
-                className={`text-lg font-semibold px-6 py-2 rounded-md transition-colors ${
+                className={`text-lg font-semibold px-6 py-1 rounded-md transition-colors ${
                   activeButton === buttonName
                     ? "bg-purple-600 text-white hover:bg-purple-700 shadow-sm"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"

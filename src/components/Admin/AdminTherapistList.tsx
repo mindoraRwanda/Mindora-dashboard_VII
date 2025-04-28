@@ -284,7 +284,7 @@ export default function AdminTherapistList() {
    
     <div className="bg-white rounded-lg shadow-xl  mt-10 p-3">
       <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-semibold mb-4 text-purple-600">
+        <h2 className="text-2xl font-semibold mb-4 text-black">
           Therapists
         </h2>
     

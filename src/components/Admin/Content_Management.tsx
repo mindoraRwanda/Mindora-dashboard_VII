@@ -51,7 +51,7 @@ export default function ContentManage() {
 
   return (
     <div className="flex gap-3 border border-gray-700 p-2 rounded-md">
-      <div className="bg-white rounded-md h-full p-4 w-2/3">
+      <div className="bg-white rounded-md h-full p-4 w-2/3 mt-6">
         <p className="text-black text-2xl mb-8 capitalize">Manage content.</p>
 
         <button className='text-black text-2xl'>View</button>
@@ -143,7 +143,7 @@ export default function ContentManage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-md p-4 text-black w-1/3">
+      <div className="bg-white rounded-md p-4 text-black w-1/3 mt-7">
         <p className='text-xl capitalize'>Published on: 2024/08/12</p>
         <strong className='capitalize mb-3'>Auth: Placide</strong><br />
         <label className='py-3 text-purple-600'>Image Uploaded:</label>

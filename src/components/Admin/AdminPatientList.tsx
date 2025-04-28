@@ -259,8 +259,8 @@ export default function AdminPatientsList() {
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
-      <div className="flex justify-between">
-        <h2 className="mb-2 text-black text-3xl font-semibold">Patients</h2>
+      <div className="flex justify-between mt-5">
+        <h2 className="mb-2 text-black text-2xl font-semibold">Patients</h2>
       </div>
       { loading ? (
         <div className="flex justify-center items-center min-h-screen">

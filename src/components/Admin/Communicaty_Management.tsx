@@ -413,8 +413,8 @@ useEffect(() => {
 
   return (
     <div className="p-6 bg-gray-50">
-      <div className="flex justify-between items-center mb-6">
-        <Title level={2} className="text-purple-600 m-0">
+      <div className="flex justify-between items-center mb-3 mt-5">
+        <Title className="text-purple-600" level={2}>
           Community Management
         </Title>
         <Button

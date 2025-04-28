@@ -29,7 +29,7 @@ export default function Communities() {
   return (
     <div className="bg-gray-50 min-h-screen p-6">
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 mt-4">
         <Title level={2} className="text-purple-700 m-0 font-bold">
           Community Management
         </Title>

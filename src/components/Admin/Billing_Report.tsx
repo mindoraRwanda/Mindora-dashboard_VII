@@ -133,7 +133,7 @@ export default function BillingReports() {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-2 mt-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Billing Reports</h1>
           <p className="text-gray-500">View and manage financial reports</p>

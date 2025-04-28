@@ -98,8 +98,8 @@ function Reports() {
 
   return (
     <div className="bg-white rounded border px-8 mt-4">
-      <div className='flex justify-between p-3'>
-      <h3 className='text-purple-600 text-2xl font-semibold'>Patient Progress Report</h3>
+      <div className='flex justify-between p-3 mt-5'>
+      <h3 className='text-black text-2xl font-semibold'>Patient Progress Report</h3>
       <Button className='bg-purple-600 text-white font-semibold p-5 flex' onClick={()=>setIsReportShow(true)}> <BiPlus size={25}/>
          New Report</Button> 
       </div>

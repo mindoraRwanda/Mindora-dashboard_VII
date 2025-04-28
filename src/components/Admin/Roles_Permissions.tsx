@@ -45,7 +45,7 @@ export default function Roles() {
   return (
     <div>
       <div className='flex gap-3'>
-        <div className="bg-white rounded-md shadow-lg p-6 w-1/2">
+        <div className="bg-white rounded-md shadow-lg p-6 w-1/2 mt-6">
           <p className="text-2xl text-black">Users Permissions</p>
 
           {/* user1 */}
@@ -130,7 +130,7 @@ export default function Roles() {
           </div>
         </div>
 
-        <div className='bg-white text-black w-1/2 p-3'>
+        <div className='bg-white text-black w-1/2 p-3 mt-6'>
           <p className='text-xl capitalize font-semibold underline my-4'>List of Permissions</p>
           <div className='flex text-lg my-3'>
             <MdAddBox size={24} color='green'/> 

@@ -22,7 +22,8 @@ import medicationReducer from './TherapistSlice/MedicationSlice';
 import medication_prescriptionReducer from './TherapistSlice/MedicationPrescription';
 import messagesReducer from './Adminslice/messageSlice';
 import reportReducer from './TherapistSlice/ReportSlice';
-
+import permissionsSliceReducer from './Adminslice/PermissionsRedux';
+import rolesSliceReducer from './Adminslice/RolesRedux';
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -48,6 +49,8 @@ const store = configureStore({
     MedicationPrescription: medication_prescriptionReducer,
     messages: messagesReducer,
     reports: reportReducer,
+    permissions:permissionsSliceReducer,
+    roles: rolesSliceReducer
   },
 });
 

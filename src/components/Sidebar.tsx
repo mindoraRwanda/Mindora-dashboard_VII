@@ -300,9 +300,9 @@ const previewImage = (file: File) => {
                   </a>
                  
              
-                  <a onClick={() => setActiveComponent("Content Management")} className="block text-lg ml-4 my-6 text-gray-700 hover:bg-gray-50 p-2  transition duration-200 cursor-pointer">
+                  {/* <a onClick={() => setActiveComponent("Content Management")} className="block text-lg ml-4 my-6 text-gray-700 hover:bg-gray-50 p-2  transition duration-200 cursor-pointer">
                     <p className="flex"><BiCircle className="m-1 " /> Content Management</p>
-                  </a>
+                  </a> */}
                 </div>
               )}
             </div>
